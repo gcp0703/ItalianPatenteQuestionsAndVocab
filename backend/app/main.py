@@ -1158,13 +1158,16 @@ async def translate_vocab_word(word: str = Query(min_length=1)) -> VocabTranslat
     if ai_definition and not translation:
         translation = ai_definition
 
-    # Use the translation as a hint to rerank dictionary meanings
-    # so they align with the most common sense of the word.
+    # Only fetch dictionary details if we don't already have a usable definition.
+    # The dictionary lookup is slow (network scrape + translation of meanings).
     google_hint = translation or ""
     dictionary: VocabDictionaryOut | None = None
+    cached_dict = entry.get("dictionary_cache")
+    skip_dictionary = bool(translation or ai_definition) and not cached_dict
     try:
-        dictionary_payload = await asyncio.to_thread(
-            get_dictionary_details, word, google_hint
+        dictionary_payload = (
+            cached_dict if skip_dictionary
+            else await asyncio.to_thread(get_dictionary_details, word, google_hint)
         )
         if dictionary_payload:
             dictionary = VocabDictionaryOut(
