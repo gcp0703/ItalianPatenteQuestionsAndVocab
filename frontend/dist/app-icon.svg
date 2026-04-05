@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Quiz Patente B Icon</title>
+  <desc id="desc">Rounded driving-school badge with road lane markings and a check symbol.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d35f2d" />
+      <stop offset="100%" stop-color="#b34718" />
+    </linearGradient>
+    <linearGradient id="road" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#30404d" />
+      <stop offset="100%" stop-color="#1f2a33" />
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bg)" />
+  <rect x="26" y="18" width="76" height="92" rx="24" fill="url(#road)" />
+  <rect x="61" y="26" width="6" height="14" rx="3" fill="#fffaf2" opacity="0.95" />
+  <rect x="61" y="48" width="6" height="14" rx="3" fill="#fffaf2" opacity="0.95" />
+  <rect x="61" y="70" width="6" height="14" rx="3" fill="#fffaf2" opacity="0.95" />
+  <path d="M41 92 55 105 87 73" fill="none" stroke="#f4d06f" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" />
+</svg>
