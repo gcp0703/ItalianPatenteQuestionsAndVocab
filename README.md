@@ -21,26 +21,35 @@ NOTE: AI access or usage is **NOT** required to run this app. It was used to gen
 - **AI (optional)**: MLX model via `mlx-lm` for on-device inference
 - **Translation fallbacks**: Google Translate (`deep-translator`), dizionario-italiano.it (scraped)
 
-## Setup
-
-### Prerequisites
-
-- Python 3.10+
-- Node.js 18+
-- Apple Silicon Mac (for MLX model inference; the app works without it but falls back to Google Translate)
-
-### Install dependencies
+## Quick Start
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-pip install mlx-lm python-dotenv  # optional: for local AI definitions
-
-cd frontend
-npm install
-cd ..
+pip install -e .
+quizpatenteb
 ```
+
+This installs the app, launches the server, and opens your browser. Press Ctrl+C to stop.
+
+Options:
+```
+quizpatenteb --port 9000      # custom port
+quizpatenteb --no-browser     # don't open browser
+```
+
+To enable local AI definitions on Apple Silicon (optional):
+```bash
+pip install -e ".[ai]"
+```
+
+## Setup (detailed)
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+ (only needed if modifying the frontend)
+- Apple Silicon Mac (optional, for MLX model inference)
 
 ### Configure
 
@@ -55,9 +64,9 @@ See `backend/.env.example` for available settings:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `AI_MODEL` | `mlx-community/Qwen3.5-27B-4bit` | MLX-compatible model for generating definitions |
-| `BACKFILL_DEFINITIONS` | `true` | Set to `false` to disable background definition caching |
+| `BACKFILL_DEFINITIONS` | `false` | Set to `true` to enable background definition caching at startup |
 
-### Run (development)
+### Development
 
 Start both servers with one command:
 

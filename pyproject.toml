@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quizpatenteb"
+version = "1.0.0"
+description = "Study tool for the Italian driver's license exam (Patente B) with vocabulary learning"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.116",
+    "uvicorn[standard]>=0.35",
+    "deep-translator>=1.11",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+ai = ["mlx-lm>=0.21"]
+
+[project.scripts]
+quizpatenteb = "backend.app.__main__:main"
+
+[tool.setuptools]
+packages = ["backend", "backend.app"]
+
+[tool.setuptools.package-data]
+"backend" = [".env.example"]

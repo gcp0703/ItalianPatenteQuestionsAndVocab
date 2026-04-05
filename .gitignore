@@ -6,3 +6,4 @@ frontend/dist/
 .run/
 *.png
 .env
+*.egg-info/
