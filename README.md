@@ -1,66 +1,171 @@
 # Quiz Patente B
 
-I quiz sono aggiornati al 2023. Il file `quizPatenteB2023.json` contiene 7139 domande, di cui 3983 con immagini; le immagini si trovano nella cartella `img_sign`.
+A study tool for the Italian driver's license exam (Patente B) with vocabulary learning powered by a local AI model.
 
-## Web app
+## Features
 
-L'applicazione espone:
+**Quiz Mode** -- Practice with 7,139 true/false questions from the 2023 exam bank, organized across 25 topics (traffic signs, speed limits, right of way, etc.). 3,983 questions include sign/road images.
 
-- un backend Python/FastAPI che estrae 30 domande casuali, calcola il punteggio finale e richiede la traduzione inglese tramite Google Translate
-- un frontend React/Vite che mostra le domande in italiano, l'immagine associata se presente, la selezione `Vero` / `Falso`, la navigazione avanti/indietro e il riepilogo finale
+**Vocab Mode** -- Learn Italian driving vocabulary in batches of 20 words. Each word gets an English definition from a local AI model, with fallbacks to Google Translate and an online Italian dictionary. Progress is tracked per-word with thumbs up/down feedback, and words cycle through rounds until mastered.
 
-## Avvio locale
+**AI Definitions** -- A local MLX model (Apple Silicon) generates contextual English definitions focused on driving and traffic law. A background worker pre-caches definitions at startup with a priority semaphore so user requests are never blocked. Definitions are persisted to disk and survive server restarts.
 
-1. Creare un ambiente virtuale Python e installare le dipendenze:
+## Architecture
+
+- **Backend**: Python / FastAPI (port 8500)
+- **Frontend**: React / Vite (port 5183 in dev, served by FastAPI in production)
+- **AI**: MLX model via `mlx-lm` for on-device inference
+- **Translation fallbacks**: Google Translate (`deep-translator`), dizionario-italiano.it (scraped)
+
+## Setup
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- Apple Silicon Mac (for MLX model inference; the app works without it but falls back to Google Translate)
+
+### Install dependencies
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
+pip install mlx-lm python-dotenv  # optional: for local AI definitions
 
-2. Installare le dipendenze frontend:
-
-```bash
 cd frontend
 npm install
+cd ..
 ```
 
-3. Avviare il backend:
+### Configure
+
+Copy the example environment file:
 
 ```bash
-uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8500
+cp backend/.env.example backend/.env
 ```
 
-4. In un secondo terminale, avviare il frontend:
+See `backend/.env.example` for available settings:
 
-```bash
-cd frontend
-npm run dev -- --host 127.0.0.1 --port 5183
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AI_MODEL` | `mlx-community/Qwen3.5-27B-4bit` | MLX-compatible model for generating definitions |
+| `BACKFILL_DEFINITIONS` | `true` | Set to `false` to disable background definition caching |
 
-In alternativa, dopo aver installato le dipendenze, si possono riavviare entrambi i servizi con un solo comando:
+### Run (development)
+
+Start both servers with one command:
 
 ```bash
 ./restart-dev.sh
 ```
 
-Lo script arresta eventuali processi già in ascolto sulle porte di sviluppo, rilancia backend e frontend in background e salva log e PID nella cartella `.run/`.
-L'app di sviluppo risponde su `http://127.0.0.1:5183` e il backend su `http://127.0.0.1:8500`.
-
-## Build produzione
-
-Per servire il frontend direttamente da FastAPI:
+Or start them separately:
 
 ```bash
+# Terminal 1 - backend
+source .venv/bin/activate
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8500
+
+# Terminal 2 - frontend
 cd frontend
-npm run build
-cd ..
+npm run dev -- --host 127.0.0.1 --port 5183
+```
+
+The app is available at `http://127.0.0.1:5183`. Logs are saved to `.run/`.
+
+### Run (production)
+
+Build the frontend and serve it from FastAPI:
+
+```bash
+cd frontend && npm run build && cd ..
 uvicorn backend.app.main:app --host 127.0.0.1 --port 8500
 ```
 
-## Note
+## Data Files
 
-- Le immagini vengono servite dal backend sul path `/img_sign/...`.
-- La traduzione inglese viene richiesta on demand quando si apre la sezione nascosta sotto la domanda in italiano.
-- La traduzione usa Google Translate tramite la libreria `deep-translator`, quindi richiede connettività di rete.
+### `quizPatenteB2023.json`
+
+The question bank. A nested JSON object keyed by topic slug (e.g. `segnali-pericolo`, `limiti-di-velocita`). Each leaf is a question object:
+
+```json
+{
+  "img": "/img_sign/550.png",
+  "q": "In una carreggiata del tipo rappresentato si può sorpassare anche in curva",
+  "a": true
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `q` | string | Question text in Italian |
+| `a` | boolean | Correct answer (true/false) |
+| `img` | string or absent | Path to the associated sign/road image |
+
+### `vocabolario_patente.json`
+
+Raw vocabulary extracted from the question bank. Keyed by Italian word:
+
+```json
+{
+  "abbagliamento": {
+    "english": "",
+    "frequency": 8.13e-08,
+    "difficulty": 5,
+    "count": 2,
+    "topics": ["11. Limiti di velocità", "2. Segnali di pericolo"],
+    "tracking": { "up": 0, "down": 0, "known": false, "difficult": false },
+    "ai_definition": "1. Blinding caused by improper high-beam use...",
+    "ai_definition_failed": false
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `english` | string | Human-curated English translation (empty if none) |
+| `frequency` | number | Word frequency in Italian language |
+| `difficulty` | 1-5 | Difficulty score |
+| `count` | number | Occurrences across all quiz questions |
+| `topics` | string[] | Quiz topics where the word appears |
+| `tracking` | object | User feedback: thumbs up/down counts, known/difficult flags |
+| `ai_definition` | string or null | AI-generated English definition (persisted by background worker) |
+| `ai_definition_failed` | boolean | True if the AI model returned no result for this word |
+
+### `vocabolario_patente.normalized.json`
+
+Deduplicated vocabulary that groups inflected forms (plurals, conjugations) under a single lemma. Generated by `scripts/generate_normalized_vocab.py`. Structure:
+
+```json
+{
+  "by_word": { "abbaglianti": "abbagliante", ... },
+  "entries": { "abbagliante": { ... } },
+  "meta": { "normalized_word_count": 2960 }
+}
+```
+
+The `by_word` map resolves any inflected form to its normalized entry. Each entry in `entries` has the same fields as the raw vocabulary plus:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `source_words` | string[] | All inflected forms grouped under this lemma |
+| `source_count` | number | Number of source words |
+| `english_variants` | string[] | Alternative translations from grouped forms |
+
+### `img_sign/`
+
+Contains 415 PNG images of traffic signs and road situations referenced by questions.
+
+## How AI Definitions Work
+
+1. When a user requests a word translation, the backend checks (in order): human-curated translation, persisted AI definition, live AI model call, Google Translate, online dictionary.
+
+2. The AI model receives a system prompt that frames it as an Italian-English dictionary for driving exam context, then generates up to 4 concise definitions per word.
+
+3. A background worker iterates through all vocabulary at startup, calling the AI model for words without cached definitions. A priority semaphore ensures user requests always preempt background work.
+
+4. AI definitions are persisted to the vocabulary JSON file in batches of 10. Words where the model returns no output are flagged with `ai_definition_failed` to avoid retrying.
+
+5. Google Translate results include a driving-context hint to bias translations toward automotive meanings (e.g. "galleria" translates to "tunnel" rather than "gallery").
