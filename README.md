@@ -1,6 +1,8 @@
-# Quiz Patente B
+# Italian Drivers License Exam Questions and Vocabulary
 
-A study tool for the Italian driver's license exam (Patente B) with vocabulary learning powered by a local AI model.
+A study tool for the Italian driver's license exam (Patente B) with vocabulary learning.
+
+Special thanks to Edourardo (https://ed0ardo.com/) for the images and exam questions that made this possible.
 
 ## Features
 
