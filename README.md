@@ -29,15 +29,24 @@ npm install
 3. Avviare il backend:
 
 ```bash
-uvicorn backend.app.main:app --reload
+uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8500
 ```
 
 4. In un secondo terminale, avviare il frontend:
 
 ```bash
 cd frontend
-npm run dev
+npm run dev -- --host 127.0.0.1 --port 5183
 ```
+
+In alternativa, dopo aver installato le dipendenze, si possono riavviare entrambi i servizi con un solo comando:
+
+```bash
+./restart-dev.sh
+```
+
+Lo script arresta eventuali processi già in ascolto sulle porte di sviluppo, rilancia backend e frontend in background e salva log e PID nella cartella `.run/`.
+L'app di sviluppo risponde su `http://127.0.0.1:5183` e il backend su `http://127.0.0.1:8500`.
 
 ## Build produzione
 
@@ -47,7 +56,7 @@ Per servire il frontend direttamente da FastAPI:
 cd frontend
 npm run build
 cd ..
-uvicorn backend.app.main:app
+uvicorn backend.app.main:app --host 127.0.0.1 --port 8500
 ```
 
 ## Note

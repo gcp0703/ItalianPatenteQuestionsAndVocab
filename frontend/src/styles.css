@@ -42,6 +42,112 @@ summary {
   padding: 32px 0 48px;
 }
 
+.vocab-batch-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(31, 42, 51, 0.26);
+  backdrop-filter: blur(8px);
+}
+
+.vocab-batch-overlay-card {
+  min-width: min(420px, calc(100vw - 48px));
+  padding: 28px 32px;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(211, 95, 45, 0.16), rgba(34, 124, 93, 0.14)),
+    rgba(255, 252, 246, 0.96);
+  border: 1px solid rgba(255, 250, 242, 0.75);
+  box-shadow: 0 28px 60px rgba(31, 42, 51, 0.22);
+  text-align: center;
+}
+
+.vocab-batch-summary-card {
+  width: min(720px, calc(100vw - 48px));
+  max-height: min(85vh, 900px);
+  overflow: auto;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: rgba(255, 252, 246, 0.98);
+  border: 1px solid rgba(255, 250, 242, 0.8);
+  box-shadow: 0 28px 60px rgba(31, 42, 51, 0.22);
+}
+
+.vocab-batch-summary-card h2 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.vocab-batch-summary-stats {
+  margin: 18px 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.vocab-batch-summary-stat {
+  min-width: 132px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(246, 239, 228, 0.9);
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 4px;
+}
+
+.vocab-batch-summary-stat strong {
+  font-size: 1.5rem;
+  color: var(--ink);
+}
+
+.vocab-batch-summary-stat-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vocab-batch-summary-list {
+  margin: 22px 0 24px;
+  display: grid;
+  gap: 10px;
+}
+
+.vocab-batch-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(246, 239, 228, 0.9);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.vocab-batch-summary-row span:last-child {
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.vocab-batch-overlay-card .eyebrow {
+  margin-bottom: 10px;
+}
+
+.vocab-batch-overlay-card h2 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  letter-spacing: -0.04em;
+}
+
 .hero-card,
 .result-card,
 .question-panel,
@@ -60,6 +166,14 @@ summary {
   gap: 24px;
   align-items: center;
   padding: 28px 30px;
+}
+
+.hero-card {
+  position: relative;
+}
+
+.hero-card-with-progress {
+  padding-bottom: 48px;
 }
 
 .hero-brand {
@@ -101,6 +215,67 @@ summary {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+
+.hero-progress-wrapper {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 60px));
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.hero-progress-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.hero-progress-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: background-color 240ms ease, box-shadow 240ms ease;
+}
+
+.dot-empty {
+  background: rgba(31, 42, 51, 0.15);
+}
+
+.dot-correct {
+  background: #227c5d;
+  box-shadow: 0 0 4px rgba(34, 124, 93, 0.4);
+}
+
+.dot-wrong {
+  background: #FF0000;
+  box-shadow: 0 0 4px rgba(211, 95, 45, 0.4);
+}
+
+.dot-active {
+  animation: dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { background: #FF0000; }
+  50% { background: #227c5d; }
+}
+
+.dot-difficult {
+  outline: 2px solid #d4a017;
+  outline-offset: 1px;
 }
 
 .header-button.active {
@@ -388,11 +563,17 @@ summary {
   margin-bottom: 20px;
 }
 
-.vocab-header h2 {
-  margin: 0;
-  font-family: "Fraunces", serif;
-  letter-spacing: -0.03em;
-  font-size: clamp(1.6rem, 3vw, 2.3rem);
+.vocab-source-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.vocab-reset-button {
+  background: rgba(185, 63, 56, 0.08);
+  color: var(--error);
+  border: 1px solid rgba(185, 63, 56, 0.18);
 }
 
 .vocab-stream {
@@ -447,6 +628,15 @@ summary {
   overflow-wrap: anywhere;
 }
 
+.vocab-feedback-stats {
+  margin: 10px 0 0;
+  display: flex;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .vocab-translation {
   margin: 6px 0 0;
   color: var(--muted);
@@ -455,6 +645,16 @@ summary {
   letter-spacing: -0.03em;
   line-height: 1.1;
   overflow-wrap: anywhere;
+}
+
+.vocab-translation-block {
+  margin-top: 6px;
+  display: grid;
+  gap: 10px;
+}
+
+.vocab-translation-block .vocab-translation {
+  margin-top: 0;
 }
 
 .vocab-translation-hidden {
@@ -470,6 +670,30 @@ summary {
 .vocab-translation-revealed-down {
   color: #7d201a;
   animation: vocabRevealGlowDown 1000ms ease-out forwards;
+}
+
+.vocab-translation-variants {
+  display: grid;
+  gap: 6px;
+}
+
+.vocab-translation-variants-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vocab-translation-variants-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink);
+  display: grid;
+  gap: 4px;
+  font-size: 0.96rem;
+  line-height: 1.35;
 }
 
 @keyframes vocabRevealGlowUp {
@@ -519,6 +743,19 @@ summary {
   line-height: 1;
 }
 
+.vocab-transition-button {
+  width: 100%;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 12px 24px;
+}
+
+.vocab-transition-batch {
+  background: linear-gradient(135deg, #227c5d 0%, #1a5e47 100%);
+  border-color: #1a5e47;
+}
+
 .vocab-icon-approve {
   background: rgba(34, 124, 93, 0.16);
   color: var(--success);
@@ -527,6 +764,17 @@ summary {
 
 .vocab-icon-reveal {
   background: linear-gradient(135deg, #e0b437 0%, #c98f16 100%);
+  color: #fff;
+}
+
+.vocab-icon-difficult {
+  background: rgba(227, 183, 55, 0.12);
+  color: #b88405;
+  border: 1px solid rgba(201, 143, 22, 0.22);
+}
+
+.vocab-icon-difficult.active {
+  background: linear-gradient(135deg, #f1ca5f 0%, #c98f16 100%);
   color: #fff;
 }
 
@@ -555,6 +803,10 @@ button:disabled {
     text-align: left;
   }
 
+  .hero-card-with-progress {
+    padding-bottom: 56px;
+  }
+
   .hero-brand {
     align-items: start;
   }
@@ -563,9 +815,26 @@ button:disabled {
     justify-content: flex-start;
   }
 
+  .hero-progress-wrapper {
+    width: calc(100% - 40px);
+  }
+
+  .hero-progress-dots {
+    gap: 4px;
+  }
+
+  .progress-dot {
+    width: 10px;
+    height: 10px;
+  }
+
   .vocab-header,
   .vocab-row {
     grid-template-columns: 1fr;
+  }
+
+  .vocab-source-actions {
+    justify-content: flex-start;
   }
 
   .vocab-body {
