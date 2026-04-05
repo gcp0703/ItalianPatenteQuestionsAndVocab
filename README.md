@@ -1,4 +1,4 @@
-# Italian Drivers License Exam Questions and Vocabulary
+# Italian Drivers License (Patente) Exam Questions and Vocabulary
 
 A study tool for the Italian driver's license exam (Patente B) with vocabulary learning.
 
