@@ -23,14 +23,37 @@ NOTE: AI access or usage is **NOT** required to run this app. It was used to gen
 
 ## Quick Start
 
+### macOS / Linux
+
 ```bash
+git clone https://github.com/gcp0703/QuizPatenteB.git
+cd QuizPatenteB
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 quizpatenteb
 ```
 
+### Windows (PowerShell)
+
+```powershell
+git clone https://github.com/gcp0703/QuizPatenteB.git
+cd QuizPatenteB
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e .
+quizpatenteb
+```
+
 This installs the app, launches the server, and opens your browser. Press Ctrl+C to stop.
+
+To run the app again later:
+
+```bash
+cd QuizPatenteB
+source .venv/bin/activate    # Windows: .venv\Scripts\Activate.ps1
+quizpatenteb
+```
 
 Options:
 ```
