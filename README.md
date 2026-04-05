@@ -4,19 +4,21 @@ A study tool for the Italian driver's license exam (Patente B) with vocabulary l
 
 Special thanks to Edourardo (https://ed0ardo.com/) for the images and exam questions that made this possible.
 
+NOTE: AI access or usage is **NOT** required to run this app. It was used to generate driving-oriented definitions of the vocabulary, which are stored in this system already. AI is only needed if you want to expand the vocabulary.
+
 ## Features
 
 **Quiz Mode** -- Practice with 7,139 true/false questions from the 2023 exam bank, organized across 25 topics (traffic signs, speed limits, right of way, etc.). 3,983 questions include sign/road images.
 
 **Vocab Mode** -- Learn Italian driving vocabulary in batches of 20 words. Each word gets an English definition from a local AI model, with fallbacks to Google Translate and an online Italian dictionary. Progress is tracked per-word with thumbs up/down feedback, and words cycle through rounds until mastered.
 
-**AI Definitions** -- A local MLX model (Apple Silicon) generates contextual English definitions focused on driving and traffic law. A background worker pre-caches definitions at startup with a priority semaphore so user requests are never blocked. Definitions are persisted to disk and survive server restarts.
+**AI Definitions (optional)** -- A local MLX model (Apple Silicon) generates contextual English definitions focused on driving and traffic law. A background worker pre-caches definitions at startup with a priority semaphore so user requests are never blocked. Definitions are persisted to disk and survive server restarts.
 
 ## Architecture
 
 - **Backend**: Python / FastAPI (port 8500)
 - **Frontend**: React / Vite (port 5183 in dev, served by FastAPI in production)
-- **AI**: MLX model via `mlx-lm` for on-device inference
+- **AI (optional)**: MLX model via `mlx-lm` for on-device inference
 - **Translation fallbacks**: Google Translate (`deep-translator`), dizionario-italiano.it (scraped)
 
 ## Setup
