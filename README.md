@@ -169,3 +169,13 @@ Contains 415 PNG images of traffic signs and road situations referenced by quest
 4. AI definitions are persisted to the vocabulary JSON file in batches of 10. Words where the model returns no output are flagged with `ai_definition_failed` to avoid retrying.
 
 5. Google Translate results include a driving-context hint to bias translations toward automotive meanings (e.g. "galleria" translates to "tunnel" rather than "gallery").
+
+## Attribution
+
+The quiz question data (`quizPatenteB2023.json`) and traffic sign images (`img_sign/`) are from [Ed0ardo/QuizPatenteB](https://github.com/Ed0ardo/QuizPatenteB) by Edoardo, licensed under the MIT License. The dataset contains 7,139 questions from the 2023 Italian Patente B exam.
+
+All application code, the vocabulary learning system, AI definition integration, and the web interface were built independently on top of this dataset.
+
+## License
+
+MIT -- see [LICENSE](LICENSE) for details.
