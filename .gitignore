@@ -6,3 +6,4 @@ frontend/node_modules/
 .run/
 *.png
 *.egg-info/
+user_data/

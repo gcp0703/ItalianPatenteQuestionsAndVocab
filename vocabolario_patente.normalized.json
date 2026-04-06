@@ -1311,7 +1311,32 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "accorgere",
+        "lemma": "accòrgersi",
+        "meanings": [
+          "begin to see, to glimpse; take note",
+          "become aware of a reality, begin to understand, become aware of something that had not previously been observed or that was unknown [] | []",
+          "literary the fact or ability to understand something or to become aware of it, even through the senses [] | []"
+        ],
+        "related": [
+          {
+            "term": "senza (neanche) accorgersene",
+            "meaning": "familiare inavvertitamente, inconsciamente",
+            "english": "familiar inadvertently, unconsciously"
+          },
+          {
+            "term": "facilmente, senza alcuna fatica o difficoltà",
+            "meaning": "facilmente, senza alcuna fatica o difficoltà",
+            "english": "easily, without any effort or difficulty"
+          },
+          {
+            "term": "te ne accorgerai!",
+            "meaning": "espressione di avvertimento, rimprovero, velata minaccia, a chi si ostina a ignorare i buoni consigli",
+            "english": "expression of warning, reproach, veiled threat, to those who persist in ignoring good advice"
+          }
+        ]
+      },
       "ai_definition": "1. To notice or become aware of a hazard, obstacle, or change in traffic conditions.\n2. To realize or perceive something important.\n3. To take care of or attend to a specific task or person."
     },
     "accorgimento": {
@@ -2392,7 +2417,7 @@
         ],
         "related": []
       },
-      "ai_definition": "1. To overtake another vehicle by passing it on the left or right side.\n2. To drive alongside another vehicle in the same lane.\n3. To accompany or stand next to someone or something.\n4. To join or align with a group or organization."
+      "ai_definition": "1. To come alongside or pull up next to another vehicle or person.\n2. To support or assist someone by being at their side.\n3. To place side by side."
     },
     "affidamento": {
       "word": "affidamento",
@@ -2585,7 +2610,17 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "agevolare",
+        "lemma": "agevolàre",
+        "meanings": [
+          "make easier or easier, facilitate",
+          "literary alleviate, attenuate, lighten []",
+          "help, favor someone, especially by granting advantages",
+          "prefer, favor over others"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To facilitate or make easier, such as simplifying a driving maneuver or traffic flow.\n2. To grant a concession or special privilege, like a reduced fee for a specific group.\n3. To help or assist someone in a general sense.\n4. To promote or encourage a particular action or development."
     },
     "agevolmente": {
@@ -5471,7 +5506,7 @@
         "difficult": false
       },
       "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle by passing it on the left side.\n2. To predict or foresee an event or situation.\n3. To advance the timing of an action or payment.\n4. To play a musical note or chord before the expected beat."
+      "ai_definition": "1. To anticipate or foresee something before it happens.\n2. To bring forward in time; to do something earlier than planned.\n3. To advance money or a payment before it is due.\n4. In driving, to predict the actions of other road users."
     },
     "antidepressivo": {
       "word": "antidepressivo",
@@ -6598,7 +6633,20 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "arno",
+        "lemma": "Àrno",
+        "meanings": [
+          "name of a river in Tuscany"
+        ],
+        "related": [
+          {
+            "term": "Arno non ingrossa se non intorbida",
+            "meaning": "è difficile salire di fama, ricchezza, potere senza compromessi un po'",
+            "english": "it is difficult to rise in fame, wealth, power without compromising a little"
+          }
+        ]
+      },
       "ai_definition": "1. A major river in northern Italy, often referenced in regional driving directions or road signs.\n2. A proper noun referring to the city of Florence, which lies on the river.\n3. A historical name for the region of Tuscany.\n4. A surname or given name in Italian culture."
     },
     "arrecare": {
@@ -8509,7 +8557,43 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "attrezzo",
+        "lemma": "attrézzo",
+        "meanings": [
+          "any instrument, utensil necessary for a specific use, for a specific activity or trade; in particular in industry, an object of simple shape, which is used to carry out a given operation in a working cycle, less complex than a tool",
+          "sport any instrument, of various shapes, used in the performance of an athletic, gymnastic or sporting exercise",
+          "sport (plural) in gymnastics: the large apparatus",
+          "always after the noun, in an adjectival function in the phrase «tow truck»"
+        ],
+        "related": [
+          {
+            "term": "strumenti attrezzi rusticali",
+            "meaning": "agricoltura arcaico strumenti agricoli",
+            "english": "archaic agriculture agricultural tools"
+          },
+          {
+            "term": "attrezzi rusticani",
+            "meaning": "agricoltura arcaico strumenti agricoli",
+            "english": "archaic agriculture agricultural tools"
+          },
+          {
+            "term": "grandi attrezzi",
+            "meaning": "sport ciascuno degli attrezzi ginnici sui quali il ginnasta si muove in appoggio o in sospensione, quali la sbarra, gli anelli, il cavallo, le parallele ecc.",
+            "english": "sport each of the gymnastic tools on which the gymnast moves in support or suspension, such as the bar, the rings, the horse, the parallel bars, etc."
+          },
+          {
+            "term": "piccoli attrezzi",
+            "meaning": "sport ciascuno degli attrezzi ginnici che vengono mossi dal ginnasta, quali gli appoggi, il cerchio, la corda, la palla, il nastro ecc.",
+            "english": "sports each of the gymnastic tools that are moved by the gymnast, such as supports, the hoop, the rope, the ball, the ribbon, etc."
+          },
+          {
+            "term": "attrezzi navali",
+            "meaning": "il complesso di tutto quanto è necessario per armare una nave",
+            "english": "the complex of everything necessary to arm a ship"
+          }
+        ]
+      },
       "ai_definition": "1. A tool or piece of equipment required for vehicle maintenance or roadside repairs.\n2. A general implement or instrument used for manual work.\n3. A person who is considered a tool or pawn for someone else's purposes.\n4. A piece of sports equipment or gear."
     },
     "attribuzione": {
@@ -9337,7 +9421,27 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "autorizzazione",
+        "lemma": "autorizzazióne",
+        "meanings": [
+          "the operation, the act, the manner and the effect of authorizing, of being authorized, of allowing someone to do something; permission, concession, approval",
+          "act with which a private individual or an authority allows a person to exercise a right or faculty by removing the obstacles and limits placed by law on their exercise",
+          "the document containing this deed, which certifies this concession"
+        ],
+        "related": [
+          {
+            "term": "permesso, autorizzazione di abitabilità",
+            "meaning": "burocrazia documento che comprova l'abitabilità di un edificio di nuova costruzione o modificato, e che viene rilasciato dall'ufficio tecnico del comune quando questo risponde ai requisiti previsti dal regolamento edilizio e di igiene",
+            "english": "bureaucracy document that proves the habitability of a newly built or modified building, and which is issued by the municipality's technical office when it meets the requirements set by the building and hygiene regulations"
+          },
+          {
+            "term": "autorizzazione a procedere",
+            "meaning": "diritto atto con il quale l'autorità competente, in determinati casi, consente lo svolgimento di un'azione penale che altrimenti non sarebbe possibile",
+            "english": "law act with which the competent authority, in certain cases, allows the carrying out of a criminal action that would otherwise not be possible"
+          }
+        ]
+      },
       "ai_definition": "1. Official permission required to perform specific driving-related actions, such as operating a vehicle in restricted zones or transporting hazardous materials.\n2. A formal document granting legal consent for a specific activity or event.\n3. The act of giving official approval or sanction to a request.\n4. A license or permit issued by an authority to allow a particular operation."
     },
     "autosnodati": {
@@ -10048,7 +10152,33 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "avvicinare",
+        "lemma": "avvicinàre",
+        "meanings": [
+          "move, put, place two objects close or closer to each other, bring something together, bring something closer",
+          "figuratively anticipating a date, a deadline",
+          "figuratively make people feel more similar by creating a stronger relationship",
+          "figurative compare, compare"
+        ],
+        "related": [
+          {
+            "term": "ti stai avvicinando al giusto, ti sei avvicinato",
+            "meaning": "si dice quando uno è prossimo a indovinare, a capire qualche cosa",
+            "english": "it is said when one is close to guessing, to understanding something"
+          },
+          {
+            "term": "avvicinarsi a una soluzione",
+            "meaning": "essere prossimo a conseguire un risultato",
+            "english": "be close to achieving a result"
+          },
+          {
+            "term": "avvicinarsi ai sacramenti",
+            "meaning": "accostarsi ai sacramenti, riceverli",
+            "english": "approach the sacraments, receive them"
+          }
+        ]
+      },
       "ai_definition": "1. To approach or come closer to a vehicle, obstacle, or intersection.\n2. To bring something nearer to a specific location.\n3. To draw someone's attention or interest toward a subject.\n4. To make a relationship or situation more favorable or friendly."
     },
     "avvisare": {
@@ -12764,7 +12894,43 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "cambiamento",
+        "lemma": "cambiaménto",
+        "meanings": [
+          "the operation, the act, the way and the effect of changing, of changing oneself, of being changed",
+          "the alternation",
+          "change in appearance, character, habits and the like",
+          "transformation, modification of a state, of a situation"
+        ],
+        "related": [
+          {
+            "term": "cambiamento cambio della guardia",
+            "meaning": "rotazione di personale nel servizio di vigilanza; anche il momento in cui questa rotazione avviene e la cerimonia relativa",
+            "english": "rotation of personnel in the security service; also the moment in which this rotation takes place and the related ceremony"
+          },
+          {
+            "term": "figurato avvicendamento di persone specialmente al vertice di una gerarchia e segnatamente nella politica e nella pubblica amministrazione",
+            "meaning": "figurato avvicendamento di persone specialmente al vertice di una gerarchia e segnatamente nella politica e nella pubblica amministrazione",
+            "english": "figurative turnover of people especially at the top of a hierarchy and especially in politics and public administration"
+          },
+          {
+            "term": "linea del cambiamento di data",
+            "meaning": "geografia linea convenzionale posta in corrispondenza, con opportune modifiche, dell'antimeridiano di Greenwich",
+            "english": "geography conventional line placed in correspondence, with appropriate modifications, of the Greenwich antimeridian"
+          },
+          {
+            "term": "cambiamento di mano",
+            "meaning": "equitazione aria di equitazione d'alta scuola, uno dei nove passi bassi del cavallo",
+            "english": "high school air riding, one of the nine low steps of the horse"
+          },
+          {
+            "term": "trasporti nella circolazione stradale: lo spostarsi dei veicoli o delle persone da un lato all'altro della via",
+            "meaning": "trasporti nella circolazione stradale: lo spostarsi dei veicoli o delle persone da un lato all'altro della via",
+            "english": "transport in road traffic: the movement of vehicles or people from one side of the road to the other"
+          }
+        ]
+      },
       "ai_definition": "1. The act of shifting gears in a vehicle.\n2. A change or alteration in general circumstances.\n3. A modification or update to a rule or regulation.\n4. A transformation or transition from one state to another."
     },
     "cambiare": {
@@ -18873,7 +19039,12 @@
         "known": true,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "conducibili",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. Vehicles that are legally permitted to be driven on public roads.\n2. (Rare) Things that can be led or guided."
     },
     "condurre": {
@@ -20362,7 +20533,15 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "contraddistinguere",
+        "lemma": "contraddistìnguere",
+        "meanings": [
+          "mark",
+          "stand out, be characterized by particular signs or qualities"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To identify or distinguish a vehicle or driver by specific features or documents.\n2. To mark something as unique or characteristic.\n3. To serve as a distinguishing sign or badge."
     },
     "contraddistinta": {
@@ -21097,7 +21276,7 @@
         "difficult": false
       },
       "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle by passing it on the left side.\n2. To cover or protect something from view or exposure.\n3. To fulfill a requirement, obligation, or duty.\n4. To pay for a cost or expense."
+      "ai_definition": "1. To cover or place something over an object to protect or conceal it.\n2. To cover a distance or route while traveling.\n3. To insure or provide coverage against risk.\n4. To fill or occupy a role or position."
     },
     "cordolo": {
       "word": "cordolo",
@@ -26206,7 +26385,16 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "distogliere",
+        "lemma": "distògliere",
+        "meanings": [
+          "push away, remove, distract",
+          "to desist, to move away from a purpose",
+          "distract yourself"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To divert one's attention from the road while driving.\n2. To turn something away from its current direction.\n3. To distract someone from their task or focus.\n4. To avert or prevent an event or consequence."
     },
     "distorsione": {
@@ -30002,7 +30190,17 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "estendere",
+        "lemma": "estèndere",
+        "meanings": [
+          "make wider or longer; increase, develop",
+          "compile",
+          "widen, widen",
+          "have a certain area or length"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To extend the validity period of a driving license or vehicle registration.\n2. To prolong the duration of a permit or authorization.\n3. To spread out or stretch a physical object.\n4. To offer or grant something to someone."
     },
     "esterno": {
@@ -31632,7 +31830,14 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "ferrare",
+        "lemma": "ferràre",
+        "meanings": [
+          "equip with iron or irons"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To equip a vehicle with winter tires or chains as required by law in specific conditions.\n2. To shoe a horse.\n3. To fit a tire onto a wheel rim."
     },
     "ferroviario": {
@@ -31766,7 +31971,7 @@
         "difficult": false
       },
       "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle by passing it on the side, a maneuver generally prohibited on Italian roads unless specific conditions are met.\n2. To pass a vehicle on the left or right side without using the designated overtaking lane."
+      "ai_definition": "1. To come alongside or flank another vehicle or person.\n2. To position oneself at the side of something."
     },
     "fiancheggiare": {
       "word": "fiancheggiare",
@@ -31791,7 +31996,7 @@
         "difficult": false
       },
       "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle by passing it on the side.\n2. To walk or move alongside something or someone.\n3. To flank a position or object from the side."
+      "ai_definition": "1. To run alongside or border something (e.g., a road that flanks a river).\n2. To support or back someone.\n3. To walk or move alongside."
     },
     "fiera": {
       "word": "fiera",
@@ -32693,7 +32898,41 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "folla",
+        "lemma": "fólla, fòlla",
+        "meanings": [
+          "multitude of people gathered",
+          "figuratively a multitude of abstract things"
+        ],
+        "related": [
+          {
+            "term": "ali di popolo, di gente, di folla e simili",
+            "meaning": "doppio schieramento di persone allineate ai lati di un corpo centrale",
+            "english": "double array of people lined up on the sides of a central body"
+          },
+          {
+            "term": "aprirsi una via fra la folla",
+            "meaning": "scansare la folla, anche in malo modo, per poter passare",
+            "english": "avoid the crowd, even in a bad way, in order to pass"
+          },
+          {
+            "term": "una folla adorante",
+            "meaning": "una folla in atteggiamento di adorazione",
+            "english": "a crowd in an attitude of adoration"
+          },
+          {
+            "term": "aprirsi un varco nella folla, tra i nemici",
+            "meaning": "farsi strada, mettere in condizione di poter passare",
+            "english": "make one's way, put one in a position to be able to pass"
+          },
+          {
+            "term": "anima della folla, della massa",
+            "meaning": "psicologia il complesso dei sentimenti e delle aspirazioni da cui è mossa una moltitudine",
+            "english": "psychology the complex of feelings and aspirations by which a multitude is moved"
+          }
+        ]
+      },
       "ai_definition": "1. A large crowd of people, often relevant when assessing pedestrian density or traffic congestion.\n2. A mass or multitude of individuals gathered in one place.\n3. A dense group of people moving together.\n4. A large number of things or people considered collectively."
     },
     "fondamentale": {
@@ -32891,7 +33130,7 @@
         "difficult": false
       },
       "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle by passing it on the left side.\n2. To precede or come before something in time or order.\n3. To anticipate an event or action.\n4. To take the lead in a sequence."
+      "ai_definition": "1. Relating to forests or woodland areas.\n2. Of or belonging to the forestry service (Corpo Forestale).\n3. Pertaining to forest roads or paths that may be encountered while driving in rural areas."
     },
     "forlì": {
       "word": "forlì",
@@ -33877,7 +34116,26 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "frontiera",
+        "lemma": "frontièra",
+        "meanings": [
+          "limit of the territorial sovereignty of a State",
+          "figuratively a line of division, of distinction"
+        ],
+        "related": [
+          {
+            "term": "chiudere le frontiere",
+            "meaning": "vietare l'entrata e l'uscita di persone o di merci da uno Stato",
+            "english": "prohibit the entry and exit of people or goods from a State"
+          },
+          {
+            "term": "accompagnamento coattivo alla frontiera",
+            "meaning": "diritto provvedimento con cui il questore dà esecuzione, per mezzo della forza pubblica, all'espulsione di cittadini stranieri irregolari o pericolosi per l'ordine pubblico disposta dal prefetto e dal ministro dell'interno",
+            "english": "right provision with which the police commissioner implements, by means of the public force, the expulsion of illegal foreign citizens or those dangerous for public order ordered by the prefect and the minister of the interior"
+          }
+        ]
+      },
       "ai_definition": "1. The border crossing point between Italy and another country where customs and police checks occur.\n2. The boundary line separating two nations.\n3. The limit or edge of a territory.\n4. A frontier or boundary in a non-geographical sense, such as a new field of study."
     },
     "frosinone": {
@@ -34079,7 +34337,15 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "funzionare",
+        "lemma": "funzionàre",
+        "meanings": [
+          "fulfill its function",
+          "act"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To operate or work correctly, referring to a vehicle's mechanical systems or safety equipment.\n2. To function or run, describing the general activity of an engine or machine.\n3. To work out or succeed, used when a plan or strategy is effective.\n4. To be in operation, indicating that a service or facility is currently active."
     },
     "funzione": {
@@ -35045,7 +35311,30 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "ginocchio",
+        "lemma": "ginòcchio",
+        "meanings": [
+          "part of the body where the leg joins the thigh"
+        ],
+        "related": [
+          {
+            "term": "il futuro è sulle ginocchia di Giove",
+            "meaning": "lo stesso che il futuro è nelle mani di Dio",
+            "english": "the same as the future is in God's hands"
+          },
+          {
+            "term": "ginocchio coronato",
+            "meaning": "zootecnia ginocchio di equino anteriormente largo e arrotondato",
+            "english": "animal husbandry equine knee wide and rounded at the front"
+          },
+          {
+            "term": "i pantaloni hanno le borse alle ginocchia",
+            "meaning": "i pantaloni sono sformati per l'uso",
+            "english": "the pants are sagging from use"
+          }
+        ]
+      },
       "ai_definition": "1. The knee, often referenced in driving manuals regarding proper leg positioning for operating pedals.\n2. The joint connecting the thigh and lower leg in the human body.\n3. A bend or curve in a road or path.\n4. The part of a garment covering the knee."
     },
     "gioco": {
@@ -36961,7 +37250,21 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "imbrattare",
+        "lemma": "imbrattàre",
+        "meanings": [
+          "dirty with fluid substances or rubbish",
+          "get dirty, get stained"
+        ],
+        "related": [
+          {
+            "term": "insudiciare impiastrare imbrattare la carta",
+            "meaning": "scribacchiare, scrivere spropositi",
+            "english": "scribble, write nonsense"
+          }
+        ]
+      },
       "ai_definition": "1. To deface or vandalize a vehicle or road sign.\n2. To smear or stain a surface with dirt or paint.\n3. To write or draw illegibly on a document.\n4. To corrupt or ruin the reputation of a person."
     },
     "immatricolare": {
@@ -40017,7 +40320,14 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "ingestione",
+        "lemma": "ingestióne",
+        "meanings": [
+          "ingesting"
+        ],
+        "related": []
+      },
       "ai_definition": "1. The act of swallowing or consuming, often used in traffic contexts regarding the ingestion of alcohol or drugs that impairs driving ability.\n2. The process of taking in food or liquid into the body.\n3. The mechanical intake of air or fuel into an engine.\n4. The absorption of data or information by a computer system."
     },
     "ingombrante": {
@@ -41461,7 +41771,15 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "interferire",
+        "lemma": "interferìre",
+        "meanings": [
+          "said of light or sound waves, give rise to interference",
+          "in a figurative sense to interfere, overlap with ideas, interests, skills, etc."
+        ],
+        "related": []
+      },
       "ai_definition": "1. To obstruct or hinder the movement of other vehicles or road users.\n2. To interfere with the operation of a device or system.\n3. To meddle in a matter that does not concern you.\n4. To clash or conflict with another person's plans or actions."
     },
     "intermittente": {
@@ -42603,7 +42921,41 @@
         "known": true,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "iscrizione",
+        "lemma": "iscrizióne",
+        "meanings": [
+          "act, effect of registering or registering",
+          "written engraved on stone and similar in memory of people or events"
+        ],
+        "related": [
+          {
+            "term": "iscrizione fuori corso",
+            "meaning": "scuola nelle università, iscrizione concessa agli studenti che non abbiano conseguito la laurea o il diploma nel numero di anni prescritto dalla loro facoltà",
+            "english": "school in universities, enrollment granted to students who have not obtained a degree or diploma in the number of years prescribed by their faculty"
+          },
+          {
+            "term": "iscrizioni damasiane",
+            "meaning": "storia epigrafi composte in esametri latini da papa Damaso in onore dei primi martiri cristiani e incise dal calligrafo Furio Dionisio Filocalo nel IV secolo",
+            "english": "history epigraphs composed in Latin hexameters by Pope Damasus in honor of the first Christian martyrs and engraved by the calligrapher Furio Dionisio Filocalo in the 4th century"
+          },
+          {
+            "term": "iscrizioni musive",
+            "meaning": "arte iscrizioni commemorative e funerarie eseguite in mosaico a complemento della decorazione di abitazioni, templi, edifici pubblici dell'era romana e nel primo Medioevo",
+            "english": "art commemorative and funerary inscriptions made in mosaic to complement the decoration of homes, temples, public buildings of the Roman era and in the early Middle Ages"
+          },
+          {
+            "term": "iscrizioni numidiche",
+            "meaning": "nel passato, nome con cui si indicavano le iscrizioni nell'antica lingua libica",
+            "english": "in the past, the name used to indicate inscriptions in the ancient Libyan language"
+          },
+          {
+            "term": "iscrizioni safaitiche",
+            "meaning": "storia iscrizioni rinvenute nella regione siriana di as-Safa, del II e III secolo d.C., scritte in un dialetto nord-arabico, di notevole importanza linguistica e religiosa",
+            "english": "history inscriptions found in the Syrian region of as-Safa, from the 2nd and 3rd centuries AD, written in a North-Arabic dialect, of considerable linguistic and religious importance"
+          }
+        ]
+      },
       "ai_definition": "1. The official registration of a vehicle with the state authority.\n2. The act of signing up for a driving school or exam.\n3. The inscription of text or symbols on a surface.\n4. The act of enrolling in a course or organization."
     },
     "isola": {
@@ -42916,7 +43268,41 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "lampada",
+        "lemma": "làmpada",
+        "meanings": [
+          "any artificial source of light, which provides illumination of streets, environments, etc.",
+          "lamp, mostly oil, which is lit in front of an altar, a tomb, etc."
+        ],
+        "related": [
+          {
+            "term": "lampada alogena",
+            "meaning": "elettricità tipo di lampadina a fortissimo potere illuminante, contenente vapori di iodio",
+            "english": "electricity type of light bulb with very strong illuminating power, containing iodine vapours"
+          },
+          {
+            "term": "braccio di una lampada",
+            "meaning": "il ferro o legno che la sostiene fermato alla parete o a un supporto centrale, che regge la lampada",
+            "english": "the iron or wood that supports it fixed to the wall or to a central support, which holds the lamp"
+          },
+          {
+            "term": "lampade grisoumetriche",
+            "meaning": "mineraria lampade di sicurezza usate in passato nelle miniere per misurare la percentuale di grisou",
+            "english": "mining safety lamps used in the past in mines to measure the percentage of firedamp"
+          },
+          {
+            "term": "lampade survoltate",
+            "meaning": "fotografia tipo particolare di lampade che vengono alimentate con una tensione più elevata di quella di normale funzionamento, per cui emettono una luce intensa e quasi bianca",
+            "english": "photography particular type of lamps that are powered with a higher voltage than normal operation, so they emit an intense and almost white light"
+          },
+          {
+            "term": "lampada votiva",
+            "meaning": "religione lampada mantenuta accesa per voto davanti a un'immagine sacra",
+            "english": "religion lamp kept lit for vow in front of a sacred image"
+          }
+        ]
+      },
       "ai_definition": "1. A light bulb used in vehicle headlights, taillights, or indicators.\n2. A general electric light fixture or lamp.\n3. A decorative oil lamp.\n4. A metaphorical source of illumination or guidance."
     },
     "lampeggiante": {
@@ -43273,7 +43659,42 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "lato",
+        "lemma": "làto",
+        "meanings": [
+          "side, side, bank",
+          "ancient plural form of side, in the meaning of flank, part []",
+          "broad, wide"
+        ],
+        "related": [
+          {
+            "term": "passo di lato",
+            "meaning": "sport nel pugilato: accorgimento difensivo consistente nel cambiare la posizione dei piedi senza modificare il proprio equilibrio",
+            "english": "sport in boxing: defensive measure consisting of changing the position of the feet without changing one's balance"
+          },
+          {
+            "term": "da lato",
+            "meaning": "arcaico accanto, a fianco, da una parte [] § []",
+            "english": "archaic next, alongside, on one side [] § []"
+          },
+          {
+            "term": "lato destro o mano destra della strada",
+            "meaning": "il lato destro della carreggiata rispetto al verso di marcia",
+            "english": "the right side of the road with respect to the direction of travel"
+          },
+          {
+            "term": "media in senso lato",
+            "meaning": "matematica media il cui valore è compreso tra due numeri della serie",
+            "english": "average mathematics whose value is between two numbers in the series"
+          },
+          {
+            "term": "da una parte … dall'altra, da un lato … dall'altro",
+            "meaning": "si usa per mettere in correlazione due frasi a breve distanza",
+            "english": "it is used to correlate two short-distance sentences"
+          }
+        ]
+      },
       "ai_definition": "1. The side of the road or vehicle, such as the left or right side of the lane.\n2. A side or edge of a physical object, like the side of a car.\n3. A party involved in a situation or agreement.\n4. A point of view or aspect of an argument."
     },
     "lavacristallo": {
@@ -43808,7 +44229,43 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "leva",
+        "lemma": "lèva",
+        "meanings": [
+          "simple machine consisting of a rod revolving around a fixed axis also in a figurative sense",
+          "control rod of a mechanical device also in a figurative sense",
+          "compulsory conscription",
+          "the total number of young people called to arms in a year"
+        ],
+        "related": [
+          {
+            "term": "leva in massa",
+            "meaning": "leva militare generale",
+            "english": "general military conscription"
+          },
+          {
+            "term": "leva svantaggiosa",
+            "meaning": "fisica leva nella quale la potenza si trova tra il fulcro e la resistenza",
+            "english": "physical lever in which the power is located between the fulcrum and the resistance"
+          },
+          {
+            "term": "ferma di leva",
+            "meaning": "militare la ferma obbligatoria",
+            "english": "military compulsory arrest"
+          },
+          {
+            "term": "leve scheletriche",
+            "meaning": "anatomia le leve costituite dalle ossa, in quanto si muovono in virtù di un'articolazione",
+            "english": "anatomy the levers made up of bones, as they move by virtue of a joint"
+          },
+          {
+            "term": "tirare a sé la leva di comando",
+            "meaning": "aviazione azioine che fa agire il timone di profondità, in modo da mettere un apparecchio aereo in posizione di salita",
+            "english": "aviation action that makes the depth rudder act, so as to put an aircraft in the climb position"
+          }
+        ]
+      },
       "ai_definition": "1. The gear stick used to change gears in a manual transmission vehicle.\n2. A mechanical bar or handle used to operate a mechanism, such as the handbrake.\n3. A lever or handle used to open the fuel filler door or hood.\n4. A tool used to lift or move heavy objects."
     },
     "liberamente": {
@@ -46492,7 +46949,42 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "meccanico",
+        "lemma": "meccànico",
+        "meanings": [
+          "relating to mechanics",
+          "of what you do with a machine",
+          "without the intervention of the will"
+        ],
+        "related": [
+          {
+            "term": "bollazione meccanica",
+            "meaning": "burocrazia contrassegno applicato, mediante bollatrice, su atti, documenti, ecc., soggetti a imposta di bollo",
+            "english": "bureaucracy mark applied, using a stamping machine, on deeds, documents, etc., subject to stamp duty"
+          },
+          {
+            "term": "ittero meccanico da stasi o ostruttivo",
+            "meaning": "medicina ittero dovuto a ostruzione dei condotti biliari esterni al fegato, con conseguente ristagno della bile",
+            "english": "medicine jaundice due to obstruction of the bile ducts external to the liver, resulting in stagnation of bile"
+          },
+          {
+            "term": "lavoro meccanico",
+            "meaning": "attività che impiega solo in minima parte la mente",
+            "english": "activity that uses the mind only minimally"
+          },
+          {
+            "term": "numeratore meccanico",
+            "meaning": "tecnologia meccanismo costituiti essenzialmente da un contagiri, capaci di registrare il numero di corse, rotazioni, oscillazioni, compiuti da una macchina",
+            "english": "mechanism technology essentially consisting of a rev counter, capable of recording the number of strokes, rotations and oscillations made by a machine"
+          },
+          {
+            "term": "essere un mezzo medico avvocato meccanico ecc.",
+            "meaning": "si dice di chi, pur non esercitando tali attività per mestiere, ha tuttavia notevoli capacità e conoscenze, soprattutto pratiche, in quello specifico settore",
+            "english": "it is said of someone who, despite not carrying out these activities as a profession, nevertheless has considerable skills and knowledge, especially practical, in that specific sector"
+          }
+        ]
+      },
       "ai_definition": "1. A professional who repairs and maintains vehicles.\n2. A person who works with machinery or mechanical systems.\n3. Relating to the mechanics or operation of a machine.\n4. Pertaining to the branch of physics dealing with motion and forces."
     },
     "meccanismo": {
@@ -47837,7 +48329,14 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "molesto",
+        "lemma": "molèsto",
+        "meanings": [
+          "which causes annoyance"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A driver or vehicle that causes annoyance or danger by obstructing traffic or driving aggressively.\n2. An unpleasant or irritating person or situation.\n3. A nuisance that disrupts peace or order."
     },
     "molla": {
@@ -50908,7 +51407,7 @@
           }
         ]
       },
-      "ai_definition": "1. To overtake another vehicle by passing it on the road.\n2. To exceed a speed limit or other legal threshold.\n3. To go beyond a specific point or boundary.\n4. To surpass or outdo someone in ability or achievement."
+      "ai_definition": "1. To go past or beyond a point, line, or limit.\n2. To cross over a boundary or threshold.\n3. To exceed a limit (e.g., a speed limit or stop line)."
     },
     "ombra": {
       "word": "ombra",
@@ -53405,7 +53904,7 @@
         "difficult": false
       },
       "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle on the road.\n2. To go through or cross a specific point, such as an intersection or a checkpoint.\n3. To pass a driving test or examination.\n4. To let someone go ahead or yield the right of way."
+      "ai_definition": "1. To pass or go through a place or point.\n2. To cross a road, intersection, or checkpoint.\n3. To spend time.\n4. To hand or give something to someone."
     },
     "passato": {
       "word": "passato",
@@ -58068,7 +58567,15 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "prescritto",
+        "lemma": "prescrìtto",
+        "meanings": [
+          "established, ordered, commanded",
+          "expired"
+        ],
+        "related": []
+      },
       "ai_definition": "1. Mandated or required by law, specifically referring to rules, speeds, or penalties established by traffic regulations.\n2. Ordered or prescribed by a medical professional, such as a specific treatment or medication.\n3. Written down or recorded in a formal document or text.\n4. Determined or fixed by a specific authority or rule."
     },
     "prescrivere": {
@@ -58266,7 +58773,43 @@
         "known": true,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "presentare",
+        "lemma": "presentàre",
+        "meanings": [
+          "expose something to someone's sight or attention; to offer",
+          "make appear",
+          "make known",
+          "appear; appear in someone's presence; show yourself"
+        ],
+        "related": [
+          {
+            "term": "andare recarsi presentarsi in corpo",
+            "meaning": "presentarsi collegialmente, specialmente in forma solenne",
+            "english": "present oneself collegially, especially in a solemn manner"
+          },
+          {
+            "term": "presentarsi bene",
+            "meaning": "fare un'impressione favorevole, aver bell'aspetto",
+            "english": "make a favorable impression, look good"
+          },
+          {
+            "term": "presentarsi con il cappello in mano",
+            "meaning": "si dice di persona che si presenta umilmente per ottenere qualcosa",
+            "english": "it is said of a person who presents himself humbly to obtain something"
+          },
+          {
+            "term": "presentare il conto a qualcuno",
+            "meaning": "presentare la fattura o la lista spese a qualcuno con cui si hanno rapporti economici",
+            "english": "present the invoice or expense list to someone with whom you have a financial relationship"
+          },
+          {
+            "term": "figurato vendicarsi con qualcuno di ciò che si è subito",
+            "meaning": "figurato vendicarsi con qualcuno di ciò che si è subito",
+            "english": "figuratively taking revenge on someone for what you have suffered"
+          }
+        ]
+      },
       "ai_definition": "1. To submit an application or required documents to the licensing authority.\n2. To appear for a practical or theoretical driving test.\n3. To introduce a person to others.\n4. To show or display an object."
     },
     "presente": {
@@ -59491,7 +60034,17 @@
         "known": true,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "proiettare",
+        "lemma": "proiettàre",
+        "meanings": [
+          "throw out or forward, throw",
+          "cinema send onto a screen using a projector the enlarged image of a slide or series of moving frames",
+          "mathematics make a projection",
+          "hurl, throw, throw oneself out or forward"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To cast a beam of light forward with vehicle headlights.\n2. To throw or launch an object.\n3. To display an image on a screen.\n4. To plan or forecast a future event."
     },
     "proiettore": {
@@ -61699,7 +62252,20 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "radiatore",
+        "lemma": "radiatóre",
+        "meanings": [
+          "device designed to disperse heat, generally made up of a bundle of tubes in which a liquid circulates which cools in contact with the surrounding air"
+        ],
+        "related": [
+          {
+            "term": "radiatore isotropo o antenna isotropa",
+            "meaning": "fisica sorgente di radiazioni elettromagnetiche o corpuscolari che irraggia con la medesima intensità in tutte le direzioni",
+            "english": "physical source of electromagnetic or corpuscular radiation that radiates with the same intensity in all directions"
+          }
+        ]
+      },
       "ai_definition": "1. The component in a vehicle's cooling system that dissipates heat from the engine coolant.\n2. A heating unit in a building that uses hot water or steam to warm a room.\n3. A person who broadcasts radio programs.\n4. A device that emits radio waves for communication."
     },
     "radio": {
@@ -65135,7 +65701,20 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "rilevamento",
+        "lemma": "rilevaménto",
+        "meanings": [
+          "the act of detecting; especially the set of operations with which we tend to determine something"
+        ],
+        "related": [
+          {
+            "term": "rilevamento celerimetrico",
+            "meaning": "geografia rilevamento topografico eseguito con tacheometro e stadia",
+            "english": "geography topographic survey performed with tacheometer and staff"
+          }
+        ]
+      },
       "ai_definition": "1. The detection or recording of a traffic violation by automated systems.\n2. The act of measuring or surveying terrain and road conditions.\n3. The identification of a specific object or person.\n4. The gathering of data or information."
     },
     "rilievo": {
@@ -70904,7 +71483,20 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "seguente",
+        "lemma": "seguènte",
+        "meanings": [
+          "next"
+        ],
+        "related": [
+          {
+            "term": "l'anno dopo o seguente o di poi",
+            "meaning": "l'anno successivo a quello di cui si parla o ci si riferisce",
+            "english": "the year following the one being spoken about or referred to"
+          }
+        ]
+      },
       "ai_definition": "1. The next vehicle or road section in a sequence.\n2. Following immediately after something else in time or order.\n3. Subsequent or coming later in a series.\n4. The one that comes after the current one."
     },
     "seguire": {
@@ -71137,7 +71729,14 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "semibarriera",
+        "lemma": "semibarrièra",
+        "meanings": [
+          "barrier of a level crossing, a driveway and similar that blocks passage in one direction of travel only"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A low traffic barrier or half-height fence used to separate lanes or protect pedestrians.\n2. A partial physical divider on a road that allows visibility but restricts crossing.\n3. A low wall or railing found in construction zones or along highway medians.\n4. A half-height gate or turnstile used for access control in parking areas."
     },
     "semibarriere": {
@@ -73498,7 +74097,33 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "soffrire",
+        "lemma": "soffrìre",
+        "meanings": [
+          "feel physical or moral pain",
+          "have a disorder, an illness",
+          "experience physical or moral pain",
+          "suffer, endure"
+        ],
+        "related": [
+          {
+            "term": "soffrire il soffribile",
+            "meaning": "raro patire le peggiori sofferenze",
+            "english": "rare to suffer the worst suffering"
+          },
+          {
+            "term": "non poter vedere, non poter soffrire qualcosa, qualcuno",
+            "meaning": "provare un sentimento di antipatia, odio, o avversione verso qualcosa o qualcuno; non poterlo sopportare",
+            "english": "have a feeling of dislike, hatred, or aversion towards something or someone; can't bear it"
+          },
+          {
+            "term": "soffrire spregio",
+            "meaning": "essere disprezzato",
+            "english": "be despised"
+          }
+        ]
+      },
       "ai_definition": "1. To suffer or experience mechanical failure, such as an engine overheating or a vehicle malfunctioning.\n2. To feel pain or distress physically or emotionally.\n3. To undergo a difficult situation or hardship.\n4. To be intolerant of something, often used in the phrase \"non soffrire\" (cannot stand)."
     },
     "soggetta": {
@@ -75583,7 +76208,41 @@
         "known": true,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "speciale",
+        "lemma": "speciàle",
+        "meanings": [
+          "relating to a species",
+          "particular, uncommon"
+        ],
+        "related": [
+          {
+            "term": "diritto speciale di prelievo",
+            "meaning": "economia unità ideale di conto di cui ciascun membro del Fondo Monetario Internazionale può disporre per il regolamento di posizioni debitorie con altri Paesi membri",
+            "english": "economy ideal unit of account that each member of the International Monetary Fund can use for the settlement of debt positions with other member countries"
+          },
+          {
+            "term": "evento speciale",
+            "meaning": "commercio iniziativa che associa la promozione di un prodotto a una manifestazione culturale, musicale o sportiva",
+            "english": "trade initiative that combines the promotion of a product with a cultural, musical or sporting event"
+          },
+          {
+            "term": "legge speciale",
+            "meaning": "diritto legge che disciplina un particolare rapporto giuridico non completamente regolato dalla legislazione comune",
+            "english": "law law that governs a particular legal relationship not completely regulated by common law"
+          },
+          {
+            "term": "legge che fa eccezione a principi stabiliti in leggi generali",
+            "meaning": "legge che fa eccezione a principi stabiliti in leggi generali",
+            "english": "law that makes exceptions to principles established in general laws"
+          },
+          {
+            "term": "lettere speciali",
+            "meaning": ", tutte quelle di uso non comune, spec. quelle con segni diacritici utilizzate per traslitterare alfabeti non latini",
+            "english": ", all those of uncommon use, especially those with diacritics used to transliterate non-Latin alphabets"
+          }
+        ]
+      },
       "ai_definition": "1. Special, referring to a specific type of vehicle or a special driving permit.\n2. Special, describing a unique or exceptional condition or event.\n3. Special, indicating a particular edition or version of something.\n4. Special, meaning extraordinary or out of the ordinary."
     },
     "specialista": {
@@ -77860,7 +78519,23 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "stupefacente",
+        "lemma": "stupefacènte",
+        "meanings": [
+          "pharmacology any natural or synthetic toxic substance that arouses artificial states of well-being, inebriation, torpor, often with hallucinations and, acting on the cerebral cortex, generates a state of toxic need with withdrawal disorders that stimulate the subject to take ever-increasing doses with deleterious consequences on a psychic and somatic level (also in an adjectival function)",
+          "present participle of stupefare in the meanings of the verb",
+          "which arouses amazement or great wonder; astonishing, astonishing",
+          "pharmacology said of substance or medicine of vegetal or synthetic origin which acts on the nervous system determining states of artificial well-being, and whose prolonged use leads to mental and physical decay, as well as addiction and dependence (also noun)"
+        ],
+        "related": [
+          {
+            "term": "disciplina penale degli stupefacenti",
+            "meaning": "diritto l'insieme delle norme giuridiche che disciplinano la coltivazione, la fabbricazione, la produzione, il commercio e la detenzione delle sostanze considerate stupefacenti",
+            "english": "law the set of legal rules that regulate the cultivation, manufacturing, production, trade and possession of substances considered narcotic"
+          }
+        ]
+      },
       "ai_definition": "1. A narcotic or psychoactive substance whose use while driving is strictly prohibited and punishable by law.\n2. A drug that causes stupor or unconsciousness.\n3. Something that causes great astonishment or amazement."
     },
     "subire": {
@@ -79215,7 +79890,7 @@
           }
         ]
       },
-      "ai_definition": "1. To cut in front of another vehicle without maintaining a safe distance.\n2. To overtake another vehicle by moving into the opposing lane.\n3. To interrupt or stop a process or action.\n4. To cut or trim something, such as hair or fabric."
+      "ai_definition": "1. To cut something with a blade or sharp instrument.\n2. To cut in front of another vehicle dangerously (tagliare la strada).\n3. To take a shortcut by cutting across.\n4. To reduce or cut costs, time, or resources."
     },
     "tale": {
       "word": "tale",
@@ -82261,7 +82936,17 @@
         "known": false,
         "difficult": false
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "trasmettere",
+        "lemma": "trasméttere",
+        "meanings": [
+          "pass on, pass on to others",
+          "send, send",
+          "communicate via radio or other communication systems",
+          "transfer, pass, move from one element to another"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To transmit power from the engine to the wheels via the gearbox.\n2. To send or broadcast a signal or message.\n3. To pass on a disease or infection.\n4. To convey a feeling or idea to someone."
     },
     "trasmissione": {
@@ -83140,7 +83825,14 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "tubare",
+        "lemma": "tubàre 1",
+        "meanings": [
+          "mining pipes"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To honk the horn to signal presence or warn of danger.\n2. To make a loud, resonant sound like a horn or siren.\n3. To emit a deep, hollow noise."
     },
     "tubeless": {
@@ -84017,8 +84709,16 @@
         "known": false,
         "difficult": true
       },
-      "dictionary_cache": null,
-      "ai_definition": "1. To overtake another vehicle by passing it on the left side.\n2. To pass or go ahead of someone in a line or queue.\n3. To surpass or exceed a limit, record, or expectation.\n4. To outdo or beat a competitor in a contest or race."
+      "dictionary_cache": {
+        "lookup_word": "ustionare",
+        "lemma": "ustionàre",
+        "meanings": [
+          "produce burns",
+          "cause oneself, produce burns, burn oneself, burn oneself"
+        ],
+        "related": []
+      },
+      "ai_definition": "1. To burn or scald, causing skin damage from heat, fire, or hot liquids.\n2. To suffer burns or be burned.\n3. In a first-aid context, to sustain burn injuries requiring medical attention."
     },
     "ustione": {
       "word": "ustione",

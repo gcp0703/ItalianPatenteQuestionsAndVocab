@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+const CURRENT_USER_STORAGE_KEY = "quiz-patente-b-current-user";
 const VOCAB_HIDDEN_WORDS_STORAGE_KEY = "quiz-patente-b-hidden-vocab-words";
 const VOCAB_FEEDBACK_COUNTS_STORAGE_KEY = "quiz-patente-b-vocab-feedback-counts";
 const VOCAB_DIFFICULT_WORDS_STORAGE_KEY = "quiz-patente-b-vocab-difficult-words";
@@ -9,6 +10,28 @@ const VOCAB_SOURCE_RANDOM = "random";
 const VOCAB_SOURCE_KNOWN = "known";
 const VOCAB_SOURCE_DIFFICULT = "difficult";
 const VOCAB_SOURCE_RANKED = "ranked";
+
+function getUserStorageKey(baseKey, email) {
+  return `${baseKey}-${email}`;
+}
+
+function getSavedUser() {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(CURRENT_USER_STORAGE_KEY) || null;
+}
+
+function saveCurrentUser(email) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(CURRENT_USER_STORAGE_KEY, email);
+}
+
+function fetchWithUser(url, options = {}, email) {
+  const headers = { ...(options.headers || {}) };
+  if (email) {
+    headers["X-User-Email"] = email;
+  }
+  return fetch(url, { ...options, headers });
+}
 
 const emptyState = {
   quiz: [],
@@ -21,13 +44,14 @@ const emptyState = {
   screenError: ""
 };
 
-function loadHiddenVocabWords() {
+function loadHiddenVocabWords(email) {
   if (typeof window === "undefined") {
     return [];
   }
 
   try {
-    const stored = window.localStorage.getItem(VOCAB_HIDDEN_WORDS_STORAGE_KEY);
+    const key = email ? getUserStorageKey(VOCAB_HIDDEN_WORDS_STORAGE_KEY, email) : VOCAB_HIDDEN_WORDS_STORAGE_KEY;
+    const stored = window.localStorage.getItem(key);
     const parsed = stored ? JSON.parse(stored) : [];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -35,13 +59,14 @@ function loadHiddenVocabWords() {
   }
 }
 
-function loadVocabFeedbackCounts() {
+function loadVocabFeedbackCounts(email) {
   if (typeof window === "undefined") {
     return {};
   }
 
   try {
-    const stored = window.localStorage.getItem(VOCAB_FEEDBACK_COUNTS_STORAGE_KEY);
+    const key = email ? getUserStorageKey(VOCAB_FEEDBACK_COUNTS_STORAGE_KEY, email) : VOCAB_FEEDBACK_COUNTS_STORAGE_KEY;
+    const stored = window.localStorage.getItem(key);
     const parsed = stored ? JSON.parse(stored) : {};
     return normalizeFeedbackCounts(parsed);
   } catch {
@@ -49,13 +74,14 @@ function loadVocabFeedbackCounts() {
   }
 }
 
-function loadDifficultVocabWords() {
+function loadDifficultVocabWords(email) {
   if (typeof window === "undefined") {
     return [];
   }
 
   try {
-    const stored = window.localStorage.getItem(VOCAB_DIFFICULT_WORDS_STORAGE_KEY);
+    const key = email ? getUserStorageKey(VOCAB_DIFFICULT_WORDS_STORAGE_KEY, email) : VOCAB_DIFFICULT_WORDS_STORAGE_KEY;
+    const stored = window.localStorage.getItem(key);
     const parsed = stored ? JSON.parse(stored) : [];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -378,7 +404,148 @@ function VocabTranslation({ translation, hidden = false, tone = null }) {
   );
 }
 
+function LoginScreen({ onLogin }) {
+  const [users, setUsers] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/users")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data);
+        if (data.length > 0) {
+          setSelectedEmail(data[0].email);
+        }
+      })
+      .catch(() => setError("Impossibile caricare gli utenti."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleLogin() {
+    const email = newEmail.trim().toLowerCase() || selectedEmail;
+    if (!email || !email.includes("@")) {
+      setError("Inserisci un indirizzo email valido.");
+      return;
+    }
+
+    setError("");
+
+    // If it's a new email, register it
+    if (newEmail.trim() && !users.some((u) => u.email === email)) {
+      try {
+        const res = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || "Impossibile creare l'utente.");
+        }
+      } catch (err) {
+        setError(err.message);
+        return;
+      }
+    }
+
+    saveCurrentUser(email);
+    onLogin(email);
+  }
+
+  async function handleDeleteUser(email) {
+    if (!window.confirm(`Eliminare l'utente ${email} e tutti i suoi dati?`)) return;
+
+    try {
+      const res = await fetch(`/api/users/${encodeURIComponent(email)}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Impossibile eliminare l'utente.");
+      setUsers((prev) => prev.filter((u) => u.email !== email));
+      if (selectedEmail === email) {
+        setSelectedEmail("");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="app-shell">
+        <section className="hero-card">
+          <p className="eyebrow">Quiz Patente B</p>
+          <h1>Caricamento...</h1>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="app-shell">
+      <section className="hero-card">
+        <div className="hero-brand">
+          <img className="hero-icon" src="/app-icon.svg" alt="Quiz Patente B" />
+          <div>
+            <p className="eyebrow">Quiz Patente B</p>
+            <h1>Accesso</h1>
+          </div>
+        </div>
+      </section>
+
+      <section className="login-panel">
+        {users.length > 0 && (
+          <div className="login-existing">
+            <label className="login-label" htmlFor="user-select">Seleziona un utente esistente</label>
+            <div className="login-select-row">
+              <select
+                id="user-select"
+                className="login-select"
+                value={selectedEmail}
+                onChange={(e) => { setSelectedEmail(e.target.value); setNewEmail(""); }}
+              >
+                {users.map((u) => (
+                  <option key={u.email} value={u.email}>{u.email}</option>
+                ))}
+              </select>
+              {selectedEmail && (
+                <button
+                  className="secondary-button login-delete-button"
+                  onClick={() => handleDeleteUser(selectedEmail)}
+                  title="Elimina utente"
+                >
+                  Elimina
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="login-new">
+          <label className="login-label" htmlFor="new-email">Oppure aggiungi un nuovo utente</label>
+          <input
+            id="new-email"
+            className="login-input"
+            type="email"
+            placeholder="email@esempio.com"
+            value={newEmail}
+            onChange={(e) => { setNewEmail(e.target.value); setSelectedEmail(""); }}
+            onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}
+          />
+        </div>
+
+        {error && <p className="inline-error">{error}</p>}
+
+        <button className="primary-button login-button" onClick={handleLogin}>
+          Continua
+        </button>
+      </section>
+    </main>
+  );
+}
+
 function App() {
+  const [currentUser, setCurrentUser] = useState(getSavedUser);
   const [mode, setMode] = useState("quiz");
   const [quiz, setQuiz] = useState(emptyState.quiz);
   const [answers, setAnswers] = useState(emptyState.answers);
@@ -406,19 +573,72 @@ function App() {
   const [vocabRoundNumber, setVocabRoundNumber] = useState(0);
   const [vocabBatchOverlay, setVocabBatchOverlay] = useState(null);
   const [vocabBatchSummary, setVocabBatchSummary] = useState(null);
-  const [vocabHiddenWords, setVocabHiddenWords] = useState(loadHiddenVocabWords);
-  const [vocabDifficultWords, setVocabDifficultWords] = useState(loadDifficultVocabWords);
-  const [vocabFeedbackCounts, setVocabFeedbackCounts] = useState(loadVocabFeedbackCounts);
+  const [vocabHiddenWords, setVocabHiddenWords] = useState(() => loadHiddenVocabWords(currentUser));
+  const [vocabDifficultWords, setVocabDifficultWords] = useState(() => loadDifficultVocabWords(currentUser));
+  const [vocabFeedbackCounts, setVocabFeedbackCounts] = useState(() => loadVocabFeedbackCounts(currentUser));
   const [vocabLoading, setVocabLoading] = useState(false);
   const [vocabRevealing, setVocabRevealing] = useState(false);
   const [vocabPendingTransition, setVocabPendingTransition] = useState(null);
   const [vocabError, setVocabError] = useState("");
+  const [quizHistory, setQuizHistory] = useState([]);
   const vocabBatchSummaryResolverRef = useRef(null);
   const knownVocabWords = deriveKnownWords(vocabBank, vocabFeedbackCounts, vocabHiddenWords);
 
+  async function handleLogin(email) {
+    setCurrentUser(email);
+    setVocabHiddenWords(loadHiddenVocabWords(email));
+    setVocabDifficultWords(loadDifficultVocabWords(email));
+    setVocabFeedbackCounts(loadVocabFeedbackCounts(email));
+    setVocabBank([]);
+    setLoading(true);
+
+    // Check for legacy tracking data to migrate (only once)
+    const migrationKey = "quiz-patente-b-migration-asked";
+    if (!window.localStorage.getItem(migrationKey)) {
+      try {
+        const res = await fetch("/api/legacy-tracking");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.has_tracking) {
+            const shouldMigrate = window.confirm(
+              `Sono stati trovati dati di tracciamento esistenti per ${data.tracked_count} parole.\n\nVuoi importarli nel tuo profilo?`
+            );
+            window.localStorage.setItem(migrationKey, "true");
+            if (shouldMigrate) {
+              await fetchWithUser("/api/migrate", { method: "POST" }, email);
+            }
+          }
+        }
+      } catch {
+        // ignore migration errors
+      }
+    }
+  }
+
+  function handleLogout() {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+    }
+    setCurrentUser(null);
+    setVocabBank([]);
+    setVocabCurrent(null);
+    setVocabCurrentTranslation(null);
+    setQuiz([]);
+    setResult(null);
+    setQuizHistory([]);
+    setMode("quiz");
+  }
+
   useEffect(() => {
-    loadQuiz();
-  }, []);
+    if (currentUser) {
+      loadQuiz();
+      loadQuizHistory();
+    }
+  }, [currentUser]);
+
+  if (!currentUser) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
 
   async function loadQuiz() {
     setLoading(true);
@@ -450,6 +670,18 @@ function App() {
     }
   }
 
+  async function loadQuizHistory() {
+    try {
+      const response = await fetchWithUser("/api/quiz/history", {}, currentUser);
+      if (response.ok) {
+        const data = await response.json();
+        setQuizHistory(data.history || []);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   async function refreshCacheStats() {
     try {
       const response = await fetch("/api/vocab/cache-stats");
@@ -475,7 +707,7 @@ function App() {
       let feedbackCounts = vocabFeedbackCounts;
 
       if (forceReload || bank.length === 0) {
-        const response = await fetch("/api/vocab");
+        const response = await fetchWithUser("/api/vocab", {}, currentUser);
         if (!response.ok) {
           throw new Error("Impossibile caricare il vocabolario.");
         }
@@ -557,7 +789,8 @@ function App() {
       return;
     }
 
-    window.localStorage.setItem(VOCAB_HIDDEN_WORDS_STORAGE_KEY, JSON.stringify(words));
+    const key = currentUser ? getUserStorageKey(VOCAB_HIDDEN_WORDS_STORAGE_KEY, currentUser) : VOCAB_HIDDEN_WORDS_STORAGE_KEY;
+    window.localStorage.setItem(key, JSON.stringify(words));
   }
 
   function persistVocabFeedbackCounts(counts) {
@@ -565,7 +798,8 @@ function App() {
       return;
     }
 
-    window.localStorage.setItem(VOCAB_FEEDBACK_COUNTS_STORAGE_KEY, JSON.stringify(counts));
+    const key = currentUser ? getUserStorageKey(VOCAB_FEEDBACK_COUNTS_STORAGE_KEY, currentUser) : VOCAB_FEEDBACK_COUNTS_STORAGE_KEY;
+    window.localStorage.setItem(key, JSON.stringify(counts));
   }
 
   function persistDifficultVocabWords(words) {
@@ -573,11 +807,12 @@ function App() {
       return;
     }
 
-    window.localStorage.setItem(VOCAB_DIFFICULT_WORDS_STORAGE_KEY, JSON.stringify(words));
+    const key = currentUser ? getUserStorageKey(VOCAB_DIFFICULT_WORDS_STORAGE_KEY, currentUser) : VOCAB_DIFFICULT_WORDS_STORAGE_KEY;
+    window.localStorage.setItem(key, JSON.stringify(words));
   }
 
   async function syncVocabTrackingToJson(feedbackCounts, hiddenWords, difficultWords) {
-    const response = await fetch("/api/vocab/tracking", {
+    const response = await fetchWithUser("/api/vocab/tracking", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -587,7 +822,7 @@ function App() {
         hidden_words: hiddenWords,
         difficult_words: difficultWords
       })
-    });
+    }, currentUser);
 
     if (!response.ok) {
       const errorPayload = await response.json().catch(() => ({}));
@@ -1157,13 +1392,13 @@ function App() {
         }))
       };
 
-      const response = await fetch("/api/score", {
+      const response = await fetchWithUser("/api/score", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
-      });
+      }, currentUser);
 
       if (!response.ok) {
         const errorPayload = await response.json().catch(() => ({}));
@@ -1172,6 +1407,7 @@ function App() {
 
       const score = await response.json();
       setResult(score);
+      loadQuizHistory();
     } catch (error) {
       setSubmitError(error.message);
     } finally {
@@ -1269,6 +1505,7 @@ function App() {
               )}
             </>
           )}
+          <span className="user-indicator">{currentUser}</span>
           <div className="header-actions">
             <button
               className={`secondary-button header-button ${mode === "quiz" ? "active" : ""}`}
@@ -1281,6 +1518,18 @@ function App() {
               onClick={openVocabMode}
             >
               Vocab
+            </button>
+            <button
+              className={`secondary-button header-button ${mode === "history" ? "active" : ""}`}
+              onClick={() => setMode("history")}
+            >
+              History
+            </button>
+            <button
+              className="secondary-button header-button"
+              onClick={handleLogout}
+            >
+              Logout
             </button>
           </div>
         </div>
@@ -1317,7 +1566,37 @@ function App() {
         </section>
       )}
 
-      {mode === "quiz" ? (
+      {mode === "history" ? (
+        <section className="history-panel">
+          <div className="vocab-header">
+            <p className="eyebrow">Quiz History</p>
+          </div>
+          {quizHistory.length === 0 ? (
+            <p>Nessun quiz completato.</p>
+          ) : (
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Corrette</th>
+                  <th>Totale</th>
+                  <th>%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...quizHistory].reverse().map((entry) => (
+                  <tr key={`${entry.date}-${entry.correct}-${entry.total}`}>
+                    <td>{new Date(entry.date).toLocaleString()}</td>
+                    <td>{entry.correct}</td>
+                    <td>{entry.total}</td>
+                    <td>{Math.round((entry.correct / entry.total) * 100)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+      ) : mode === "quiz" ? (
         <section className="content-grid">
           <article className="question-panel">
             <p className="topic-tag">{currentQuestion.topic}</p>

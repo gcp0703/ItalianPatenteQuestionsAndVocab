@@ -18,8 +18,10 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
+from datetime import datetime, timezone
+
 from deep_translator import GoogleTranslator
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -30,7 +32,10 @@ VOCAB_FILE = ROOT_DIR / "vocabolario_patente.json"
 NORMALIZED_VOCAB_FILE = ROOT_DIR / "vocabolario_patente.normalized.json"
 IMAGE_DIR = ROOT_DIR / "img_sign"
 FRONTEND_DIST = ROOT_DIR / "frontend" / "dist"
+USER_DATA_DIR = ROOT_DIR / "user_data"
+USER_REGISTRY_FILE = USER_DATA_DIR / "_users.json"
 VOCAB_WRITE_LOCK = Lock()
+USER_DATA_LOCK = Lock()
 DICTIONARY_URL = "https://www.dizionario-italiano.it/dizionario-italiano.php?parola={}100"
 DICTIONARY_USER_AGENT = "Mozilla/5.0"
 DICTIONARY_TIMEOUT_SECONDS = 10
@@ -217,6 +222,25 @@ class VocabPrefetchResponse(BaseModel):
     queued_words: int
 
 
+class UserOut(BaseModel):
+    email: str
+    created: str
+
+
+class UserCreateIn(BaseModel):
+    email: str
+
+
+class QuizHistoryEntry(BaseModel):
+    date: str
+    total: int
+    correct: int
+
+
+class QuizHistoryResponse(BaseModel):
+    history: list[QuizHistoryEntry]
+
+
 def _humanize_topic(parts: list[str]) -> str:
     return " / ".join(part.replace("-", " ") for part in parts)
 
@@ -252,6 +276,99 @@ def _coerce_non_negative_int(value: Any) -> int:
         return max(int(value), 0)
     except (TypeError, ValueError):
         return 0
+
+
+# ---------------------------------------------------------------------------
+# User data helpers
+# ---------------------------------------------------------------------------
+
+def sanitize_email(email: str) -> str:
+    """Convert an email address to a safe filesystem name."""
+    name = email.lower().strip()
+    name = name.replace("@", "_at_").replace(".", "_dot_")
+    # Replace remaining non-alphanumeric (except _ and -) with _
+    name = re.sub(r"[^a-z0-9_\-]", "_", name)
+    return name
+
+
+def get_user_file_path(email: str) -> Path:
+    path = USER_DATA_DIR / f"{sanitize_email(email)}.json"
+    if not path.resolve().is_relative_to(USER_DATA_DIR.resolve()):
+        raise ValueError("Invalid email produces unsafe path.")
+    return path
+
+
+def _ensure_user_data_dir() -> None:
+    USER_DATA_DIR.mkdir(exist_ok=True)
+    if not USER_REGISTRY_FILE.exists():
+        USER_REGISTRY_FILE.write_text('{"users": []}\n', encoding="utf-8")
+
+
+def _read_user_registry_unlocked() -> list[dict[str, str]]:
+    """Read user registry. Caller must hold USER_DATA_LOCK."""
+    _ensure_user_data_dir()
+    with USER_REGISTRY_FILE.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("users", [])
+
+
+def _write_user_registry_unlocked(users: list[dict[str, str]]) -> None:
+    """Write user registry. Caller must hold USER_DATA_LOCK."""
+    _ensure_user_data_dir()
+    with USER_REGISTRY_FILE.open("w", encoding="utf-8") as f:
+        json.dump({"users": users}, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+
+def load_user_registry() -> list[dict[str, str]]:
+    with USER_DATA_LOCK:
+        return _read_user_registry_unlocked()
+
+
+def _empty_user_data(email: str) -> dict[str, Any]:
+    return {
+        "email": email,
+        "tracking": {
+            "feedback_counts": {},
+            "hidden_words": [],
+            "difficult_words": [],
+        },
+        "quiz_history": [],
+    }
+
+
+def _read_user_data_unlocked(email: str) -> dict[str, Any]:
+    """Read user data. Caller must hold USER_DATA_LOCK."""
+    path = get_user_file_path(email)
+    if not path.exists():
+        return _empty_user_data(email)
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _write_user_data_unlocked(email: str, data: dict[str, Any]) -> None:
+    """Write user data. Caller must hold USER_DATA_LOCK."""
+    _ensure_user_data_dir()
+    path = get_user_file_path(email)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+
+def load_user_data(email: str) -> dict[str, Any]:
+    with USER_DATA_LOCK:
+        return _read_user_data_unlocked(email)
+
+
+def save_user_data(email: str, data: dict[str, Any]) -> None:
+    with USER_DATA_LOCK:
+        _write_user_data_unlocked(email, data)
+
+
+def get_current_user_email(x_user_email: str | None = Header(None)) -> str:
+    if not x_user_email:
+        raise HTTPException(status_code=400, detail="X-User-Email header is required.")
+    return x_user_email.strip().lower()
 
 
 def _read_vocab_tracking(metadata: dict[str, Any]) -> dict[str, int | bool]:
@@ -876,6 +993,36 @@ def persist_vocab_tracking(update: VocabTrackingSyncIn) -> int:
     return updated_words
 
 
+def persist_quiz_result(email: str, total: int, correct: int) -> None:
+    """Append a quiz result to the user's history."""
+    user_data = load_user_data(email)
+    if "quiz_history" not in user_data:
+        user_data["quiz_history"] = []
+    user_data["quiz_history"].append({
+        "date": datetime.now(timezone.utc).isoformat(),
+        "total": total,
+        "correct": correct,
+    })
+    save_user_data(email, user_data)
+
+
+def persist_vocab_tracking_for_user(email: str, update: VocabTrackingSyncIn) -> int:
+    """Save vocab tracking data to the user's personal JSON file."""
+    feedback_counts = {
+        word: {"up": _coerce_non_negative_int(c.up), "down": _coerce_non_negative_int(c.down)}
+        for word, c in update.feedback_counts.items()
+    }
+
+    user_data = load_user_data(email)
+    user_data["tracking"] = {
+        "feedback_counts": feedback_counts,
+        "hidden_words": update.hidden_words,
+        "difficult_words": update.difficult_words,
+    }
+    save_user_data(email, user_data)
+    return len(feedback_counts)
+
+
 def unique_preserve_order(items: list[str]) -> list[str]:
     seen: set[str] = set()
     unique_items: list[str] = []
@@ -1014,6 +1161,7 @@ def _is_backfill_enabled() -> bool:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _ensure_user_data_dir()
     if _is_backfill_enabled():
         thread = threading.Thread(
             target=_background_definition_worker, daemon=True, name="bg-ai-definitions",
@@ -1045,6 +1193,127 @@ def get_question_or_404(question_id: int) -> dict[str, Any]:
 @app.get("/api/health")
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/users")
+async def list_users() -> list[UserOut]:
+    users = load_user_registry()
+    return [UserOut(email=u["email"], created=u["created"]) for u in users]
+
+
+@app.post("/api/users", status_code=201)
+async def create_user(body: UserCreateIn) -> UserOut:
+    email = body.email.strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Invalid email address.")
+
+    with USER_DATA_LOCK:
+        users = _read_user_registry_unlocked()
+        if any(u["email"] == email for u in users):
+            raise HTTPException(status_code=409, detail="User already exists.")
+
+        created = datetime.now(timezone.utc).isoformat()
+        users.append({"email": email, "created": created})
+        _write_user_registry_unlocked(users)
+        _write_user_data_unlocked(email, _empty_user_data(email))
+
+    return UserOut(email=email, created=created)
+
+
+@app.delete("/api/users/{email}")
+async def delete_user(email: str) -> dict[str, str]:
+    email = email.strip().lower()
+
+    with USER_DATA_LOCK:
+        users = _read_user_registry_unlocked()
+        updated = [u for u in users if u["email"] != email]
+        if len(updated) == len(users):
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        _write_user_registry_unlocked(updated)
+
+        path = get_user_file_path(email)
+        if path.exists():
+            path.unlink()
+
+    return {"status": "deleted", "email": email}
+
+
+@app.get("/api/legacy-tracking")
+async def check_legacy_tracking() -> dict[str, Any]:
+    """Check if the shared vocab file has tracking data that can be migrated."""
+    _, _, raw_data = load_vocab_storage_payload()
+    has_tracking = False
+    tracked_count = 0
+    for metadata in raw_data.values():
+        if not isinstance(metadata, dict):
+            continue
+        tracking = metadata.get("tracking")
+        if isinstance(tracking, dict):
+            up = tracking.get("up", 0)
+            down = tracking.get("down", 0)
+            known = tracking.get("known", False)
+            difficult = tracking.get("difficult", False)
+            if up or down or known or difficult:
+                has_tracking = True
+                tracked_count += 1
+    return {"has_tracking": has_tracking, "tracked_count": tracked_count}
+
+
+@app.post("/api/migrate")
+async def migrate_legacy_tracking(email: str = Depends(get_current_user_email)) -> dict[str, Any]:
+    """Import existing tracking from shared vocab file into a user's data."""
+    _, _, raw_data = load_vocab_storage_payload()
+
+    feedback_counts = {}
+    hidden_words = []
+    difficult_words = []
+
+    for word, metadata in raw_data.items():
+        if not isinstance(metadata, dict):
+            continue
+        tracking = metadata.get("tracking")
+        if not isinstance(tracking, dict):
+            continue
+        up = _coerce_non_negative_int(tracking.get("up", 0))
+        down = _coerce_non_negative_int(tracking.get("down", 0))
+        known = bool(tracking.get("known", False))
+        difficult = bool(tracking.get("difficult", False))
+
+        if up or down:
+            feedback_counts[word] = {"up": up, "down": down}
+        if known:
+            hidden_words.append(word)
+        if difficult:
+            difficult_words.append(word)
+
+    user_data = load_user_data(email)
+    user_data["tracking"] = {
+        "feedback_counts": feedback_counts,
+        "hidden_words": hidden_words,
+        "difficult_words": difficult_words,
+    }
+    save_user_data(email, user_data)
+
+    # Strip tracking from shared vocab file
+    await asyncio.to_thread(_strip_legacy_tracking)
+
+    return {
+        "imported_feedback_counts": len(feedback_counts),
+        "imported_hidden_words": len(hidden_words),
+        "imported_difficult_words": len(difficult_words),
+    }
+
+
+def _strip_legacy_tracking() -> None:
+    """Remove tracking fields from the shared vocabulary file."""
+    with VOCAB_WRITE_LOCK:
+        path, raw_payload, raw_data = load_vocab_storage_payload()
+        for metadata in raw_data.values():
+            if isinstance(metadata, dict) and "tracking" in metadata:
+                del metadata["tracking"]
+        write_vocab_storage_payload(path, raw_payload, raw_data)
+    refresh_vocab_bank()
 
 
 @app.get("/api/quiz", response_model=QuizResponse)
@@ -1086,15 +1355,29 @@ async def reveal_answer(question_id: int) -> AnswerRevealResponse:
 
 
 @app.get("/api/vocab", response_model=VocabResponse)
-async def get_vocab() -> VocabResponse:
-    words = [
-        VocabWordOut(
-            word=item["word"],
-            known_translation=item["known_translation"],
-            tracking=VocabTrackingOut(**item["tracking"]),
+async def get_vocab(email: str = Depends(get_current_user_email)) -> VocabResponse:
+    user_data = load_user_data(email)
+    user_tracking = user_data.get("tracking", {})
+    user_counts = user_tracking.get("feedback_counts", {})
+    user_hidden = set(user_tracking.get("hidden_words", []))
+    user_difficult = set(user_tracking.get("difficult_words", []))
+
+    words = []
+    for item in VOCAB_BANK:
+        word = item["word"]
+        counts = user_counts.get(word, {})
+        tracking = VocabTrackingOut(
+            up=_coerce_non_negative_int(counts.get("up", 0)),
+            down=_coerce_non_negative_int(counts.get("down", 0)),
+            known=word in user_hidden,
+            difficult=word in user_difficult,
         )
-        for item in VOCAB_BANK
-    ]
+        words.append(VocabWordOut(
+            word=word,
+            known_translation=item["known_translation"],
+            tracking=tracking,
+        ))
+
     percent = _definitions_cached_percent()
     return VocabResponse(words=words, definitions_cached_percent=percent)
 
@@ -1200,9 +1483,11 @@ async def translate_vocab_word(word: str = Query(min_length=1)) -> VocabTranslat
 
 
 @app.post("/api/vocab/tracking", response_model=VocabTrackingSyncResponse)
-async def sync_vocab_tracking(update: VocabTrackingSyncIn) -> VocabTrackingSyncResponse:
+async def sync_vocab_tracking(
+    update: VocabTrackingSyncIn, email: str = Depends(get_current_user_email)
+) -> VocabTrackingSyncResponse:
     try:
-        updated_words = await asyncio.to_thread(persist_vocab_tracking, update)
+        updated_words = await asyncio.to_thread(persist_vocab_tracking_for_user, email, update)
     except Exception as exc:
         raise HTTPException(status_code=500, detail="Unable to persist vocab tracking.") from exc
 
@@ -1221,7 +1506,9 @@ async def prefetch_vocab_batch(
 
 
 @app.post("/api/score", response_model=ScoreResponse)
-async def score_quiz(submission: ScoreSubmission) -> ScoreResponse:
+async def score_quiz(
+    submission: ScoreSubmission, email: str = Depends(get_current_user_email)
+) -> ScoreResponse:
     if not submission.answers:
         raise HTTPException(status_code=400, detail="No answers submitted.")
 
@@ -1243,7 +1530,32 @@ async def score_quiz(submission: ScoreSubmission) -> ScoreResponse:
 
     correct = sum(1 for detail in details if detail.is_correct)
     total = len(details)
+
+    # Persist quiz result to user's history
+    await asyncio.to_thread(
+        persist_quiz_result, email, total, correct,
+    )
+
     return ScoreResponse(total=total, correct=correct, wrong=total - correct, details=details)
+
+
+@app.get("/api/quiz/history", response_model=QuizHistoryResponse)
+async def get_quiz_history(email: str = Depends(get_current_user_email)) -> QuizHistoryResponse:
+    user_data = load_user_data(email)
+    history = user_data.get("quiz_history", [])
+    entries = []
+    for h in history:
+        if not isinstance(h, dict):
+            continue
+        try:
+            entries.append(QuizHistoryEntry(
+                date=h.get("date", ""),
+                total=h.get("total", 0),
+                correct=h.get("correct", 0),
+            ))
+        except (TypeError, ValueError):
+            continue
+    return QuizHistoryResponse(history=entries)
 
 
 if IMAGE_DIR.exists():
@@ -1259,3 +1571,4 @@ else:
         return {
             "message": "Frontend build not found. Run `npm install` and `npm run build` inside `frontend/`."
         }
+

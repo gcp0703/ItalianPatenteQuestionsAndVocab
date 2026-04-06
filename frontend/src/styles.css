@@ -869,3 +869,107 @@ button:disabled {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Login screen */
+.login-panel {
+  background: var(--panel-strong);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 32px;
+  margin-top: 20px;
+  max-width: 480px;
+}
+
+.login-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.login-select-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.login-select {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  font: inherit;
+  font-size: 1rem;
+  background: var(--panel);
+}
+
+.login-delete-button {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--error);
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  font: inherit;
+  font-size: 1rem;
+  background: var(--panel);
+}
+
+.login-new {
+  margin-top: 20px;
+}
+
+.login-existing {
+  margin-bottom: 4px;
+}
+
+.login-button {
+  margin-top: 24px;
+  width: 100%;
+}
+
+/* User indicator */
+.user-indicator {
+  font-size: 0.8rem;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+/* Quiz history */
+.history-panel {
+  background: var(--panel-strong);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 32px;
+  margin-top: 20px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.history-table th {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.history-table td {
+  font-size: 0.95rem;
+}
