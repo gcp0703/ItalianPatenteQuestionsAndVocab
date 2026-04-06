@@ -885,9 +885,6 @@ def refresh_vocab_bank() -> None:
 
 
 def persist_dictionary_cache(word: str, dictionary_cache: dict[str, Any]) -> int:
-    normalized_word = get_normalized_vocab_word(word)
-    target_words = {normalized_word}
-
     payload = {
         "lookup_word": dictionary_cache.get("lookup_word"),
         "lemma": dictionary_cache.get("lemma"),
@@ -897,6 +894,13 @@ def persist_dictionary_cache(word: str, dictionary_cache: dict[str, Any]) -> int
 
     with VOCAB_WRITE_LOCK:
         path, raw_payload, raw_data = load_vocab_storage_payload()
+
+        # Use the word directly if it's already an entry key;
+        # only fall back to normalization for raw/original word forms.
+        if word in raw_data:
+            target_words = {word}
+        else:
+            target_words = {get_normalized_vocab_word(word)}
 
         updated_words = 0
         for target_word in target_words:
@@ -922,10 +926,12 @@ def persist_ai_definitions(definitions: dict[str, str]) -> int:
 
         updated_words = 0
         for word, definition in definitions.items():
-            normalized_word = get_normalized_vocab_word(word)
-            metadata = raw_data.get(normalized_word)
+            # Use the word directly if it's already an entry key;
+            # only fall back to normalization for raw/original word forms.
+            metadata = raw_data.get(word)
             if not isinstance(metadata, dict):
-                metadata = raw_data.get(word)
+                normalized_word = get_normalized_vocab_word(word)
+                metadata = raw_data.get(normalized_word)
             if not isinstance(metadata, dict):
                 continue
             metadata["ai_definition"] = definition
@@ -947,10 +953,10 @@ def persist_ai_definition_failures(words: list[str]) -> int:
 
         updated_words = 0
         for word in words:
-            normalized_word = get_normalized_vocab_word(word)
-            metadata = raw_data.get(normalized_word)
+            metadata = raw_data.get(word)
             if not isinstance(metadata, dict):
-                metadata = raw_data.get(word)
+                normalized_word = get_normalized_vocab_word(word)
+                metadata = raw_data.get(normalized_word)
             if not isinstance(metadata, dict):
                 continue
             metadata["ai_definition_failed"] = True
