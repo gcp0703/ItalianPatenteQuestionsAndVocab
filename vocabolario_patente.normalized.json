@@ -4355,7 +4355,38 @@
         "annullato"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "annullare",
+        "lemma": "annullàre",
+        "meanings": [
+          "render void, inoperative or invalid; deprive of validity or operation; in law: eliminate the effects of a legal act or transaction that do not comply with the law",
+          "cancel, cancel",
+          "stamp or mark stamps, tickets and the like to prevent their reuse; subject to postal cancellation",
+          "by extension render vain, remove all strength and effectiveness"
+        ],
+        "related": [
+          {
+            "term": "Annulla",
+            "meaning": "informatica comando che permette all'utente di cancellare gli effetti dell'ultimo comando impartito",
+            "english": "informatica command that allows the user to cancel the effects of the last command given"
+          },
+          {
+            "term": "annullare una legge",
+            "meaning": "diritto abrogare una legge",
+            "english": "right to repeal a law"
+          },
+          {
+            "term": "annullare un francobollo, una marca da bollo",
+            "meaning": "apporre la data o un timbro o una firma su un francobollo o una marca da bollo per renderli validi ai fini del documento cui sono applicati e allo stesso tempo per impedirne il loro ulteriore riutilizzo",
+            "english": "affix the date or a stamp or a signature on a stamp or revenue stamp to make them valid for the purposes of the document to which they are applied and at the same time to prevent their further reuse"
+          },
+          {
+            "term": "annullare un progetto",
+            "meaning": "rinunciare a un progetto",
+            "english": "give up on a project"
+          }
+        ]
+      },
       "ai_definition": "1. To cancel or invalidate a traffic sign, signal, or road marking.\n2. To revoke a driver's license or permit.\n3. To cancel a reservation or appointment.\n4. To negate or void a legal document or contract."
     },
     "anomalia": {
@@ -13867,7 +13898,42 @@
         "cogliere"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "cogliere",
+        "lemma": "cògliere",
+        "meanings": [
+          "detach a fruit, or a flower from a plant",
+          "hit",
+          "surprise"
+        ],
+        "related": [
+          {
+            "term": "cogliere la buona occasione",
+            "meaning": "cogliere il momento buono, la circostanza opportuna, favorevole",
+            "english": "seize the good moment, the appropriate, favorable circumstance"
+          },
+          {
+            "term": "toccare o cogliere nel guidalesco",
+            "meaning": "toccare un argomento delicato o imbarazzante, sottolineare il punto critico di una situazione",
+            "english": "touch on a delicate or embarrassing topic, underline the critical point of a situation"
+          },
+          {
+            "term": "cogliere il tempo",
+            "meaning": "sfruttare l'occasione, cogliere il momento propizio",
+            "english": "take advantage of the opportunity, seize the right moment"
+          },
+          {
+            "term": "cogliere qualcuno con le mani nella marmellata",
+            "meaning": "figurato scherzoso cogliere qualcuno sul fatto",
+            "english": "figuratively playful to catch someone in the act"
+          },
+          {
+            "term": "andare, mettere a segno; cogliere, colpire, dare nel segno",
+            "meaning": "colpire, cogliere, centrare il bersaglio",
+            "english": "hit, catch, hit the target"
+          }
+        ]
+      },
       "ai_definition": "1. To catch or apprehend a driver committing a traffic violation.\n2. To perceive or notice a visual signal or hazard on the road.\n3. To pick or gather fruit or flowers.\n4. To seize an opportunity or moment."
     },
     "cognome": {
@@ -14648,7 +14714,15 @@
         "compito"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "compire",
+        "lemma": "compìre",
+        "meanings": [
+          "to complete; execute",
+          "less common variant of fulfillment"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To reach a specific age, such as the legal minimum required to obtain a driver's license.\n2. To complete or finish a task, period, or duration.\n3. To fulfill a requirement or obligation.\n4. To celebrate a birthday or anniversary."
     },
     "compleanno": {
@@ -25526,7 +25600,43 @@
         "fattore"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "fattore",
+        "lemma": "fattóre",
+        "meanings": [
+          "he who does, creator",
+          "what it promotes, produces",
+          "mathematics each term of a product",
+          "someone who looks after the interests of the owner in a farm, having his orders followed and carrying out the work"
+        ],
+        "related": [
+          {
+            "term": "fattore antigrigio",
+            "meaning": "biologia vitamina del gruppo B la cui mancanza provoca, in alcuni animali, l'incanutimento del pelo",
+            "english": "biology group B vitamin whose lack causes, in some animals, the graying of the fur"
+          },
+          {
+            "term": "fattore antisprue",
+            "meaning": "farmacologia l'uropterina, sostanza ad azione vitaminica, del complesso B, la cui carenza provoca alterazioni gastro-intestinali, con un quadro clinico simile a quello della sprue",
+            "english": "pharmacology uropterin, a substance with a vitamin action, of the B complex, the deficiency of which causes gastro-intestinal alterations, with a clinical picture similar to that of sprue"
+          },
+          {
+            "term": "fattori antitriptici",
+            "meaning": "biochimica sostanze presenti in alcuni funghi, nell'albume d'uovo, nel colostro bovino, nel sangue e che inibiscono l'azione della tripsina",
+            "english": "biochemical substances present in some mushrooms, in egg white, in bovine colostrum, in the blood and which inhibit the action of trypsin"
+          },
+          {
+            "term": "fattore natriuretico atriale",
+            "meaning": "fisiologia polipeptide ad azione ormonale, isolato nel 1983, dotato di azione natriuretica, diuretica e ipotensiva, elaborato dal miocardio e poi immesso in circolazione",
+            "english": "physiology polypeptide with hormonal action, isolated in 1983, with natriuretic, diuretic and hypotensive action, processed by the myocardium and then released into circulation"
+          },
+          {
+            "term": "fattore K",
+            "meaning": "politica durante la guerra fredda, la difficoltà dell'alternanza politica al governo di un paese occidentale, qualora il partito comunista rappresenti una grande parte dell'elettorato",
+            "english": "politics during the Cold War, the difficulty of political alternation in the government of a Western country, if the communist party represents a large part of the electorate"
+          }
+        ]
+      },
       "ai_definition": "1. A variable or element that influences the outcome of a driving situation, such as weather or road conditions.\n2. A person who works as an agent or representative in a business transaction.\n3. A mathematical number that divides another number without leaving a remainder.\n4. A person who manages a farm or estate on behalf of the owner."
     },
     "fattoria": {
@@ -30832,7 +30942,16 @@
         "impostare"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "impostare",
+        "lemma": "impostàre",
+        "meanings": [
+          "lay the foundations of something; figuratively determine the essential points, start",
+          "put in the mailbox",
+          "put yourself in the most suitable position for a certain action"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To adjust or set a vehicle's controls, such as the mirrors, seat, or headlights.\n2. To configure or program a device, like a GPS or dashboard settings.\n3. To establish or set up a plan, route, or procedure.\n4. To arrange or organize an event or meeting."
     },
     "impostazione": {
@@ -41899,7 +42018,42 @@
         "onde"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "onda",
+        "lemma": "ónda",
+        "meanings": [
+          "more or less strong rippling of the surface of the sea or of liquid masses, caused by the action of the wind or other causes",
+          "undulating movement of a mass; curved and rounded part of a surface",
+          "physical propagation of energy of various nature, characterized by vibration or progressive oscillation of a certain medium"
+        ],
+        "related": [
+          {
+            "term": "andare in onda",
+            "meaning": "di programma televisivo o radiofonico, iniziare a essere trasmesso",
+            "english": "of a television or radio program, start being broadcast"
+          },
+          {
+            "term": "onde centimetriche",
+            "meaning": "fisica in radiotecnica: le radioonde di lunghezza dell'ordine di qualche centimetro",
+            "english": "physics in radio engineering: radio waves of the order of a few centimeters in length"
+          },
+          {
+            "term": "onde decametriche o onde corte",
+            "meaning": "telecomunicazioni in radiotecnica: onde radio di lunghezza tra 10 e 100 m, di frequenza tra 3 e 30 MHz; rientrano nella banda HF",
+            "english": "telecommunications in radio engineering: radio waves with a length between 10 and 100 m, a frequency between 3 and 30 MHz; fall within the HF band"
+          },
+          {
+            "term": "onde decachilometriche o miriametriche o lunghissime",
+            "meaning": "telecomunicazioni in radiotecnica: onde radio di lunghezza d'onda fra 10 e 100 km, di frequenza tra 3 e 30 kHz; rientrano nella banda VLF",
+            "english": "telecommunications in radio engineering: radio waves with a wavelength between 10 and 100 km, a frequency between 3 and 30 kHz; fall within the VLF band"
+          },
+          {
+            "term": "onde decimetriche",
+            "meaning": "telecomunicazioni in radiotecnica, onde radio di lunghezza d'onda tra 1 e 10 dm, di frequenza da 3000 a 300 megahertz; rientrano nella banda UHF",
+            "english": "telecommunications in radio engineering, radio waves with a wavelength between 1 and 10 dm, a frequency from 3000 to 300 megahertz; fall within the UHF band"
+          }
+        ]
+      },
       "ai_definition": "1. A wave of traffic congestion or a surge in vehicle flow.\n2. A physical wave of water, air, or light.\n3. A radio frequency band used for communication.\n4. A rhythmic movement or undulation."
     },
     "opera": {
@@ -48803,7 +48957,26 @@
         "proiettori"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "proiettore",
+        "lemma": "proiettóre",
+        "meanings": [
+          "optical device for projecting films or slides",
+          "very powerful light source that projects an illuminating beam at a great distance"
+        ],
+        "related": [
+          {
+            "term": "proiettore bipasso",
+            "meaning": "cinema macchina da proiezione cinematografica, provvista di un dispositivo che permette la proiezione anche di pellicole a passo ridotto",
+            "english": "cinema cinema projection machine, equipped with a device that also allows the projection of short-pitch films"
+          },
+          {
+            "term": "proiettore dia",
+            "meaning": "fotografia proiettore per visualizzare diapositive; diaproiettore",
+            "english": "photography projector for viewing slides; slide projector"
+          }
+        ]
+      },
       "ai_definition": "1. A headlight or lamp used to illuminate the road ahead of a vehicle.\n2. A device that projects images or light onto a screen or surface.\n3. A person who projects or throws something forward."
     },
     "prolungare": {
@@ -51220,7 +51393,43 @@
         "reazioni"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "reazione",
+        "lemma": "reazióne",
+        "meanings": [
+          "act, effect of reacting",
+          "opposition to every reformist and progressive program, and to every demand for political freedom; also the political forces that implement it",
+          "physical force that is generated by the application of another force and is equal and opposite to the latter",
+          "chemical transformation that modifies the composition of substances"
+        ],
+        "related": [
+          {
+            "term": "reazione anticorpale",
+            "meaning": "ogni modificazione della concentrazione di anticorpi specifici in un siero",
+            "english": "any change in the concentration of specific antibodies in a serum"
+          },
+          {
+            "term": "reazione bimolecolare",
+            "meaning": "chimica reazione in cui due molecole reagiscono per dar luogo ad altre sostanze",
+            "english": "chemical reaction in which two molecules react to give rise to other substances"
+          },
+          {
+            "term": "camera di reazione",
+            "meaning": "chimica ambiente o recipiente ove avviene una reazione",
+            "english": "chemistry environment or container where a reaction takes place"
+          },
+          {
+            "term": "reazione a catena",
+            "meaning": "chimica fisica successione di reazioni chimiche o nucleari, ciascuna delle quali è innescata dalla precedente",
+            "english": "physical chemistry succession of chemical or nuclear reactions, each of which is triggered by the previous one"
+          },
+          {
+            "term": "per antonomasia la reazione originata dall'uranio che, bombardato da neutroni, si scinde emettendone altri che, a loro volta, provocano la scissione di nuovi atomi di uranio",
+            "meaning": "per antonomasia la reazione originata dall'uranio che, bombardato da neutroni, si scinde emettendone altri che, a loro volta, provocano la scissione di nuovi atomi di uranio",
+            "english": "par excellence the reaction originating from uranium which, bombarded by neutrons, splits, emitting others which, in turn, cause the splitting of new uranium atoms"
+          }
+        ]
+      },
       "ai_definition": "1. The time interval between perceiving a hazard and physically applying the brakes.\n2. The physical or chemical change resulting from a collision or impact.\n3. A response or reply to a specific event or statement.\n4. The physiological response of the body to stress or fatigue."
     },
     "recare": {
@@ -54636,7 +54845,38 @@
         "ritiro"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "ritirare",
+        "lemma": "ritiràre",
+        "meanings": [
+          "pull back",
+          "recall, bring back",
+          "take, be delivered",
+          "pull again"
+        ],
+        "related": [
+          {
+            "term": "ritirarsi in buon ordine",
+            "meaning": "militare arretrare di fronte alla pressione nemica in modo ordinato, senza sbandamento dei reparti",
+            "english": "military retreat in the face of enemy pressure in an orderly manner, without disbanding the units"
+          },
+          {
+            "term": "figurato desistere volontariamente da un'impresa riconoscendo impossibile raggiungere lo scopo voluto",
+            "meaning": "figurato desistere volontariamente da un'impresa riconoscendo impossibile raggiungere lo scopo voluto",
+            "english": "figuratively voluntarily giving up from an undertaking recognizing that it is impossible to achieve the desired goal"
+          },
+          {
+            "term": "ritirarsi sull'Aventino",
+            "meaning": "per estensione appartarsi sdegnosamente",
+            "english": "by extension to withdraw disdainfully"
+          },
+          {
+            "term": "ritira la parola!",
+            "meaning": "smentisci subito quanto hai detto!",
+            "english": "immediately deny what you said!"
+          }
+        ]
+      },
       "ai_definition": "1. To collect or pick up the physical driver's license card after passing the exam.\n2. To withdraw money from a bank account.\n3. To take back or recall a product or document.\n4. To withdraw from a competition or contest."
     },
     "ritirato": {
@@ -56470,7 +56710,43 @@
         "scarica"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "scarica",
+        "lemma": "scàrica",
+        "meanings": [
+          "simultaneous series of shots fired from multiple firearms: a thunderous volley erupted from the trenches",
+          "rapid succession of shots fired from a single automatic weapon; gust",
+          "by extension rapid, violent, sudden and continuous succession of blows, of beatings that fall on someone (even in a figurative sense)",
+          "by extension, short and violent atmospheric precipitation"
+        ],
+        "related": [
+          {
+            "term": "emissione o scarica autoelettronica",
+            "meaning": "elettricità lo stesso che emissione elettronica di campo",
+            "english": "electricity the same as electronic field emission"
+          },
+          {
+            "term": "scarica affettiva",
+            "meaning": "psicologia liberazione di una pulsione, di un impulso, di un moto affettivo o di una manifestazione emotiva",
+            "english": "psychology liberation of a drive, an impulse, an affective movement or an emotional manifestation"
+          },
+          {
+            "term": "scarica diarroica",
+            "meaning": "medicina escrezione, evacuazione violenta e incontenibile di feci liquide",
+            "english": "medicine excretion, violent and uncontainable evacuation of liquid feces"
+          },
+          {
+            "term": "fogli di scarica",
+            "meaning": "tipografia fogli di carta che si fanno passare sopra la forma, quando questa è troppo inchiostrata, per toglierne l'eccedenza di inchiostro",
+            "english": "typography sheets of paper that are passed over the shape, when it is too inked, to remove the excess ink"
+          },
+          {
+            "term": "scarica elettrica",
+            "meaning": "elettricità passaggio violento di corrente elettrica tra due corpi a diverso potenziale elettrico separati da un isolante",
+            "english": "electricity violent passage of electric current between two bodies with different electrical potential separated by an insulator"
+          }
+        ]
+      },
       "ai_definition": "1. The act of unloading passengers or cargo from a vehicle.\n2. The discharge of a battery or electrical system.\n3. The release of pressure from a tire or hydraulic system.\n4. The act of emptying a container or tank."
     },
     "scaricare": {
@@ -62582,7 +62858,42 @@
         "sportive"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "sportivo",
+        "lemma": "sportìvo",
+        "meanings": [
+          "regarding sport",
+          "who practices or follows a sport with interest",
+          "loyal, correct"
+        ],
+        "related": [
+          {
+            "term": "campo sportivo",
+            "meaning": "sport terreno opportunamente attrezzato e predisposto secondo le norme dei regolamenti, ove si svolgono gare e incontri di vari sport",
+            "english": "sports ground suitably equipped and prepared according to the rules of the regulations, where competitions and matches of various sports take place"
+          },
+          {
+            "term": "tuta da ginnastica ginnica o sportiva",
+            "meaning": "abbigliamento completo costituito da casacca e pantaloni, confezionato in tessuto di cotone o acrilico, tale da consentire ampia libertà di movimento e quindi adatto a varie attività sportive",
+            "english": "complete clothing consisting of jacket and trousers, made of cotton or acrylic fabric, which allows ample freedom of movement and is therefore suitable for various sporting activities"
+          },
+          {
+            "term": "accompagnatore sportivo",
+            "meaning": "sport chi è incaricato di assistere una squadra fuori sede o un atleta in trasferta o segue un marciatore durante lo svolgimento di una gara",
+            "english": "sport who is responsible for assisting an off-site team or an away athlete or following a walker during a race"
+          },
+          {
+            "term": "automobile sportiva",
+            "meaning": "autoveicoli automobile, generalmente a due posti, molto veloce",
+            "english": "motor vehicles automobile, generally two-seater, very fast"
+          },
+          {
+            "term": "brevetto sportivo",
+            "meaning": "sport certificato di abilità per giovani praticanti una disciplina sportiva",
+            "english": "sport skill certificate for young people practicing a sporting discipline"
+          }
+        ]
+      },
       "ai_definition": "1. A vehicle designed for high performance and speed, often with a powerful engine and sporty handling.\n2. A driving style characterized by aggressive acceleration, high speeds, and risky maneuvers.\n3. A person who is enthusiastic about sports or physical activities.\n4. A type of clothing or footwear designed for athletic use."
     },
     "spostamento": {
@@ -63213,7 +63524,16 @@
         "sterzo"
       ],
       "source_count": 4,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "sterzare",
+        "lemma": "sterzàre 1",
+        "meanings": [
+          "archaic to divide by three, into three parts",
+          "archaic decrease by a third",
+          "agriculture in forestry: thinning, thinning out a forest or a plant in any proportion"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To turn the steering wheel to change the vehicle's direction.\n2. To steer a car around a corner or obstacle.\n3. To deviate from a straight path while driving.\n4. To pivot or swivel an object."
     },
     "stia": {
@@ -65230,7 +65550,40 @@
         "tappeti"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "tappeto",
+        "lemma": "tappéto",
+        "meanings": [
+          "fabric drape made with a particular technique, used in furnishings to cover floors or tables"
+        ],
+        "related": [
+          {
+            "term": "andare al tappeto",
+            "meaning": "sport nel pugilato, venire, essere atterrato",
+            "english": "sport in boxing, come, be knocked down"
+          },
+          {
+            "term": "figurato subire un duro colpo, una batosta",
+            "meaning": "figurato subire un duro colpo, una batosta",
+            "english": "figuratively suffering a hard blow, a beating"
+          },
+          {
+            "term": "battere i panni i materassi i tappeti",
+            "meaning": "spolverarli, sprimacciarli",
+            "english": "dust them, fluff them"
+          },
+          {
+            "term": "mettere sul tappeto una questione",
+            "meaning": "provocare la discussione su una determinata questione",
+            "english": "provoke discussion on a particular issue"
+          },
+          {
+            "term": "tappeto plasmodiale",
+            "meaning": "botanica lo stesso che periplasmodio",
+            "english": "botany the same as periplasmodium"
+          }
+        ]
+      },
       "ai_definition": "1. A floor mat placed inside a vehicle to protect the carpeting from dirt and wear.\n2. A rug or carpet used to cover the floor of a room or house.\n3. A small, decorative piece of fabric used as a doily or placemat."
     },
     "tara": {
@@ -65666,7 +66019,15 @@
         "telefoni"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "telefonare",
+        "lemma": "telefonàre",
+        "meanings": [
+          "communicate, speak by telephone",
+          "(mutual) call each other, talk to each other over the telephone"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A mobile device used for communication, the use of which while driving is strictly prohibited unless hands-free.\n2. A fixed communication device found in public buildings or emergency call boxes.\n3. A general term for any apparatus used to transmit voice over distances."
     },
     "telepass": {
