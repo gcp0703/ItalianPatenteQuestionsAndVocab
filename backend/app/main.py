@@ -112,6 +112,14 @@ class AIModelGate:
 
 AI_MODEL_GATE = AIModelGate()
 _background_stop = threading.Event()
+_bg_worker_status: dict[str, Any] = {
+    "running": False,
+    "mode": None,
+    "checked": 0,
+    "updated": 0,
+    "last_word": None,
+    "last_check_time": None,
+}
 
 TRANSLATION_CONTEXT_HINT = "macchina guidare autovettura"
 TRANSLATION_TEXT_MARKER = "[[[TEXT]]]"
@@ -239,6 +247,26 @@ class QuizHistoryEntry(BaseModel):
 
 class QuizHistoryResponse(BaseModel):
     history: list[QuizHistoryEntry]
+
+
+class QuestionMatchOut(BaseModel):
+    id: int
+    text: str
+    answer: bool
+    image_url: str | None
+    topic: str
+
+
+class VocabQuestionsResponse(BaseModel):
+    word: str
+    questions: list[QuestionMatchOut]
+    count: int
+
+
+class QuestionVariantsResponse(BaseModel):
+    question_id: int
+    questions: list[QuestionMatchOut]
+    count: int
 
 
 def _humanize_topic(parts: list[str]) -> str:
@@ -848,6 +876,15 @@ AI_DEFINITION_PROMPT = (
 
 
 @lru_cache(maxsize=8192)
+def _extract_final_answer(response: str) -> str:
+    """Strip <think>...</think> reasoning blocks from a model response."""
+    # Remove complete <think>...</think> blocks
+    cleaned = re.sub(r"<think>.*?</think>", "", response, flags=re.DOTALL)
+    # Remove an unclosed leading <think>... if generation was truncated mid-thought
+    cleaned = re.sub(r"^.*?</think>", "", cleaned, flags=re.DOTALL)
+    return cleaned.strip()
+
+
 def get_ai_definition(word: str) -> str | None:
     """Get a contextual English definition using the local MLX model."""
     try:
@@ -867,9 +904,9 @@ def get_ai_definition(word: str) -> str | None:
         enable_thinking=False,
     )
     response = generate(
-        model, tokenizer, prompt=prompt, max_tokens=200, verbose=False,
+        model, tokenizer, prompt=prompt, max_tokens=1024, verbose=False,
     )
-    cleaned = response.strip()
+    cleaned = _extract_final_answer(response)
     return cleaned if cleaned else None
 
 
@@ -1068,6 +1105,8 @@ _BG_PERSIST_BATCH_SIZE = 10
 def _background_definition_worker() -> None:
     """Pre-cache AI definitions for all vocab words in JSON order."""
     logger.info("Background definition worker started (%d words)", len(VOCAB_BANK))
+    _bg_worker_status["running"] = True
+    _bg_worker_status["mode"] = "backfill"
 
     cached = 0
     failed = 0
@@ -1159,22 +1198,168 @@ def _background_definition_worker() -> None:
     )
 
 
-def _is_backfill_enabled() -> bool:
+def _get_fresh_ai_definition(word: str) -> str | None:
+    """Generate an AI definition without using the LRU cache."""
+    try:
+        model, tokenizer = _load_ai_model()
+    except Exception as exc:
+        logger.warning("Failed to load AI model: %s", exc)
+        return None
+
+    messages = [
+        {"role": "system", "content": AI_DEFINITION_PROMPT},
+        {"role": "user", "content": word},
+    ]
+
+    from mlx_lm import generate
+    prompt = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True,
+        enable_thinking=False,
+    )
+    response = generate(
+        model, tokenizer, prompt=prompt, max_tokens=1024, verbose=False,
+    )
+    cleaned = _extract_final_answer(response)
+    return cleaned if cleaned else None
+
+
+def _definition_differs(old: str, new: str) -> bool:
+    """Return True if two definitions differ by more than 10% in wording."""
+    from difflib import SequenceMatcher
+    ratio = SequenceMatcher(None, old, new).ratio()
+    return ratio < 0.90
+
+
+def _read_env_flags() -> tuple[bool, bool]:
     from dotenv import dotenv_values
     env = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
-    return env.get("BACKFILL_DEFINITIONS", "true").lower() not in ("false", "0", "no")
+    backfill = env.get("BACKFILL_DEFINITIONS", "true").lower() not in ("false", "0", "no")
+    checking = env.get("BACKFILL_CHECKING", "false").lower() not in ("false", "0", "no")
+    return backfill, checking
+
+
+def _is_backfill_enabled() -> bool:
+    backfill, _ = _read_env_flags()
+    return backfill
+
+
+def _background_checking_worker() -> None:
+    """Periodically re-check a random word's AI definition for quality."""
+    logger.info("Background definition checking worker started")
+    _bg_worker_status["running"] = True
+    _bg_worker_status["mode"] = "checking"
+    checked = 0
+    updated = 0
+
+    while not _background_stop.is_set():
+        # Sleep 60 seconds, checking for stop every second
+        for _ in range(60):
+            if _background_stop.is_set():
+                _bg_worker_status["running"] = False
+                return
+            time.sleep(1)
+
+        if not VOCAB_BANK:
+            continue
+
+        item = random.choice(VOCAB_BANK)
+        word = item["word"]
+        existing = item.get("ai_definition") or ""
+        logger.info("Background checking: picking word '%s' to verify", word)
+        _bg_worker_status["last_word"] = word
+
+        # Wait for the gate, yielding to any user requests
+        while not _background_stop.is_set():
+            if AI_MODEL_GATE.has_user_waiting():
+                time.sleep(0.5)
+                continue
+
+            if AI_MODEL_GATE.background_acquire():
+                _bg_worker_status["gate_acquired_time"] = datetime.now(timezone.utc).isoformat()
+                try:
+                    fresh = _get_fresh_ai_definition(word)
+                    checked += 1
+                    _bg_worker_status["checked"] = checked
+                    _bg_worker_status["last_check_time"] = datetime.now(timezone.utc).isoformat()
+
+                    if not fresh:
+                        logger.info(
+                            "Checking [%d checked, %d updated]: %s — AI returned empty",
+                            checked, updated, word,
+                        )
+                        break
+
+                    if not existing:
+                        # Word had no definition — add it
+                        persist_ai_definitions({word: fresh})
+                        updated += 1
+                        _bg_worker_status["updated"] = updated
+                        logger.info(
+                            "Checking [%d checked, %d updated]: %s — added missing definition",
+                            checked, updated, word,
+                        )
+                    elif _definition_differs(existing, fresh):
+                        persist_ai_definitions({word: fresh})
+                        updated += 1
+                        _bg_worker_status["updated"] = updated
+                        logger.info(
+                            "Checking [%d checked, %d updated]: %s — definition updated",
+                            checked, updated, word,
+                        )
+                    else:
+                        logger.info(
+                            "Checking [%d checked, %d updated]: %s — definition unchanged",
+                            checked, updated, word,
+                        )
+                except Exception as exc:
+                    _bg_worker_status["last_error"] = f"{word}: {exc}"
+                    logger.exception("Checking failed for: %s", word)
+                finally:
+                    AI_MODEL_GATE.background_release()
+                break
+            else:
+                time.sleep(0.1)
+
+    _bg_worker_status["running"] = False
+    logger.info(
+        "Background checking worker finished (checked=%d, updated=%d)",
+        checked, updated,
+    )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _ensure_user_data_dir()
-    if _is_backfill_enabled():
+    backfill, checking = _read_env_flags()
+
+    if not backfill and not checking:
+        logger.info("Background threads disabled (BACKFILL_DEFINITIONS=false, BACKFILL_CHECKING=false)")
+    elif backfill and not checking:
+        # Finish unfinished definitions, then thread dies
         thread = threading.Thread(
             target=_background_definition_worker, daemon=True, name="bg-ai-definitions",
         )
         thread.start()
+        logger.info("Background backfill only (no checking)")
+    elif backfill and checking:
+        # Finish definitions first, then move into checking mode
+        def _backfill_then_check():
+            _background_definition_worker()
+            if not _background_stop.is_set():
+                _background_checking_worker()
+        thread = threading.Thread(
+            target=_backfill_then_check, daemon=True, name="bg-ai-definitions",
+        )
+        thread.start()
+        logger.info("Background backfill + checking enabled")
     else:
-        logger.info("Background definition backfill disabled (BACKFILL_DEFINITIONS=false)")
+        # checking only (BACKFILL_DEFINITIONS=false, BACKFILL_CHECKING=true)
+        thread = threading.Thread(
+            target=_background_checking_worker, daemon=True, name="bg-ai-checking",
+        )
+        thread.start()
+        logger.info("Background checking only (no backfill)")
+
     yield
     _background_stop.set()
 
@@ -1199,6 +1384,14 @@ def get_question_or_404(question_id: int) -> dict[str, Any]:
 @app.get("/api/health")
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/worker-status")
+async def worker_status() -> dict[str, Any]:
+    status = dict(_bg_worker_status)
+    status["gate_locked"] = AI_MODEL_GATE._lock.locked()
+    status["gate_user_waiting"] = AI_MODEL_GATE._user_waiting
+    return status
 
 
 @app.get("/api/users")
@@ -1360,6 +1553,25 @@ async def reveal_answer(question_id: int) -> AnswerRevealResponse:
     return AnswerRevealResponse(question_id=question_id, correct_answer=question["answer"])
 
 
+@app.get("/api/questions/{question_id}/variants", response_model=QuestionVariantsResponse)
+async def get_question_variants(question_id: int) -> QuestionVariantsResponse:
+    question = get_question_or_404(question_id)
+    topic = question["topic"]
+    image_url = question.get("image_url")
+    matches = [
+        QuestionMatchOut(
+            id=q["id"],
+            text=q["text"],
+            answer=q["answer"],
+            image_url=q.get("image_url"),
+            topic=q["topic"],
+        )
+        for q in QUESTION_BANK
+        if q["topic"] == topic and q.get("image_url") == image_url
+    ]
+    return QuestionVariantsResponse(question_id=question_id, questions=matches, count=len(matches))
+
+
 @app.get("/api/vocab", response_model=VocabResponse)
 async def get_vocab(email: str = Depends(get_current_user_email)) -> VocabResponse:
     user_data = load_user_data(email)
@@ -1486,6 +1698,27 @@ async def translate_vocab_word(word: str = Query(min_length=1)) -> VocabTranslat
         )
 
     return VocabTranslationResponse(word=word, translation=translation, dictionary=dictionary)
+
+
+@app.get("/api/vocab/{word}/questions", response_model=VocabQuestionsResponse)
+async def get_vocab_word_questions(word: str) -> VocabQuestionsResponse:
+    stem = re.sub(r"[aeio]+$", "", word)
+    if len(stem) >= 4:
+        pattern = re.compile(rf"\b{re.escape(stem)}\w*", re.IGNORECASE)
+    else:
+        pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
+    matches = [
+        QuestionMatchOut(
+            id=q["id"],
+            text=q["text"],
+            answer=q["answer"],
+            image_url=q.get("image_url"),
+            topic=q["topic"],
+        )
+        for q in QUESTION_BANK
+        if pattern.search(q["text"])
+    ]
+    return VocabQuestionsResponse(word=word, questions=matches, count=len(matches))
 
 
 @app.post("/api/vocab/tracking", response_model=VocabTrackingSyncResponse)

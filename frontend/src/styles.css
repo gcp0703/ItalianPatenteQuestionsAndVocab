@@ -306,6 +306,21 @@ summary {
   padding: 28px;
 }
 
+.quiz-search-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8em;
+  padding: 0 6px 0 0;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  vertical-align: baseline;
+}
+
+.quiz-search-button:hover {
+  opacity: 1;
+}
+
 .response-panel {
   display: grid;
   gap: 20px;
@@ -972,4 +987,134 @@ button:disabled {
 
 .history-table td {
   font-size: 0.95rem;
+}
+
+/* Vocab question lookup */
+
+.vocab-search-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  margin-left: 12px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.vocab-search-button:hover {
+  opacity: 1;
+}
+
+.vocab-questions-modal-card {
+  position: relative;
+  width: min(720px, calc(100vw - 48px));
+  max-height: min(85vh, 900px);
+  overflow: auto;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: rgba(255, 252, 246, 0.98);
+  border: 1px solid rgba(255, 250, 242, 0.8);
+  box-shadow: 0 28px 60px rgba(31, 42, 51, 0.22);
+  text-align: left;
+}
+
+.vocab-questions-modal-card h2 {
+  margin: 0 0 4px;
+  font-size: 1.3rem;
+}
+
+.vocab-questions-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+  padding: 4px 8px;
+}
+
+.vocab-questions-close:hover {
+  color: #222;
+}
+
+.vocab-questions-count {
+  margin: 0 0 16px;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.vocab-questions-empty {
+  text-align: center;
+  color: #999;
+  padding: 32px 0;
+}
+
+.vocab-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vocab-question-item {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.vocab-question-text {
+  margin-bottom: 8px;
+}
+
+.vocab-question-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.vocab-question-image {
+  max-width: 200px;
+  max-height: 120px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.vocab-question-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vocab-question-answer {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vocab-question-answer.vero {
+  background: rgba(34, 124, 93, 0.15);
+  color: #1a7a5a;
+}
+
+.vocab-question-answer.falso {
+  background: rgba(211, 95, 45, 0.15);
+  color: #b55a2a;
+}
+
+.vocab-question-topic {
+  font-size: 0.78rem;
+  color: #999;
+}
+
+.vocab-question-current {
+  border-color: rgba(34, 124, 93, 0.3);
+  background: rgba(34, 124, 93, 0.06);
 }

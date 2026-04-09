@@ -344,11 +344,20 @@ function getTranslationKey(translation) {
   ].join("::");
 }
 
-function VocabFeedbackStats({ stats }) {
+function VocabFeedbackStats({ stats, onSearch }) {
   return (
     <p className="vocab-feedback-stats">
       <span>👍 {stats.up}</span>
       <span>👎 {stats.down}</span>
+      {onSearch && (
+        <button
+          className="vocab-search-button"
+          title="Find quiz questions with this word"
+          onClick={onSearch}
+        >
+          🔍
+        </button>
+      )}
     </p>
   );
 }
@@ -581,6 +590,8 @@ function App() {
   const [vocabPendingTransition, setVocabPendingTransition] = useState(null);
   const [vocabError, setVocabError] = useState("");
   const [quizHistory, setQuizHistory] = useState([]);
+  const [vocabQuestionResults, setVocabQuestionResults] = useState(null);
+  const [quizVariantResults, setQuizVariantResults] = useState(null);
   const vocabBatchSummaryResolverRef = useRef(null);
   const knownVocabWords = deriveKnownWords(vocabBank, vocabFeedbackCounts, vocabHiddenWords);
 
@@ -689,6 +700,28 @@ function App() {
         const data = await response.json();
         setVocabDefinitionsCachedPercent(data.definitions_cached_percent);
       }
+    } catch {
+      // ignore
+    }
+  }
+
+  async function loadVocabQuestions(word) {
+    try {
+      const res = await fetch(`/api/vocab/${encodeURIComponent(word)}/questions`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setVocabQuestionResults(data);
+    } catch {
+      // ignore
+    }
+  }
+
+  async function loadQuizVariants(questionId) {
+    try {
+      const res = await fetch(`/api/questions/${questionId}/variants`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setQuizVariantResults(data);
     } catch {
       // ignore
     }
@@ -1473,6 +1506,59 @@ function App() {
           </div>
         </div>
       )}
+      {vocabQuestionResults && (
+        <div className="vocab-batch-overlay" role="dialog" aria-modal="true" onClick={() => setVocabQuestionResults(null)}>
+          <div className="vocab-questions-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="vocab-questions-close" onClick={() => setVocabQuestionResults(null)}>&times;</button>
+            <h2>Questions with &ldquo;{vocabQuestionResults.word}&rdquo;</h2>
+            <p className="vocab-questions-count">{vocabQuestionResults.count} question{vocabQuestionResults.count !== 1 ? "s" : ""} found</p>
+            {vocabQuestionResults.count === 0 ? (
+              <p className="vocab-questions-empty">No quiz questions contain this word.</p>
+            ) : (
+              <div className="vocab-questions-list">
+                {vocabQuestionResults.questions.map((q) => (
+                  <div key={q.id} className="vocab-question-item">
+                    <div className="vocab-question-text">
+                      {q.image_url && <img className="vocab-question-image" src={q.image_url} alt="" />}
+                      <p>{q.text}</p>
+                    </div>
+                    <div className="vocab-question-meta">
+                      <span className={`vocab-question-answer ${q.answer ? "vero" : "falso"}`}>
+                        {q.answer ? "Vero" : "Falso"}
+                      </span>
+                      <span className="vocab-question-topic">{q.topic}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {quizVariantResults && (
+        <div className="vocab-batch-overlay" role="dialog" aria-modal="true" onClick={() => setQuizVariantResults(null)}>
+          <div className="vocab-questions-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="vocab-questions-close" onClick={() => setQuizVariantResults(null)}>&times;</button>
+            <h2>Question Variants</h2>
+            <p className="vocab-questions-count">{quizVariantResults.count} variant{quizVariantResults.count !== 1 ? "s" : ""}</p>
+            <div className="vocab-questions-list">
+              {quizVariantResults.questions.map((q) => (
+                <div key={q.id} className={`vocab-question-item${q.id === quizVariantResults.question_id ? " vocab-question-current" : ""}`}>
+                  <div className="vocab-question-text">
+                    {q.image_url && <img className="vocab-question-image" src={q.image_url} alt="" />}
+                    <p>{q.text}</p>
+                  </div>
+                  <div className="vocab-question-meta">
+                    <span className={`vocab-question-answer ${q.answer ? "vero" : "falso"}`}>
+                      {q.answer ? "Vero" : "Falso"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       {vocabBatchOverlay && (
         <div className="vocab-batch-overlay" role="status" aria-live="polite">
           <div className="vocab-batch-overlay-card">
@@ -1600,7 +1686,16 @@ function App() {
         <section className="content-grid">
           <article className="question-panel">
             <p className="topic-tag">{currentQuestion.topic}</p>
-            <h2 className="question-text">{currentQuestion.text}</h2>
+            <h2 className="question-text">
+              <button
+                className="quiz-search-button"
+                title="Show all question variants"
+                onClick={() => loadQuizVariants(currentQuestion.id)}
+              >
+                🔍
+              </button>
+              {currentQuestion.text}
+            </h2>
 
             <details
               key={currentQuestion.id}
@@ -1782,7 +1877,10 @@ function App() {
                     <div className="vocab-copy">
                       <p className="vocab-language">Italiano</p>
                       <h3 className="vocab-word">{vocabCurrent.word}</h3>
-                      <VocabFeedbackStats stats={getWordFeedbackStats(vocabCurrent.word)} />
+                      <VocabFeedbackStats
+                        stats={getWordFeedbackStats(vocabCurrent.word)}
+                        onSearch={() => loadVocabQuestions(vocabCurrent.word)}
+                      />
                     </div>
                     <div className="vocab-copy">
                       <p className="vocab-language">English</p>
