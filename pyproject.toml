@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 ai = ["mlx-lm>=0.21"]
+claude = ["anthropic>=0.40"]
 
 [project.scripts]
 quizpatenteb = "backend.app.__main__:main"

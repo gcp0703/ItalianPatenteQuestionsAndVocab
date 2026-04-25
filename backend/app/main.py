@@ -885,13 +885,35 @@ def _extract_final_answer(response: str) -> str:
     return cleaned.strip()
 
 
+def _get_claude_definition(word: str) -> str | None:
+    """Get a definition using the Claude API as fallback when MLX is unavailable."""
+    import os
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return None
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=512,
+            system=AI_DEFINITION_PROMPT,
+            messages=[{"role": "user", "content": word}],
+        )
+        text = response.content[0].text.strip()
+        return text if text else None
+    except Exception as exc:
+        logger.warning("Claude API definition failed for '%s': %s", word, exc)
+        return None
+
+
 def get_ai_definition(word: str) -> str | None:
-    """Get a contextual English definition using the local MLX model."""
+    """Get a contextual English definition using the local MLX model or Claude API."""
     try:
         model, tokenizer = _load_ai_model()
     except Exception as exc:
-        logger.warning("Failed to load AI model: %s", exc)
-        return None
+        logger.warning("Failed to load AI model, trying Claude API: %s", exc)
+        return _get_claude_definition(word)
 
     messages = [
         {"role": "system", "content": AI_DEFINITION_PROMPT},
@@ -1203,8 +1225,8 @@ def _get_fresh_ai_definition(word: str) -> str | None:
     try:
         model, tokenizer = _load_ai_model()
     except Exception as exc:
-        logger.warning("Failed to load AI model: %s", exc)
-        return None
+        logger.warning("Failed to load AI model, trying Claude API: %s", exc)
+        return _get_claude_definition(word)
 
     messages = [
         {"role": "system", "content": AI_DEFINITION_PROMPT},

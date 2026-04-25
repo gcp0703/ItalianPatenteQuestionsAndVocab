@@ -1,0 +1,20 @@
+[Unit]
+Description=Quiz Patente B
+After=network.target
+
+[Service]
+Type=simple
+User=azureuser
+WorkingDirectory=/home/azureuser/quizpatenteb
+Environment="PATH=/home/azureuser/quizpatenteb/.venv/bin"
+EnvironmentFile=-/home/azureuser/quizpatenteb/.env
+ExecStart=/home/azureuser/quizpatenteb/.venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8500 --workers 1 --timeout-keep-alive 5
+Restart=always
+RestartSec=3
+
+# Memory limits - lightweight app, no database
+MemoryMax=1G
+MemoryHigh=768M
+
+[Install]
+WantedBy=multi-user.target
