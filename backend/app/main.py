@@ -1395,13 +1395,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Quiz Patente B", lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5183", "http://127.0.0.1:5183"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+_cors_origins_raw = os.environ.get("CORS_ORIGINS", "").strip()
+if _cors_origins_raw:
+    _cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
+    )
+    logger.info("CORS enabled for origins: %s", _cors_origins)
+else:
+    logger.info("CORS disabled (CORS_ORIGINS unset). Same-origin only.")
 
 
 def get_question_or_404(question_id: int) -> dict[str, Any]:
