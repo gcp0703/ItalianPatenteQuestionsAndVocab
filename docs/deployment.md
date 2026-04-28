@@ -101,6 +101,35 @@ curl -s http://127.0.0.1:8500/api/quiz/topics | python3 -m json.tool | head
 curl -s https://patenteb.eventhorizon.llc/api/quiz/topics | head
 ```
 
+## Migrating existing users to bearer-token auth (one-time, after auth deploy)
+
+When the auth update is deployed for the first time, every existing entry in
+`user_data/_users.json` lacks a `token_hash` and cannot log in. SSH to the VM
+and run the migration CLI:
+
+```bash
+sudo -u azureuser bash -c '
+  set -a
+  source /etc/quizpatenteb.env
+  set +a
+  cd /home/azureuser/quizpatenteb
+  QPB_USER_DATA_DIR=/home/azureuser/quizpatenteb/user_data \
+    QPB_LOAD_DOTENV=0 \
+    .venv/bin/python -m backend.scripts.mint_user_tokens > /tmp/qpb-tokens.tsv
+'
+```
+
+The output `/tmp/qpb-tokens.tsv` contains `email<TAB>token` rows. Distribute
+each token to its user out-of-band (email, SMS, paper). Then **shred the file**:
+
+```bash
+shred -u /tmp/qpb-tokens.tsv
+```
+
+Users log in via the SPA's "Ho già un token" form by entering their email and
+token. The CLI is idempotent: re-running it only mints tokens for users that
+still lack one.
+
 ## Deploying Updates
 
 Run from your local machine:
