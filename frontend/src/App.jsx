@@ -2223,9 +2223,9 @@ function App() {
                     >
                       ?
                       <span className="vocab-help-tooltip" role="tooltip">
-                        Thumbs-up means you know it, thumbs-down means you don't,
-                        and the fretting face means it's tough so add it to the
-                        difficult word list, which you can review separately.
+                        <span className="vocab-help-tooltip-line">Thumbs-up means you know it</span>
+                        <span className="vocab-help-tooltip-line">Thumbs-down means you don't</span>
+                        <span className="vocab-help-tooltip-line">The fretting face means it's tough, so add it to the difficult word list</span>
                       </span>
                     </span>
                   </div>
