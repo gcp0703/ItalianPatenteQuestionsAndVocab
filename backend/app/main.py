@@ -245,6 +245,13 @@ class UserOut(BaseModel):
     created: str
 
 
+class UserCreatedOut(BaseModel):
+    """Returned only at registration. Contains the plaintext token shown once."""
+    email: str
+    created: str
+    token: str
+
+
 class UserCreateIn(BaseModel):
     email: str
 
@@ -403,10 +410,26 @@ def save_user_data(email: str, data: dict[str, Any]) -> None:
         _write_user_data_unlocked(email, data)
 
 
-def get_current_user_email(x_user_email: str | None = Header(None)) -> str:
-    if not x_user_email:
-        raise HTTPException(status_code=400, detail="X-User-Email header is required.")
-    return x_user_email.strip().lower()
+def get_current_user_email(authorization: str | None = Header(None)) -> str:
+    """Authenticate the caller via Authorization: Bearer <token>.
+
+    Replaces the legacy X-User-Email header which trusted clients to self-assert.
+    """
+    from backend.app.auth import require_user
+    return require_user(authorization)
+
+
+def _admin_email() -> str:
+    return os.environ.get("ADMIN_EMAIL", "").strip().lower()
+
+
+def require_admin(caller_email: str = Depends(get_current_user_email)) -> str:
+    admin = _admin_email()
+    if not admin:
+        raise HTTPException(status_code=503, detail="Admin endpoints disabled (ADMIN_EMAIL unset).")
+    if caller_email != admin:
+        raise HTTPException(status_code=403, detail="Admin access required.")
+    return caller_email
 
 
 def _read_vocab_tracking(metadata: dict[str, Any]) -> dict[str, int | bool]:
@@ -1432,13 +1455,15 @@ async def worker_status() -> dict[str, Any]:
 
 
 @app.get("/api/users")
-async def list_users() -> list[UserOut]:
+async def list_users(_admin: str = Depends(require_admin)) -> list[UserOut]:
     users = load_user_registry()
     return [UserOut(email=u["email"], created=u["created"]) for u in users]
 
 
-@app.post("/api/users", status_code=201)
-async def create_user(body: UserCreateIn) -> UserOut:
+@app.post("/api/users", status_code=201, response_model=UserCreatedOut)
+async def create_user(body: UserCreateIn) -> UserCreatedOut:
+    from backend.app.auth import generate_token, hash_token
+
     email = body.email.strip().lower()
     if not email or "@" not in email:
         raise HTTPException(status_code=400, detail="Invalid email address.")
@@ -1448,17 +1473,25 @@ async def create_user(body: UserCreateIn) -> UserOut:
         if any(u["email"] == email for u in users):
             raise HTTPException(status_code=409, detail="User already exists.")
 
+        token = generate_token()
         created = datetime.now(timezone.utc).isoformat()
-        users.append({"email": email, "created": created})
+        users.append({"email": email, "created": created, "token_hash": hash_token(token)})
         _write_user_registry_unlocked(users)
         _write_user_data_unlocked(email, _empty_user_data(email))
 
-    return UserOut(email=email, created=created)
+    return UserCreatedOut(email=email, created=created, token=token)
 
 
 @app.delete("/api/users/{email}")
-async def delete_user(email: str) -> dict[str, str]:
+async def delete_user(
+    email: str,
+    caller: str = Depends(get_current_user_email),
+) -> dict[str, str]:
     email = email.strip().lower()
+    admin = _admin_email()
+    is_admin = bool(admin) and caller == admin
+    if caller != email and not is_admin:
+        raise HTTPException(status_code=403, detail="You can only delete your own account.")
 
     with USER_DATA_LOCK:
         users = _read_user_registry_unlocked()
@@ -1473,6 +1506,11 @@ async def delete_user(email: str) -> dict[str, str]:
             path.unlink()
 
     return {"status": "deleted", "email": email}
+
+
+@app.get("/api/auth/whoami")
+async def whoami(email: str = Depends(get_current_user_email)) -> dict[str, str]:
+    return {"email": email}
 
 
 @app.get("/api/legacy-tracking")
