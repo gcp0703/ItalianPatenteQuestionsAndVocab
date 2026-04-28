@@ -40,15 +40,29 @@ cd ..
 
 ### 4. Configure environment
 
+Copy the template to a secured location outside the repo and edit it:
+
 ```bash
-cp backend/.env.example .env
+sudo cp /home/azureuser/quizpatenteb/.env.example /etc/quizpatenteb.env
+sudo chown root:azureuser /etc/quizpatenteb.env
+sudo chmod 640 /etc/quizpatenteb.env
+sudo nano /etc/quizpatenteb.env
 ```
 
-Edit `.env` and set:
-```
-ANTHROPIC_API_KEY=<your-anthropic-api-key>
-BACKFILL_DEFINITIONS=false
-```
+Required values:
+- `ANTHROPIC_API_KEY=sk-ant-...`
+- `SESSION_SECRET=<32 random bytes hex>` — generate with
+  `python3 -c 'import secrets; print(secrets.token_hex(32))'`
+- `AUTH_TOKEN_PEPPER=<32 random bytes hex>` — same generator
+- `ANTHROPIC_MONTHLY_USD_CAP=10` (or your preferred cap)
+
+Leave empty in production:
+- `CORS_ORIGINS=` (SPA is served same-origin via nginx)
+- `ADMIN_EMAIL=` (or set to the operator's email to enable admin endpoints)
+
+The systemd unit's `EnvironmentFile=/etc/quizpatenteb.env` reads this file and
+sets `QPB_LOAD_DOTENV=0`, so the application never falls back to a repo-root
+`.env`. **Do not place secrets inside the repo working tree.**
 
 ### 5. Install nginx config
 
@@ -86,6 +100,80 @@ curl -s http://127.0.0.1:8500/api/quiz/topics | python3 -m json.tool | head
 # Check HTTPS
 curl -s https://patenteb.eventhorizon.llc/api/quiz/topics | head
 ```
+
+## nginx rate-limit zones
+
+The zones used by the `limit_req` directives in `patenteb.conf` are defined in
+a separate snippet that lives in nginx's `http {}` context. Install both:
+
+```bash
+sudo cp /home/azureuser/quizpatenteb/deployment/nginx/limit_req_zones.conf \
+        /etc/nginx/conf.d/qpb-zones.conf
+sudo cp /home/azureuser/quizpatenteb/deployment/nginx/patenteb.conf \
+        /etc/nginx/sites-available/patenteb
+sudo nginx -t  # MUST succeed before reload
+sudo systemctl reload nginx
+```
+
+Verify limiting works from an off-server host:
+
+```bash
+for i in $(seq 1 40); do
+  curl -s -o /dev/null -w "%{http_code}\n" \
+    https://patenteb.eventhorizon.llc/api/health
+done | sort | uniq -c
+```
+
+Expected: a mix of `200` and `429`. The `429` rows confirm nginx-layer
+limiting is active (in addition to the slowapi-layer limits inside the app).
+
+## Anthropic monthly hard cap (REQUIRED)
+
+The application enforces a *soft* cap via `ANTHROPIC_MONTHLY_USD_CAP` in
+`/etc/quizpatenteb.env` — it stops calling Claude when the in-memory monthly
+total exceeds the cap. **A soft cap alone is not enough**: a worker restart
+resets the counter, and a malformed env value silently disables it.
+
+Set a *hard* cap in the Anthropic console too:
+1. https://console.anthropic.com/settings/limits
+2. Under "Spend limits", set a monthly USD cap on the QuizPatenteB API key.
+3. Set the soft cap (`ANTHROPIC_MONTHLY_USD_CAP`) to ~50% of the hard cap so
+   the app stops voluntarily before Anthropic forces a 429.
+
+Use a dedicated API key for QuizPatenteB so rotation does not affect the
+RePortfolio or OpenSesame backends sharing the same VM.
+
+Per-call cost lines (`ANTHROPIC_CALL ... month_total_usd=$X`) appear in
+`journalctl -u quizpatenteb` — grep for `ANTHROPIC_CALL` to audit spend.
+
+## Migrating existing users to bearer-token auth (one-time, after auth deploy)
+
+When the auth update is deployed for the first time, every existing entry in
+`user_data/_users.json` lacks a `token_hash` and cannot log in. SSH to the VM
+and run the migration CLI:
+
+```bash
+sudo -u azureuser bash -c '
+  set -a
+  source /etc/quizpatenteb.env
+  set +a
+  cd /home/azureuser/quizpatenteb
+  QPB_USER_DATA_DIR=/home/azureuser/quizpatenteb/user_data \
+    QPB_LOAD_DOTENV=0 \
+    .venv/bin/python -m backend.scripts.mint_user_tokens > /tmp/qpb-tokens.tsv
+'
+```
+
+The output `/tmp/qpb-tokens.tsv` contains `email<TAB>token` rows. Distribute
+each token to its user out-of-band (email, SMS, paper). Then **shred the file**:
+
+```bash
+shred -u /tmp/qpb-tokens.tsv
+```
+
+Users log in via the SPA's "Ho già un token" form by entering their email and
+token. The CLI is idempotent: re-running it only mints tokens for users that
+still lack one.
 
 ## Deploying Updates
 

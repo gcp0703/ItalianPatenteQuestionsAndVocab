@@ -7,7 +7,8 @@ Type=simple
 User=azureuser
 WorkingDirectory=/home/azureuser/quizpatenteb
 Environment="PATH=/home/azureuser/quizpatenteb/.venv/bin"
-EnvironmentFile=-/home/azureuser/quizpatenteb/.env
+Environment="QPB_LOAD_DOTENV=0"
+EnvironmentFile=/etc/quizpatenteb.env
 ExecStart=/home/azureuser/quizpatenteb/.venv/bin/uvicorn backend.app.main:app --host 127.0.0.1 --port 8500 --workers 1 --timeout-keep-alive 5
 Restart=always
 RestartSec=3

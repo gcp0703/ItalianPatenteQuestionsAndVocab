@@ -7,3 +7,10 @@ frontend/node_modules/
 *.png
 *.egg-info/
 user_data/
+
+# Environment files: never commit. Real values live in /etc/quizpatenteb.env on prod.
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*

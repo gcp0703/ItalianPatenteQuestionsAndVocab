@@ -14,17 +14,16 @@ dependencies = [
     "uvicorn[standard]>=0.35",
     "deep-translator>=1.11",
     "python-dotenv>=1.0",
+    "slowapi>=0.1.9",
 ]
 
 [project.optional-dependencies]
 ai = ["mlx-lm>=0.21"]
 claude = ["anthropic>=0.40"]
+dev = ["pytest>=8.0", "httpx>=0.27"]
 
 [project.scripts]
 quizpatenteb = "backend.app.__main__:main"
 
 [tool.setuptools]
 packages = ["backend", "backend.app"]
-
-[tool.setuptools.package-data]
-"backend" = [".env.example"]

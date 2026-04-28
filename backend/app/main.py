@@ -4,6 +4,7 @@ import asyncio
 import html
 import json
 import logging
+import os
 import random
 import re
 import time
@@ -16,15 +17,24 @@ from threading import Lock
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
-from urllib.request import Request, urlopen
+from urllib.request import Request as UrllibRequest, urlopen
 
 from datetime import datetime, timezone
 
 from deep_translator import GoogleTranslator
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+# Dev-only: load repo-root .env so local runs pick up developer overrides.
+# Production sets QPB_LOAD_DOTENV=0 in the systemd unit so this is a no-op.
+if os.environ.get("QPB_LOAD_DOTENV", "1") == "1":
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
+    except ImportError:
+        pass
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DATA_FILE = ROOT_DIR / "quizPatenteB2023.json"
@@ -32,7 +42,7 @@ VOCAB_FILE = ROOT_DIR / "vocabolario_patente.json"
 NORMALIZED_VOCAB_FILE = ROOT_DIR / "vocabolario_patente.normalized.json"
 IMAGE_DIR = ROOT_DIR / "img_sign"
 FRONTEND_DIST = ROOT_DIR / "frontend" / "dist"
-USER_DATA_DIR = ROOT_DIR / "user_data"
+USER_DATA_DIR = Path(os.environ.get("QPB_USER_DATA_DIR") or (ROOT_DIR / "user_data"))
 USER_REGISTRY_FILE = USER_DATA_DIR / "_users.json"
 VOCAB_WRITE_LOCK = Lock()
 USER_DATA_LOCK = Lock()
@@ -223,7 +233,7 @@ class VocabTrackingSyncResponse(BaseModel):
 
 
 class VocabPrefetchRequest(BaseModel):
-    words: list[str]
+    words: list[str] = Field(default_factory=list, max_length=50)
 
 
 class VocabPrefetchResponse(BaseModel):
@@ -233,6 +243,13 @@ class VocabPrefetchResponse(BaseModel):
 class UserOut(BaseModel):
     email: str
     created: str
+
+
+class UserCreatedOut(BaseModel):
+    """Returned only at registration. Contains the plaintext token shown once."""
+    email: str
+    created: str
+    token: str
 
 
 class UserCreateIn(BaseModel):
@@ -393,10 +410,26 @@ def save_user_data(email: str, data: dict[str, Any]) -> None:
         _write_user_data_unlocked(email, data)
 
 
-def get_current_user_email(x_user_email: str | None = Header(None)) -> str:
-    if not x_user_email:
-        raise HTTPException(status_code=400, detail="X-User-Email header is required.")
-    return x_user_email.strip().lower()
+def get_current_user_email(authorization: str | None = Header(None)) -> str:
+    """Authenticate the caller via Authorization: Bearer <token>.
+
+    Replaces the legacy X-User-Email header which trusted clients to self-assert.
+    """
+    from backend.app.auth import require_user
+    return require_user(authorization)
+
+
+def _admin_email() -> str:
+    return os.environ.get("ADMIN_EMAIL", "").strip().lower()
+
+
+def require_admin(caller_email: str = Depends(get_current_user_email)) -> str:
+    admin = _admin_email()
+    if not admin:
+        raise HTTPException(status_code=503, detail="Admin endpoints disabled (ADMIN_EMAIL unset).")
+    if caller_email != admin:
+        raise HTTPException(status_code=403, detail="Admin access required.")
+    return caller_email
 
 
 def _read_vocab_tracking(metadata: dict[str, Any]) -> dict[str, int | bool]:
@@ -625,7 +658,7 @@ def translate_dictionary_text(text: str) -> str:
 @lru_cache(maxsize=2048)
 def fetch_dictionary_page(word: str) -> str | None:
     url = DICTIONARY_URL.format(quote(word))
-    request = Request(url, headers={"User-Agent": DICTIONARY_USER_AGENT})
+    request = UrllibRequest(url, headers={"User-Agent": DICTIONARY_USER_AGENT})
 
     try:
         with urlopen(request, timeout=DICTIONARY_TIMEOUT_SECONDS) as response:
@@ -850,9 +883,8 @@ def _load_ai_model() -> tuple[Any, Any]:
     if "model" in _ai_model_cache:
         return _ai_model_cache["model"], _ai_model_cache["tokenizer"]
 
-    from dotenv import dotenv_values
-    env = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
-    model_name = env.get("AI_MODEL", "mlx-community/Qwen3.5-27B-4bit")
+    import os
+    model_name = os.environ.get("AI_MODEL", "mlx-community/Qwen3.5-27B-4bit")
 
     from mlx_lm import load
     model, tokenizer = load(model_name)
@@ -887,7 +919,19 @@ def _extract_final_answer(response: str) -> str:
 
 def _get_claude_definition(word: str) -> str | None:
     """Get a definition using the Claude API as fallback when MLX is unavailable."""
-    import os
+    from backend.app import spend
+
+    enabled = os.environ.get("CLAUDE_FALLBACK_ENABLED", "true").lower() not in ("false", "0", "no")
+    if not enabled:
+        return None
+
+    if spend.is_over_cap():
+        logger.warning(
+            "Skipping Claude call for '%s': monthly cap reached (total=$%.2f).",
+            word, spend.month_total_usd(),
+        )
+        return None
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return None
@@ -899,6 +943,10 @@ def _get_claude_definition(word: str) -> str | None:
             max_tokens=512,
             system=AI_DEFINITION_PROMPT,
             messages=[{"role": "user", "content": word}],
+        )
+        spend.record_claude_call(
+            input_tokens=response.usage.input_tokens,
+            output_tokens=response.usage.output_tokens,
         )
         text = response.content[0].text.strip()
         return text if text else None
@@ -1253,10 +1301,9 @@ def _definition_differs(old: str, new: str) -> bool:
 
 
 def _read_env_flags() -> tuple[bool, bool]:
-    from dotenv import dotenv_values
-    env = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
-    backfill = env.get("BACKFILL_DEFINITIONS", "true").lower() not in ("false", "0", "no")
-    checking = env.get("BACKFILL_CHECKING", "false").lower() not in ("false", "0", "no")
+    import os
+    backfill = os.environ.get("BACKFILL_DEFINITIONS", "true").lower() not in ("false", "0", "no")
+    checking = os.environ.get("BACKFILL_CHECKING", "false").lower() not in ("false", "0", "no")
     return backfill, checking
 
 
@@ -1387,13 +1434,28 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Quiz Patente B", lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5183", "http://127.0.0.1:5183"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+from backend.app.rate_limit import limiter, RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi import _rate_limit_exceeded_handler
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
+_cors_origins_raw = os.environ.get("CORS_ORIGINS", "").strip()
+if _cors_origins_raw:
+    _cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
+    )
+    logger.info("CORS enabled for origins: %s", _cors_origins)
+else:
+    logger.info("CORS disabled (CORS_ORIGINS unset). Same-origin only.")
 
 
 def get_question_or_404(question_id: int) -> dict[str, Any]:
@@ -1417,13 +1479,15 @@ async def worker_status() -> dict[str, Any]:
 
 
 @app.get("/api/users")
-async def list_users() -> list[UserOut]:
+async def list_users(_admin: str = Depends(require_admin)) -> list[UserOut]:
     users = load_user_registry()
     return [UserOut(email=u["email"], created=u["created"]) for u in users]
 
 
-@app.post("/api/users", status_code=201)
-async def create_user(body: UserCreateIn) -> UserOut:
+@app.post("/api/users", status_code=201, response_model=UserCreatedOut)
+async def create_user(body: UserCreateIn) -> UserCreatedOut:
+    from backend.app.auth import generate_token, hash_token
+
     email = body.email.strip().lower()
     if not email or "@" not in email:
         raise HTTPException(status_code=400, detail="Invalid email address.")
@@ -1433,17 +1497,25 @@ async def create_user(body: UserCreateIn) -> UserOut:
         if any(u["email"] == email for u in users):
             raise HTTPException(status_code=409, detail="User already exists.")
 
+        token = generate_token()
         created = datetime.now(timezone.utc).isoformat()
-        users.append({"email": email, "created": created})
+        users.append({"email": email, "created": created, "token_hash": hash_token(token)})
         _write_user_registry_unlocked(users)
         _write_user_data_unlocked(email, _empty_user_data(email))
 
-    return UserOut(email=email, created=created)
+    return UserCreatedOut(email=email, created=created, token=token)
 
 
 @app.delete("/api/users/{email}")
-async def delete_user(email: str) -> dict[str, str]:
+async def delete_user(
+    email: str,
+    caller: str = Depends(get_current_user_email),
+) -> dict[str, str]:
     email = email.strip().lower()
+    admin = _admin_email()
+    is_admin = bool(admin) and caller == admin
+    if caller != email and not is_admin:
+        raise HTTPException(status_code=403, detail="You can only delete your own account.")
 
     with USER_DATA_LOCK:
         users = _read_user_registry_unlocked()
@@ -1458,6 +1530,11 @@ async def delete_user(email: str) -> dict[str, str]:
             path.unlink()
 
     return {"status": "deleted", "email": email}
+
+
+@app.get("/api/auth/whoami")
+async def whoami(email: str = Depends(get_current_user_email)) -> dict[str, str]:
+    return {"email": email}
 
 
 @app.get("/api/legacy-tracking")
@@ -1538,7 +1615,11 @@ def _strip_legacy_tracking() -> None:
 
 
 @app.get("/api/quiz", response_model=QuizResponse)
-async def get_quiz(count: int = Query(default=30, ge=1, le=100)) -> QuizResponse:
+@limiter.limit("30/minute")
+async def get_quiz(
+    request: Request,
+    count: int = Query(default=30, ge=1, le=100),
+) -> QuizResponse:
     if count > len(QUESTION_BANK):
         raise HTTPException(status_code=400, detail="Requested quiz is larger than the question bank.")
 
@@ -1556,7 +1637,8 @@ async def get_quiz(count: int = Query(default=30, ge=1, le=100)) -> QuizResponse
 
 
 @app.get("/api/questions/{question_id}/translation", response_model=TranslationResponse)
-async def get_translation(question_id: int) -> TranslationResponse:
+@limiter.limit("10/minute")
+async def get_translation(request: Request, question_id: int) -> TranslationResponse:
     question = get_question_or_404(question_id)
     try:
         translation = await asyncio.to_thread(translate_text, question["text"])
@@ -1643,7 +1725,11 @@ async def get_vocab_cache_stats() -> dict[str, int]:
 
 
 @app.get("/api/vocab/translate", response_model=VocabTranslationResponse)
-async def translate_vocab_word(word: str = Query(min_length=1)) -> VocabTranslationResponse:
+@limiter.limit("10/minute")
+async def translate_vocab_word(
+    request: Request,
+    word: str = Query(min_length=1),
+) -> VocabTranslationResponse:
     entry = VOCAB_BY_WORD.get(word)
     if not entry:
         raise HTTPException(status_code=404, detail="Word not found.")
@@ -1756,10 +1842,15 @@ async def sync_vocab_tracking(
 
 
 @app.post("/api/vocab/prefetch", response_model=VocabPrefetchResponse)
+@limiter.limit("5/minute")
 async def prefetch_vocab_batch(
-    request: VocabPrefetchRequest, background_tasks: BackgroundTasks
+    request: Request,
+    body: VocabPrefetchRequest,
+    background_tasks: BackgroundTasks,
 ) -> VocabPrefetchResponse:
-    words = [word for word in unique_preserve_order(request.words) if word in VOCAB_BY_WORD]
+    if len(body.words) > 50:
+        raise HTTPException(status_code=400, detail="Maximum 50 words per request.")
+    words = [word for word in unique_preserve_order(body.words) if word in VOCAB_BY_WORD]
     if words:
         background_tasks.add_task(prefetch_vocab_meanings, words)
 
