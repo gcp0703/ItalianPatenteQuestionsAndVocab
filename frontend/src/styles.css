@@ -909,6 +909,16 @@ button:disabled {
   align-items: center;
 }
 
+.login-mode-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.login-mode-tabs > button {
+  flex: 1;
+}
+
 .login-select {
   flex: 1;
   padding: 10px 14px;

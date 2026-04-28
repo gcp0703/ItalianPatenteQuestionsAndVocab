@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const CURRENT_USER_STORAGE_KEY = "quiz-patente-b-current-user";
+const AUTH_TOKEN_STORAGE_KEY = "quiz-patente-b-auth-token";
 const VOCAB_HIDDEN_WORDS_STORAGE_KEY = "quiz-patente-b-hidden-vocab-words";
 const VOCAB_FEEDBACK_COUNTS_STORAGE_KEY = "quiz-patente-b-vocab-feedback-counts";
 const VOCAB_DIFFICULT_WORDS_STORAGE_KEY = "quiz-patente-b-vocab-difficult-words";
@@ -25,12 +26,38 @@ function saveCurrentUser(email) {
   window.localStorage.setItem(CURRENT_USER_STORAGE_KEY, email);
 }
 
-function fetchWithUser(url, options = {}, email) {
-  const headers = { ...(options.headers || {}) };
-  if (email) {
-    headers["X-User-Email"] = email;
+function getSavedToken() {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(AUTH_TOKEN_STORAGE_KEY) || null;
+}
+
+function saveAuthToken(token) {
+  if (typeof window === "undefined") return;
+  if (token) {
+    window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+  } else {
+    window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
   }
-  return fetch(url, { ...options, headers });
+}
+
+function clearAuth() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+  window.localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+}
+
+async function fetchWithUser(url, options = {}, _email) {
+  const headers = { ...(options.headers || {}) };
+  const token = getSavedToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  const response = await fetch(url, { ...options, headers });
+  if (response.status === 401 && typeof window !== "undefined") {
+    clearAuth();
+    window.dispatchEvent(new CustomEvent("qpb-auth-required"));
+  }
+  return response;
 }
 
 const emptyState = {
@@ -414,77 +441,99 @@ function VocabTranslation({ translation, hidden = false, tone = null }) {
 }
 
 function LoginScreen({ onLogin }) {
-  const [users, setUsers] = useState([]);
-  const [selectedEmail, setSelectedEmail] = useState("");
-  const [newEmail, setNewEmail] = useState("");
+  const [mode, setMode] = useState("register"); // "register" | "existing"
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
+  const [issuedToken, setIssuedToken] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/users")
-      .then((res) => res.json())
-      .then((data) => {
-        setUsers(data);
-        if (data.length > 0) {
-          setSelectedEmail(data[0].email);
-        }
-      })
-      .catch(() => setError("Impossibile caricare gli utenti."))
-      .finally(() => setLoading(false));
-  }, []);
+  function loginAs(emailLower, tokenValue) {
+    saveAuthToken(tokenValue);
+    saveCurrentUser(emailLower);
+    onLogin(emailLower);
+  }
 
-  async function handleLogin() {
-    const email = newEmail.trim().toLowerCase() || selectedEmail;
-    if (!email || !email.includes("@")) {
+  async function handleRegister() {
+    const e = email.trim().toLowerCase();
+    if (!e.includes("@")) {
       setError("Inserisci un indirizzo email valido.");
       return;
     }
-
     setError("");
-
-    // If it's a new email, register it
-    if (newEmail.trim() && !users.some((u) => u.email === email)) {
-      try {
-        const res = await fetch("/api/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.detail || "Impossibile creare l'utente.");
-        }
-      } catch (err) {
-        setError(err.message);
-        return;
-      }
-    }
-
-    saveCurrentUser(email);
-    onLogin(email);
-  }
-
-  async function handleDeleteUser(email) {
-    if (!window.confirm(`Eliminare l'utente ${email} e tutti i suoi dati?`)) return;
-
+    setBusy(true);
     try {
-      const res = await fetch(`/api/users/${encodeURIComponent(email)}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Impossibile eliminare l'utente.");
-      setUsers((prev) => prev.filter((u) => u.email !== email));
-      if (selectedEmail === email) {
-        setSelectedEmail("");
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: e }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Impossibile creare l'utente.");
       }
+      const body = await res.json();
+      setIssuedToken(body.token);
+      saveAuthToken(body.token);
+      saveCurrentUser(e);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setBusy(false);
     }
   }
 
-  if (loading) {
+  async function handleExisting() {
+    const e = email.trim().toLowerCase();
+    const t = token.trim();
+    if (!e.includes("@") || !t) {
+      setError("Inserisci email e token.");
+      return;
+    }
+    setError("");
+    setBusy(true);
+    try {
+      saveAuthToken(t);
+      const res = await fetch("/api/auth/whoami", {
+        headers: { Authorization: `Bearer ${t}` },
+      });
+      if (!res.ok) {
+        saveAuthToken(null);
+        throw new Error("Token non valido per questa email.");
+      }
+      const body = await res.json();
+      if (body.email !== e) {
+        saveAuthToken(null);
+        throw new Error("Il token non corrisponde all'email indicata.");
+      }
+      loginAs(e, t);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (issuedToken) {
     return (
       <main className="app-shell">
         <section className="hero-card">
           <p className="eyebrow">Quiz Patente B</p>
-          <h1>Caricamento...</h1>
+          <h1>Salva il tuo token</h1>
+        </section>
+        <section className="login-panel">
+          <p>
+            Account creato per <strong>{email.trim().toLowerCase()}</strong>. Il
+            token qui sotto è la tua chiave d'accesso: copialo e conservalo in
+            un posto sicuro. Non potrai recuperarlo in seguito.
+          </p>
+          <pre className="login-input" style={{ wordBreak: "break-all" }}>{issuedToken}</pre>
+          <button
+            className="primary-button login-button"
+            onClick={() => onLogin(email.trim().toLowerCase())}
+          >
+            Ho salvato il token, continua
+          </button>
         </section>
       </main>
     );
@@ -503,50 +552,63 @@ function LoginScreen({ onLogin }) {
       </section>
 
       <section className="login-panel">
-        {users.length > 0 && (
-          <div className="login-existing">
-            <label className="login-label" htmlFor="user-select">Seleziona un utente esistente</label>
-            <div className="login-select-row">
-              <select
-                id="user-select"
-                className="login-select"
-                value={selectedEmail}
-                onChange={(e) => { setSelectedEmail(e.target.value); setNewEmail(""); }}
-              >
-                {users.map((u) => (
-                  <option key={u.email} value={u.email}>{u.email}</option>
-                ))}
-              </select>
-              {selectedEmail && (
-                <button
-                  className="secondary-button login-delete-button"
-                  onClick={() => handleDeleteUser(selectedEmail)}
-                  title="Elimina utente"
-                >
-                  Elimina
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+        <div className="login-mode-tabs">
+          <button
+            type="button"
+            className={mode === "register" ? "primary-button" : "secondary-button"}
+            onClick={() => { setMode("register"); setError(""); }}
+          >
+            Nuovo utente
+          </button>
+          <button
+            type="button"
+            className={mode === "existing" ? "primary-button" : "secondary-button"}
+            onClick={() => { setMode("existing"); setError(""); }}
+          >
+            Ho già un token
+          </button>
+        </div>
 
         <div className="login-new">
-          <label className="login-label" htmlFor="new-email">Oppure aggiungi un nuovo utente</label>
+          <label className="login-label" htmlFor="login-email">Email</label>
           <input
-            id="new-email"
+            id="login-email"
             className="login-input"
             type="email"
             placeholder="email@esempio.com"
-            value={newEmail}
-            onChange={(e) => { setNewEmail(e.target.value); setSelectedEmail(""); }}
-            onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && mode === "register") handleRegister();
+            }}
+            disabled={busy}
           />
         </div>
 
+        {mode === "existing" && (
+          <div className="login-new">
+            <label className="login-label" htmlFor="login-token">Token</label>
+            <input
+              id="login-token"
+              className="login-input"
+              type="text"
+              placeholder="32 caratteri esadecimali"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleExisting(); }}
+              disabled={busy}
+            />
+          </div>
+        )}
+
         {error && <p className="inline-error">{error}</p>}
 
-        <button className="primary-button login-button" onClick={handleLogin}>
-          Continua
+        <button
+          className="primary-button login-button"
+          onClick={mode === "register" ? handleRegister : handleExisting}
+          disabled={busy}
+        >
+          {mode === "register" ? "Crea account" : "Accedi"}
         </button>
       </section>
     </main>
@@ -627,9 +689,7 @@ function App() {
   }
 
   function handleLogout() {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem(CURRENT_USER_STORAGE_KEY);
-    }
+    clearAuth();
     setCurrentUser(null);
     setVocabBank([]);
     setVocabCurrent(null);
@@ -639,6 +699,21 @@ function App() {
     setQuizHistory([]);
     setMode("quiz");
   }
+
+  useEffect(() => {
+    function onAuthRequired() {
+      setCurrentUser(null);
+      setVocabBank([]);
+      setVocabCurrent(null);
+      setVocabCurrentTranslation(null);
+      setQuiz([]);
+      setResult(null);
+      setQuizHistory([]);
+      setMode("quiz");
+    }
+    window.addEventListener("qpb-auth-required", onAuthRequired);
+    return () => window.removeEventListener("qpb-auth-required", onAuthRequired);
+  }, []);
 
   useEffect(() => {
     if (currentUser) {
