@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const CURRENT_USER_STORAGE_KEY = "quiz-patente-b-current-user";
 const AUTH_TOKEN_STORAGE_KEY = "quiz-patente-b-auth-token";
@@ -369,6 +370,59 @@ function getTranslationKey(translation) {
     translation.dictionary?.lookup_word ?? "",
     translation.dictionary?.meanings?.join("|") ?? ""
   ].join("::");
+}
+
+function VocabHelpChip() {
+  const chipRef = useRef(null);
+  const [pos, setPos] = useState(null);
+
+  function show() {
+    const el = chipRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const tooltipWidth = 280;
+    const margin = 12;
+    // Anchor the tooltip's right edge to the chip's right edge so it grows
+    // leftward, clamped so it doesn't escape the viewport on either side.
+    let left = rect.right - tooltipWidth;
+    if (left < margin) left = margin;
+    if (left + tooltipWidth > window.innerWidth - margin) {
+      left = window.innerWidth - tooltipWidth - margin;
+    }
+    setPos({ top: rect.bottom + 8, left });
+  }
+
+  function hide() {
+    setPos(null);
+  }
+
+  return (
+    <span
+      ref={chipRef}
+      className="vocab-help-chip"
+      role="img"
+      aria-label="Help: what do these buttons do?"
+      tabIndex={0}
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocus={show}
+      onBlur={hide}
+    >
+      ?
+      {pos && createPortal(
+        <span
+          className="vocab-help-tooltip"
+          role="tooltip"
+          style={{ top: `${pos.top}px`, left: `${pos.left}px` }}
+        >
+          <span className="vocab-help-tooltip-line">Thumbs-up means you know it</span>
+          <span className="vocab-help-tooltip-line">Thumbs-down means you don't</span>
+          <span className="vocab-help-tooltip-line">The fretting face means it's tough, so add it to the difficult word list</span>
+        </span>,
+        document.body
+      )}
+    </span>
+  );
 }
 
 function VocabFeedbackStats({ stats, onSearch }) {
@@ -2215,19 +2269,7 @@ function App() {
                     >
                       {isDifficultWord(vocabCurrent.word) ? "\ud83d\ude21" : "\ud83d\ude10"}
                     </button>
-                    <span
-                      className="vocab-help-chip"
-                      role="img"
-                      aria-label="Help: what do these buttons do?"
-                      tabIndex={0}
-                    >
-                      ?
-                      <span className="vocab-help-tooltip" role="tooltip">
-                        <span className="vocab-help-tooltip-line">Thumbs-up means you know it</span>
-                        <span className="vocab-help-tooltip-line">Thumbs-down means you don't</span>
-                        <span className="vocab-help-tooltip-line">The fretting face means it's tough, so add it to the difficult word list</span>
-                      </span>
-                    </span>
+                    <VocabHelpChip />
                   </div>
                 </article>
               )}
