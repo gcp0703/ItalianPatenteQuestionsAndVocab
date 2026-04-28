@@ -17,15 +17,15 @@ from threading import Lock
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
-from urllib.request import Request, urlopen
+from urllib.request import Request as UrllibRequest, urlopen
 
 from datetime import datetime, timezone
 
 from deep_translator import GoogleTranslator
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # Dev-only: load repo-root .env so local runs pick up developer overrides.
 # Production sets QPB_LOAD_DOTENV=0 in the systemd unit so this is a no-op.
@@ -233,7 +233,7 @@ class VocabTrackingSyncResponse(BaseModel):
 
 
 class VocabPrefetchRequest(BaseModel):
-    words: list[str]
+    words: list[str] = Field(default_factory=list, max_length=50)
 
 
 class VocabPrefetchResponse(BaseModel):
@@ -658,7 +658,7 @@ def translate_dictionary_text(text: str) -> str:
 @lru_cache(maxsize=2048)
 def fetch_dictionary_page(word: str) -> str | None:
     url = DICTIONARY_URL.format(quote(word))
-    request = Request(url, headers={"User-Agent": DICTIONARY_USER_AGENT})
+    request = UrllibRequest(url, headers={"User-Agent": DICTIONARY_USER_AGENT})
 
     try:
         with urlopen(request, timeout=DICTIONARY_TIMEOUT_SECONDS) as response:
@@ -1419,6 +1419,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Quiz Patente B", lifespan=lifespan)
 
+from backend.app.rate_limit import limiter, RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi import _rate_limit_exceeded_handler
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 _cors_origins_raw = os.environ.get("CORS_ORIGINS", "").strip()
 if _cors_origins_raw:
     _cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
@@ -1591,7 +1599,11 @@ def _strip_legacy_tracking() -> None:
 
 
 @app.get("/api/quiz", response_model=QuizResponse)
-async def get_quiz(count: int = Query(default=30, ge=1, le=100)) -> QuizResponse:
+@limiter.limit("30/minute")
+async def get_quiz(
+    request: Request,
+    count: int = Query(default=30, ge=1, le=100),
+) -> QuizResponse:
     if count > len(QUESTION_BANK):
         raise HTTPException(status_code=400, detail="Requested quiz is larger than the question bank.")
 
@@ -1609,7 +1621,8 @@ async def get_quiz(count: int = Query(default=30, ge=1, le=100)) -> QuizResponse
 
 
 @app.get("/api/questions/{question_id}/translation", response_model=TranslationResponse)
-async def get_translation(question_id: int) -> TranslationResponse:
+@limiter.limit("10/minute")
+async def get_translation(request: Request, question_id: int) -> TranslationResponse:
     question = get_question_or_404(question_id)
     try:
         translation = await asyncio.to_thread(translate_text, question["text"])
@@ -1696,7 +1709,11 @@ async def get_vocab_cache_stats() -> dict[str, int]:
 
 
 @app.get("/api/vocab/translate", response_model=VocabTranslationResponse)
-async def translate_vocab_word(word: str = Query(min_length=1)) -> VocabTranslationResponse:
+@limiter.limit("10/minute")
+async def translate_vocab_word(
+    request: Request,
+    word: str = Query(min_length=1),
+) -> VocabTranslationResponse:
     entry = VOCAB_BY_WORD.get(word)
     if not entry:
         raise HTTPException(status_code=404, detail="Word not found.")
@@ -1809,10 +1826,15 @@ async def sync_vocab_tracking(
 
 
 @app.post("/api/vocab/prefetch", response_model=VocabPrefetchResponse)
+@limiter.limit("5/minute")
 async def prefetch_vocab_batch(
-    request: VocabPrefetchRequest, background_tasks: BackgroundTasks
+    request: Request,
+    body: VocabPrefetchRequest,
+    background_tasks: BackgroundTasks,
 ) -> VocabPrefetchResponse:
-    words = [word for word in unique_preserve_order(request.words) if word in VOCAB_BY_WORD]
+    if len(body.words) > 50:
+        raise HTTPException(status_code=400, detail="Maximum 50 words per request.")
+    words = [word for word in unique_preserve_order(body.words) if word in VOCAB_BY_WORD]
     if words:
         background_tasks.add_task(prefetch_vocab_meanings, words)
 
