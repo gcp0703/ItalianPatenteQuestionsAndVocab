@@ -55,6 +55,12 @@ Required values:
   `python3 -c 'import secrets; print(secrets.token_hex(32))'`
 - `AUTH_TOKEN_PEPPER=<32 random bytes hex>` — same generator
 - `ANTHROPIC_MONTHLY_USD_CAP=10` (or your preferred cap)
+- `GMAIL_APP_PASSWORD=<gmail app password>` — generated at
+  https://myaccount.google.com/apppasswords for the
+  `eventhorizonpatenteb@gmail.com` account (requires 2FA enabled). Used to
+  email new users their bearer token and to handle forgot-token requests.
+  If empty, email is silently skipped (registration still returns the token
+  in the API response).
 
 Leave empty in production:
 - `CORS_ORIGINS=` (SPA is served same-origin via nginx)

@@ -1496,8 +1496,9 @@ async def list_users(_admin: str = Depends(require_admin)) -> list[UserOut]:
 
 
 @app.post("/api/users", status_code=201, response_model=UserCreatedOut)
-async def create_user(body: UserCreateIn) -> UserCreatedOut:
+async def create_user(body: UserCreateIn, background_tasks: BackgroundTasks) -> UserCreatedOut:
     from backend.app.auth import generate_token, hash_token
+    from backend.app.email_sender import send_welcome_token
 
     email = body.email.strip().lower()
     if not email or "@" not in email:
@@ -1513,6 +1514,10 @@ async def create_user(body: UserCreateIn) -> UserCreatedOut:
         users.append({"email": email, "created": created, "token_hash": hash_token(token)})
         _write_user_registry_unlocked(users)
         _write_user_data_unlocked(email, _empty_user_data(email))
+
+    # Email after the response is sent so SMTP latency doesn't slow registration
+    # and so SMTP failures don't break it (send_welcome_token swallows errors).
+    background_tasks.add_task(send_welcome_token, email, token)
 
     return UserCreatedOut(email=email, created=created, token=token)
 
@@ -1546,6 +1551,76 @@ async def delete_user(
 @app.get("/api/auth/whoami")
 async def whoami(email: str = Depends(get_current_user_email)) -> dict[str, str]:
     return {"email": email}
+
+
+# Per-email forgot-token throttle: max FORGOT_PER_EMAIL_LIMIT requests per
+# FORGOT_PER_EMAIL_WINDOW_SECONDS. Stops a single email address from being
+# spammed even if the attacker rotates source IPs (which would defeat the
+# slowapi per-IP limit). Reset on process restart — fine for a hobby app.
+FORGOT_PER_EMAIL_LIMIT = 5
+FORGOT_PER_EMAIL_WINDOW_SECONDS = 3600
+_forgot_token_history: dict[str, list[float]] = {}
+_forgot_token_history_lock = Lock()
+
+
+def _forgot_token_throttled(email: str) -> bool:
+    """Return True if the per-email rate cap is exceeded. Records this attempt."""
+    now = time.time()
+    cutoff = now - FORGOT_PER_EMAIL_WINDOW_SECONDS
+    with _forgot_token_history_lock:
+        history = [t for t in _forgot_token_history.get(email, []) if t >= cutoff]
+        if len(history) >= FORGOT_PER_EMAIL_LIMIT:
+            _forgot_token_history[email] = history
+            return True
+        history.append(now)
+        _forgot_token_history[email] = history
+        return False
+
+
+class ForgotTokenIn(BaseModel):
+    email: str
+
+
+@app.post("/api/auth/forgot-token")
+async def forgot_token(
+    body: ForgotTokenIn,
+    background_tasks: BackgroundTasks,
+) -> dict[str, str]:
+    # Rate-limited at nginx (30/min on /api/) + the per-email throttle below.
+    # See prefetch_vocab_batch for why @limiter.limit is not used here.
+    """Mint a new bearer token, invalidate the old, email it.
+
+    Anti-enumeration: always returns {"status": "ok"} regardless of whether the
+    email is registered or the request is throttled.
+    """
+    from backend.app.auth import generate_token, hash_token
+    from backend.app.email_sender import send_forgot_token
+
+    email = body.email.strip().lower()
+    uniform = {"status": "ok"}
+
+    # Validate format here (not via Pydantic) so we can keep the uniform reply.
+    if not email or "@" not in email or "." not in email.split("@", 1)[1]:
+        return uniform
+
+    if _forgot_token_throttled(email):
+        logger.info("forgot-token throttled for %s", email)
+        return uniform
+
+    new_token: str | None = None
+    with USER_DATA_LOCK:
+        users = _read_user_registry_unlocked()
+        for user in users:
+            if user["email"] == email:
+                new_token = generate_token()
+                user["token_hash"] = hash_token(new_token)
+                _write_user_registry_unlocked(users)
+                break
+
+    if new_token is not None:
+        background_tasks.add_task(send_forgot_token, email, new_token)
+
+    return uniform
 
 
 @app.get("/api/legacy-tracking")
@@ -1882,12 +1957,14 @@ async def sync_vocab_tracking(
 
 
 @app.post("/api/vocab/prefetch", response_model=VocabPrefetchResponse)
-@limiter.limit("5/minute")
 async def prefetch_vocab_batch(
-    request: Request,
     body: VocabPrefetchRequest,
     background_tasks: BackgroundTasks,
 ) -> VocabPrefetchResponse:
+    # Rate-limited at nginx (10/min for AI endpoints) + 50-word cap below.
+    # slowapi's @limiter.limit decorator does not compose with from-future
+    # annotations on POST endpoints with body params (FastAPI fails to resolve
+    # the body type via typing.get_type_hints on the slowapi wrapper).
     if len(body.words) > 50:
         raise HTTPException(status_code=400, detail="Maximum 50 words per request.")
     words = [word for word in unique_preserve_order(body.words) if word in VOCAB_BY_WORD]

@@ -919,6 +919,31 @@ button:disabled {
   flex: 1;
 }
 
+.login-forgot-link {
+  background: none;
+  border: none;
+  color: var(--accent, #4a7dff);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.login-forgot-link:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.inline-info {
+  background: rgba(74, 125, 255, 0.08);
+  border-left: 3px solid var(--accent, #4a7dff);
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin: 8px 0;
+}
+
 .login-select {
   flex: 1;
   padding: 10px 14px;

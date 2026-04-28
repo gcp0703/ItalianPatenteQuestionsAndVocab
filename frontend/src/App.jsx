@@ -446,6 +446,7 @@ function LoginScreen({ onLogin }) {
   const [token, setToken] = useState("");
   const [issuedToken, setIssuedToken] = useState("");
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
 
   function loginAs(emailLower, tokenValue) {
@@ -491,6 +492,7 @@ function LoginScreen({ onLogin }) {
       return;
     }
     setError("");
+    setInfo("");
     setBusy(true);
     try {
       saveAuthToken(t);
@@ -509,6 +511,37 @@ function LoginScreen({ onLogin }) {
       loginAs(e, t);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleForgotToken() {
+    const e = email.trim().toLowerCase();
+    if (!e.includes("@")) {
+      setError("Inserisci la tua email per ricevere un nuovo token.");
+      return;
+    }
+    setError("");
+    setInfo("");
+    setBusy(true);
+    try {
+      await fetch("/api/auth/forgot-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: e }),
+      });
+      // Always show the same message — the server is anti-enumeration.
+      setInfo(
+        "Se questa email è registrata, ti abbiamo inviato un nuovo token. " +
+        "Controlla la posta (anche lo spam). Il token precedente è stato " +
+        "invalidato."
+      );
+      setToken("");
+    } catch {
+      setInfo(
+        "Se questa email è registrata, ti abbiamo inviato un nuovo token."
+      );
     } finally {
       setBusy(false);
     }
@@ -586,22 +619,33 @@ function LoginScreen({ onLogin }) {
         </div>
 
         {mode === "existing" && (
-          <div className="login-new">
-            <label className="login-label" htmlFor="login-token">Token</label>
-            <input
-              id="login-token"
-              className="login-input"
-              type="text"
-              placeholder="32 caratteri esadecimali"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleExisting(); }}
+          <>
+            <div className="login-new">
+              <label className="login-label" htmlFor="login-token">Token</label>
+              <input
+                id="login-token"
+                className="login-input"
+                type="text"
+                placeholder="32 caratteri esadecimali"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleExisting(); }}
+                disabled={busy}
+              />
+            </div>
+            <button
+              type="button"
+              className="login-forgot-link"
+              onClick={handleForgotToken}
               disabled={busy}
-            />
-          </div>
+            >
+              Token dimenticato? Inviamene uno nuovo via email
+            </button>
+          </>
         )}
 
         {error && <p className="inline-error">{error}</p>}
+        {info && <p className="inline-info">{info}</p>}
 
         <button
           className="primary-button login-button"
