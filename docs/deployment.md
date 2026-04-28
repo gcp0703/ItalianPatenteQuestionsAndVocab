@@ -115,6 +115,12 @@ sudo nginx -t  # MUST succeed before reload
 sudo systemctl reload nginx
 ```
 
+`patenteb.conf` includes the Certbot-managed SSL server block. If you ever
+re-issue the certificate to a different domain, re-run
+`sudo certbot --nginx -d <new-domain>` and copy the resulting
+`/etc/nginx/sites-available/patenteb` back into the repo so future deploys
+don't drop HTTPS.
+
 Verify limiting works from an off-server host:
 
 ```bash
