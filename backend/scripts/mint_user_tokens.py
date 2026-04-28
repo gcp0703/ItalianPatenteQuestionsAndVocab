@@ -32,7 +32,19 @@ def main() -> int:
         return 1
 
     with registry_path.open() as f:
-        users = json.load(f)
+        data = json.load(f)
+
+    # Registry format is {"users": [...]} as written by _write_user_registry_unlocked.
+    # Older test fixtures may be a bare list; accept both for resilience.
+    if isinstance(data, dict) and "users" in data:
+        users = data["users"]
+        wrap = lambda u: {"users": u}
+    elif isinstance(data, list):
+        users = data
+        wrap = lambda u: u
+    else:
+        print(f"Unexpected registry shape in {registry_path}", file=sys.stderr)
+        return 1
 
     minted = 0
     for entry in users:
@@ -46,7 +58,8 @@ def main() -> int:
     if minted:
         tmp = registry_path.with_suffix(".json.tmp")
         with tmp.open("w") as f:
-            json.dump(users, f, indent=2)
+            json.dump(wrap(users), f, ensure_ascii=False, indent=2)
+            f.write("\n")
         tmp.replace(registry_path)
 
     print(f"Minted {minted} new tokens.", file=sys.stderr)
