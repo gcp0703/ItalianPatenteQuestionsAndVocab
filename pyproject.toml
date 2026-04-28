@@ -25,6 +25,3 @@ quizpatenteb = "backend.app.__main__:main"
 
 [tool.setuptools]
 packages = ["backend", "backend.app"]
-
-[tool.setuptools.package-data]
-"backend" = [".env.example"]
