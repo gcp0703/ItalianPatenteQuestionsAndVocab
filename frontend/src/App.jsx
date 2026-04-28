@@ -2215,6 +2215,19 @@ function App() {
                     >
                       {isDifficultWord(vocabCurrent.word) ? "\ud83d\ude21" : "\ud83d\ude10"}
                     </button>
+                    <span
+                      className="vocab-help-chip"
+                      role="img"
+                      aria-label="Help: what do these buttons do?"
+                      tabIndex={0}
+                    >
+                      ?
+                      <span className="vocab-help-tooltip" role="tooltip">
+                        Thumbs-up means you know it, thumbs-down means you don't,
+                        and the fretting face means it's tough so add it to the
+                        difficult word list, which you can review separately.
+                      </span>
+                    </span>
                   </div>
                 </article>
               )}
