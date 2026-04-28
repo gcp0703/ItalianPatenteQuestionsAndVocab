@@ -101,6 +101,32 @@ curl -s http://127.0.0.1:8500/api/quiz/topics | python3 -m json.tool | head
 curl -s https://patenteb.eventhorizon.llc/api/quiz/topics | head
 ```
 
+## nginx rate-limit zones
+
+The zones used by the `limit_req` directives in `patenteb.conf` are defined in
+a separate snippet that lives in nginx's `http {}` context. Install both:
+
+```bash
+sudo cp /home/azureuser/quizpatenteb/deployment/nginx/limit_req_zones.conf \
+        /etc/nginx/conf.d/qpb-zones.conf
+sudo cp /home/azureuser/quizpatenteb/deployment/nginx/patenteb.conf \
+        /etc/nginx/sites-available/patenteb
+sudo nginx -t  # MUST succeed before reload
+sudo systemctl reload nginx
+```
+
+Verify limiting works from an off-server host:
+
+```bash
+for i in $(seq 1 40); do
+  curl -s -o /dev/null -w "%{http_code}\n" \
+    https://patenteb.eventhorizon.llc/api/health
+done | sort | uniq -c
+```
+
+Expected: a mix of `200` and `429`. The `429` rows confirm nginx-layer
+limiting is active (in addition to the slowapi-layer limits inside the app).
+
 ## Anthropic monthly hard cap (REQUIRED)
 
 The application enforces a *soft* cap via `ANTHROPIC_MONTHLY_USD_CAP` in
