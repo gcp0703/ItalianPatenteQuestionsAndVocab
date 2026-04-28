@@ -773,7 +773,7 @@ summary {
 
 .vocab-help-tooltip {
   position: absolute;
-  bottom: calc(100% + 8px);
+  top: calc(100% + 8px);
   right: 0;
   width: max-content;
   max-width: 280px;
@@ -788,7 +788,7 @@ summary {
   box-shadow: 0 8px 22px rgba(31, 42, 51, 0.28);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(2px);
+  transform: translateY(-2px);
   transition: opacity 120ms ease, transform 120ms ease;
   z-index: 5;
 }
