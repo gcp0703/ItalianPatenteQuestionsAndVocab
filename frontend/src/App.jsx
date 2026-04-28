@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const CURRENT_USER_STORAGE_KEY = "quiz-patente-b-current-user";
@@ -753,7 +753,8 @@ function App() {
   const [vocabQuestionResults, setVocabQuestionResults] = useState(null);
   const [quizVariantResults, setQuizVariantResults] = useState(null);
   const [topics, setTopics] = useState([]);
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubtopic, setSelectedSubtopic] = useState("");
   const [topicAnswerFilter, setTopicAnswerFilter] = useState(true);
   const [topicQuestions, setTopicQuestions] = useState([]);
   const [topicsLoading, setTopicsLoading] = useState(false);
@@ -834,19 +835,54 @@ function App() {
       .catch((err) => setScreenError(err.message));
   }, [mode]);
 
+  const topicHierarchy = useMemo(() => {
+    const map = new Map();
+    for (const t of topics) {
+      const idx = t.indexOf(" / ");
+      const category = idx === -1 ? t : t.slice(0, idx);
+      const subtopic = idx === -1 ? "" : t.slice(idx + 3);
+      if (!map.has(category)) map.set(category, []);
+      map.get(category).push(subtopic);
+    }
+    return map;
+  }, [topics]);
+
+  const categories = useMemo(
+    () => [...topicHierarchy.keys()].sort(),
+    [topicHierarchy],
+  );
+
+  const subtopicsForCategory = selectedCategory
+    ? (topicHierarchy.get(selectedCategory) || [])
+    : [];
+
   useEffect(() => {
-    if (mode !== "topics" || !selectedTopic) {
+    if (!selectedCategory) {
+      setSelectedSubtopic("");
+      return;
+    }
+    const subs = topicHierarchy.get(selectedCategory) || [];
+    if (subs.length === 0) {
+      setSelectedSubtopic("");
+    } else if (!subs.includes(selectedSubtopic)) {
+      setSelectedSubtopic(subs[0]);
+    }
+  }, [selectedCategory, topicHierarchy]);
+
+  useEffect(() => {
+    if (mode !== "topics" || !selectedCategory || !selectedSubtopic) {
       setTopicQuestions([]);
       return;
     }
+    const fullTopic = `${selectedCategory} / ${selectedSubtopic}`;
     setTopicsLoading(true);
-    const url = `/api/topics/questions?topic=${encodeURIComponent(selectedTopic)}&answer=${topicAnswerFilter}`;
+    const url = `/api/topics/questions?topic=${encodeURIComponent(fullTopic)}&answer=${topicAnswerFilter}`;
     fetch(url)
       .then((r) => r.json())
       .then((data) => setTopicQuestions(data.questions || []))
       .catch((err) => setScreenError(err.message))
       .finally(() => setTopicsLoading(false));
-  }, [mode, selectedTopic, topicAnswerFilter]);
+  }, [mode, selectedCategory, selectedSubtopic, topicAnswerFilter]);
 
   useEffect(() => {
     if (mode !== "topics" || !includeTranslations || topicQuestions.length === 0) return;
@@ -1863,16 +1899,16 @@ function App() {
               Vocab
             </button>
             <button
-              className={`secondary-button header-button ${mode === "history" ? "active" : ""}`}
-              onClick={() => setMode("history")}
-            >
-              History
-            </button>
-            <button
               className={`secondary-button header-button ${mode === "topics" ? "active" : ""}`}
               onClick={() => setMode("topics")}
             >
               Topics
+            </button>
+            <button
+              className={`secondary-button header-button ${mode === "history" ? "active" : ""}`}
+              onClick={() => setMode("history")}
+            >
+              History
             </button>
             <button
               className="secondary-button header-button"
@@ -1920,87 +1956,109 @@ function App() {
           <div className="vocab-header">
             <p className="eyebrow">Topics</p>
           </div>
-          <div className="topics-controls">
-            <label className="topics-select-label">
-              Argomento:
-              <select
-                className="topics-select"
-                value={selectedTopic}
-                onChange={(e) => setSelectedTopic(e.target.value)}
-              >
-                <option value="">— Seleziona un argomento —</option>
-                {topics.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </label>
-            <fieldset className="topics-answer-filter" disabled={!selectedTopic}>
-              <label>
-                <input
-                  type="radio"
-                  name="topic-answer"
-                  checked={topicAnswerFilter === true}
-                  onChange={() => setTopicAnswerFilter(true)}
-                /> True
+          <div className="topics-layout">
+            <div className="topics-pickers">
+              <label className="topics-listbox-label">
+                Categoria
+                <select
+                  className="topics-listbox"
+                  size={12}
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </label>
-              <label>
-                <input
-                  type="radio"
-                  name="topic-answer"
-                  checked={topicAnswerFilter === false}
-                  onChange={() => setTopicAnswerFilter(false)}
-                /> False
+              <label className="topics-listbox-label">
+                Sotto-argomento
+                <select
+                  className="topics-listbox"
+                  size={12}
+                  value={selectedSubtopic}
+                  onChange={(e) => setSelectedSubtopic(e.target.value)}
+                  disabled={!selectedCategory}
+                >
+                  {subtopicsForCategory.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
               </label>
-            </fieldset>
-            <label className="topics-translate-toggle">
-              <input
-                type="checkbox"
-                checked={includeTranslations}
-                onChange={(e) => setIncludeTranslations(e.target.checked)}
-              /> Include English translation
-            </label>
+            </div>
+            <div className="topics-content">
+              <div className="topics-controls">
+                <fieldset className="topics-answer-filter" disabled={!selectedSubtopic}>
+                  <label>
+                    <input
+                      type="radio"
+                      name="topic-answer"
+                      checked={topicAnswerFilter === true}
+                      onChange={() => setTopicAnswerFilter(true)}
+                    /> True
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="topic-answer"
+                      checked={topicAnswerFilter === false}
+                      onChange={() => setTopicAnswerFilter(false)}
+                    /> False
+                  </label>
+                </fieldset>
+                <label className="topics-translate-toggle">
+                  <input
+                    type="checkbox"
+                    checked={includeTranslations}
+                    onChange={(e) => setIncludeTranslations(e.target.checked)}
+                  /> Include English translation
+                </label>
+              </div>
+              {topicsLoading ? (
+                <p>Caricamento...</p>
+              ) : !selectedCategory ? (
+                <p>Seleziona una categoria per vedere le domande.</p>
+              ) : !selectedSubtopic ? (
+                <p>Seleziona un sotto-argomento per vedere le domande.</p>
+              ) : topicQuestions.length === 0 ? (
+                <p>Nessuna domanda trovata.</p>
+              ) : (
+                <>
+                  {(() => {
+                    const distinctImages = [
+                      ...new Set(topicQuestions.map((q) => q.image_url).filter(Boolean)),
+                    ];
+                    return distinctImages.length > 0 ? (
+                      <div className="topics-image-bar">
+                        {distinctImages.map((url) => (
+                          <img key={url} src={url} alt="" className="topics-image" />
+                        ))}
+                      </div>
+                    ) : null;
+                  })()}
+                  <ul className="topics-question-list">
+                    {topicQuestions.map((q) => {
+                      const tr = translations[q.id];
+                      return (
+                        <li key={q.id} className="topics-question-item">
+                          <p className="question-text">{q.text}</p>
+                          {includeTranslations && (
+                            <p className={`topics-question-translation ${tr?.status || "loading"}`}>
+                              {tr?.status === "ready"
+                                ? tr.text
+                                : tr?.status === "error"
+                                ? `Traduzione non disponibile: ${tr.text}`
+                                : "Traduzione in corso..."}
+                            </p>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </div>
           </div>
-          {topicsLoading ? (
-            <p>Caricamento...</p>
-          ) : !selectedTopic ? (
-            <p>Seleziona un argomento per vedere le domande.</p>
-          ) : topicQuestions.length === 0 ? (
-            <p>Nessuna domanda trovata.</p>
-          ) : (
-            <>
-              {(() => {
-                const distinctImages = [
-                  ...new Set(topicQuestions.map((q) => q.image_url).filter(Boolean)),
-                ];
-                return distinctImages.length > 0 ? (
-                  <div className="topics-image-bar">
-                    {distinctImages.map((url) => (
-                      <img key={url} src={url} alt="" className="topics-image" />
-                    ))}
-                  </div>
-                ) : null;
-              })()}
-              <ul className="topics-question-list">
-                {topicQuestions.map((q) => {
-                  const tr = translations[q.id];
-                  return (
-                    <li key={q.id} className="topics-question-item">
-                      <p className="question-text">{q.text}</p>
-                      {includeTranslations && (
-                        <p className={`topics-question-translation ${tr?.status || "loading"}`}>
-                          {tr?.status === "ready"
-                            ? tr.text
-                            : tr?.status === "error"
-                            ? `Traduzione non disponibile: ${tr.text}`
-                            : "Traduzione in corso..."}
-                        </p>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </>
-          )}
         </section>
       ) : mode === "history" ? (
         <section className="history-panel">

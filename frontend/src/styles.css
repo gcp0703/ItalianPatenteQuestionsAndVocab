@@ -1219,29 +1219,70 @@ button:disabled {
   gap: 1rem;
 }
 
+.topics-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) minmax(0, 2.2fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.topics-pickers {
+  display: contents;
+}
+
+.topics-listbox-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted, #59656f);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.topics-listbox {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem;
+  border: 1px solid var(--line, rgba(31, 42, 51, 0.12));
+  border-radius: 0.5rem;
+  background: var(--panel-strong, #fffaf2);
+  color: var(--ink, #1f2a33);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.topics-listbox:focus {
+  outline: 2px solid var(--accent, #d35f2d);
+  outline-offset: 1px;
+}
+
+.topics-listbox option {
+  padding: 0.25rem 0.4rem;
+}
+
+.topics-content {
+  min-width: 0;
+}
+
 .topics-controls {
   display: flex;
   gap: 1.5rem;
   align-items: center;
   flex-wrap: wrap;
-  margin: 0.5rem 0 1rem;
+  margin: 0 0 1rem;
 }
 
-.topics-select-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.topics-select {
-  padding: 0.45rem 0.6rem;
-  min-width: 22rem;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  border-radius: 0.4rem;
-  background: #fff;
+@media (max-width: 900px) {
+  .topics-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+  .topics-content {
+    grid-column: 1 / -1;
+  }
 }
 
 .topics-answer-filter {
