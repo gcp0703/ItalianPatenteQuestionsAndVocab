@@ -4,6 +4,7 @@ import asyncio
 import html
 import json
 import logging
+import os
 import random
 import re
 import time
@@ -25,6 +26,15 @@ from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Qu
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+# Dev-only: load repo-root .env so local runs pick up developer overrides.
+# Production sets QPB_LOAD_DOTENV=0 in the systemd unit so this is a no-op.
+if os.environ.get("QPB_LOAD_DOTENV", "1") == "1":
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
+    except ImportError:
+        pass
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DATA_FILE = ROOT_DIR / "quizPatenteB2023.json"
@@ -850,9 +860,8 @@ def _load_ai_model() -> tuple[Any, Any]:
     if "model" in _ai_model_cache:
         return _ai_model_cache["model"], _ai_model_cache["tokenizer"]
 
-    from dotenv import dotenv_values
-    env = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
-    model_name = env.get("AI_MODEL", "mlx-community/Qwen3.5-27B-4bit")
+    import os
+    model_name = os.environ.get("AI_MODEL", "mlx-community/Qwen3.5-27B-4bit")
 
     from mlx_lm import load
     model, tokenizer = load(model_name)
@@ -1253,10 +1262,9 @@ def _definition_differs(old: str, new: str) -> bool:
 
 
 def _read_env_flags() -> tuple[bool, bool]:
-    from dotenv import dotenv_values
-    env = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
-    backfill = env.get("BACKFILL_DEFINITIONS", "true").lower() not in ("false", "0", "no")
-    checking = env.get("BACKFILL_CHECKING", "false").lower() not in ("false", "0", "no")
+    import os
+    backfill = os.environ.get("BACKFILL_DEFINITIONS", "true").lower() not in ("false", "0", "no")
+    checking = os.environ.get("BACKFILL_CHECKING", "false").lower() not in ("false", "0", "no")
     return backfill, checking
 
 

@@ -40,15 +40,29 @@ cd ..
 
 ### 4. Configure environment
 
+Copy the template to a secured location outside the repo and edit it:
+
 ```bash
-cp backend/.env.example .env
+sudo cp /home/azureuser/quizpatenteb/.env.example /etc/quizpatenteb.env
+sudo chown root:azureuser /etc/quizpatenteb.env
+sudo chmod 640 /etc/quizpatenteb.env
+sudo nano /etc/quizpatenteb.env
 ```
 
-Edit `.env` and set:
-```
-ANTHROPIC_API_KEY=<your-anthropic-api-key>
-BACKFILL_DEFINITIONS=false
-```
+Required values:
+- `ANTHROPIC_API_KEY=sk-ant-...`
+- `SESSION_SECRET=<32 random bytes hex>` — generate with
+  `python3 -c 'import secrets; print(secrets.token_hex(32))'`
+- `AUTH_TOKEN_PEPPER=<32 random bytes hex>` — same generator
+- `ANTHROPIC_MONTHLY_USD_CAP=10` (or your preferred cap)
+
+Leave empty in production:
+- `CORS_ORIGINS=` (SPA is served same-origin via nginx)
+- `ADMIN_EMAIL=` (or set to the operator's email to enable admin endpoints)
+
+The systemd unit's `EnvironmentFile=/etc/quizpatenteb.env` reads this file and
+sets `QPB_LOAD_DOTENV=0`, so the application never falls back to a repo-root
+`.env`. **Do not place secrets inside the repo working tree.**
 
 ### 5. Install nginx config
 
