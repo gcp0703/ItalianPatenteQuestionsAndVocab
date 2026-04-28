@@ -147,6 +147,17 @@ class QuizResponse(BaseModel):
     questions: list[QuestionOut]
 
 
+class TopicsResponse(BaseModel):
+    topics: list[str]
+
+
+class TopicQuestionsResponse(BaseModel):
+    topic: str
+    answer: bool
+    questions: list[QuestionOut]
+    count: int
+
+
 class SubmittedAnswer(BaseModel):
     question_id: int
     selected: bool | None
@@ -1634,6 +1645,35 @@ async def get_quiz(
         for item in selection
     ]
     return QuizResponse(questions=questions)
+
+
+@app.get("/api/topics", response_model=TopicsResponse)
+@limiter.limit("60/minute")
+async def get_topics(request: Request) -> TopicsResponse:
+    topics = sorted({item["topic"] for item in QUESTION_BANK})
+    return TopicsResponse(topics=topics)
+
+
+@app.get("/api/topics/questions", response_model=TopicQuestionsResponse)
+@limiter.limit("60/minute")
+async def get_topic_questions(
+    request: Request,
+    topic: str = Query(...),
+    answer: bool = Query(default=True),
+) -> TopicQuestionsResponse:
+    matches = [
+        QuestionOut(
+            id=item["id"],
+            text=item["text"],
+            image_url=item["image_url"],
+            topic=item["topic"],
+        )
+        for item in QUESTION_BANK
+        if item["topic"] == topic and bool(item["answer"]) == answer
+    ]
+    return TopicQuestionsResponse(
+        topic=topic, answer=answer, questions=matches, count=len(matches)
+    )
 
 
 @app.get("/api/questions/{question_id}/translation", response_model=TranslationResponse)

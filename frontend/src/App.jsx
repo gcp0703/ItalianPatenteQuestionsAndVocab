@@ -654,6 +654,11 @@ function App() {
   const [quizHistory, setQuizHistory] = useState([]);
   const [vocabQuestionResults, setVocabQuestionResults] = useState(null);
   const [quizVariantResults, setQuizVariantResults] = useState(null);
+  const [topics, setTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [topicAnswerFilter, setTopicAnswerFilter] = useState(true);
+  const [topicQuestions, setTopicQuestions] = useState([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
   const vocabBatchSummaryResolverRef = useRef(null);
   const knownVocabWords = deriveKnownWords(vocabBank, vocabFeedbackCounts, vocabHiddenWords);
 
@@ -721,6 +726,28 @@ function App() {
       loadQuizHistory();
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (mode !== "topics" || topics.length > 0) return;
+    fetch("/api/topics")
+      .then((r) => r.json())
+      .then((data) => setTopics(data.topics || []))
+      .catch((err) => setScreenError(err.message));
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "topics" || !selectedTopic) {
+      setTopicQuestions([]);
+      return;
+    }
+    setTopicsLoading(true);
+    const url = `/api/topics/questions?topic=${encodeURIComponent(selectedTopic)}&answer=${topicAnswerFilter}`;
+    fetch(url)
+      .then((r) => r.json())
+      .then((data) => setTopicQuestions(data.questions || []))
+      .catch((err) => setScreenError(err.message))
+      .finally(() => setTopicsLoading(false));
+  }, [mode, selectedTopic, topicAnswerFilter]);
 
   if (!currentUser) {
     return <LoginScreen onLogin={handleLogin} />;
@@ -1687,6 +1714,12 @@ function App() {
               History
             </button>
             <button
+              className={`secondary-button header-button ${mode === "topics" ? "active" : ""}`}
+              onClick={() => setMode("topics")}
+            >
+              Topics
+            </button>
+            <button
               className="secondary-button header-button"
               onClick={handleLogout}
             >
@@ -1727,7 +1760,64 @@ function App() {
         </section>
       )}
 
-      {mode === "history" ? (
+      {mode === "topics" ? (
+        <section className="topics-panel">
+          <div className="vocab-header">
+            <p className="eyebrow">Topics</p>
+          </div>
+          <div className="topics-controls">
+            <label className="topics-select-label">
+              Argomento:
+              <select
+                className="topics-select"
+                value={selectedTopic}
+                onChange={(e) => setSelectedTopic(e.target.value)}
+              >
+                <option value="">— Seleziona un argomento —</option>
+                {topics.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </label>
+            <fieldset className="topics-answer-filter" disabled={!selectedTopic}>
+              <label>
+                <input
+                  type="radio"
+                  name="topic-answer"
+                  checked={topicAnswerFilter === true}
+                  onChange={() => setTopicAnswerFilter(true)}
+                /> True
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="topic-answer"
+                  checked={topicAnswerFilter === false}
+                  onChange={() => setTopicAnswerFilter(false)}
+                /> False
+              </label>
+            </fieldset>
+          </div>
+          {topicsLoading ? (
+            <p>Caricamento...</p>
+          ) : !selectedTopic ? (
+            <p>Seleziona un argomento per vedere le domande.</p>
+          ) : topicQuestions.length === 0 ? (
+            <p>Nessuna domanda trovata.</p>
+          ) : (
+            <ul className="topics-question-list">
+              {topicQuestions.map((q) => (
+                <li key={q.id} className="topics-question-item">
+                  <p className="question-text">{q.text}</p>
+                  {q.image_url && (
+                    <img src={q.image_url} alt="" className="question-image" />
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : mode === "history" ? (
         <section className="history-panel">
           <div className="vocab-header">
             <p className="eyebrow">Quiz History</p>
