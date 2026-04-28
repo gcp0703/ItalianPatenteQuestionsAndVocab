@@ -101,6 +101,25 @@ curl -s http://127.0.0.1:8500/api/quiz/topics | python3 -m json.tool | head
 curl -s https://patenteb.eventhorizon.llc/api/quiz/topics | head
 ```
 
+## Anthropic monthly hard cap (REQUIRED)
+
+The application enforces a *soft* cap via `ANTHROPIC_MONTHLY_USD_CAP` in
+`/etc/quizpatenteb.env` — it stops calling Claude when the in-memory monthly
+total exceeds the cap. **A soft cap alone is not enough**: a worker restart
+resets the counter, and a malformed env value silently disables it.
+
+Set a *hard* cap in the Anthropic console too:
+1. https://console.anthropic.com/settings/limits
+2. Under "Spend limits", set a monthly USD cap on the QuizPatenteB API key.
+3. Set the soft cap (`ANTHROPIC_MONTHLY_USD_CAP`) to ~50% of the hard cap so
+   the app stops voluntarily before Anthropic forces a 429.
+
+Use a dedicated API key for QuizPatenteB so rotation does not affect the
+RePortfolio or OpenSesame backends sharing the same VM.
+
+Per-call cost lines (`ANTHROPIC_CALL ... month_total_usd=$X`) appear in
+`journalctl -u quizpatenteb` — grep for `ANTHROPIC_CALL` to audit spend.
+
 ## Migrating existing users to bearer-token auth (one-time, after auth deploy)
 
 When the auth update is deployed for the first time, every existing entry in

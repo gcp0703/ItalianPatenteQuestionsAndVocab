@@ -919,7 +919,15 @@ def _extract_final_answer(response: str) -> str:
 
 def _get_claude_definition(word: str) -> str | None:
     """Get a definition using the Claude API as fallback when MLX is unavailable."""
-    import os
+    from backend.app import spend
+
+    if spend.is_over_cap():
+        logger.warning(
+            "Skipping Claude call for '%s': monthly cap reached (total=$%.2f).",
+            word, spend.month_total_usd(),
+        )
+        return None
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return None
@@ -931,6 +939,10 @@ def _get_claude_definition(word: str) -> str | None:
             max_tokens=512,
             system=AI_DEFINITION_PROMPT,
             messages=[{"role": "user", "content": word}],
+        )
+        spend.record_claude_call(
+            input_tokens=response.usage.input_tokens,
+            output_tokens=response.usage.output_tokens,
         )
         text = response.content[0].text.strip()
         return text if text else None
