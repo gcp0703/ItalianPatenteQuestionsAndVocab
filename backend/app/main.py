@@ -921,6 +921,10 @@ def _get_claude_definition(word: str) -> str | None:
     """Get a definition using the Claude API as fallback when MLX is unavailable."""
     from backend.app import spend
 
+    enabled = os.environ.get("CLAUDE_FALLBACK_ENABLED", "true").lower() not in ("false", "0", "no")
+    if not enabled:
+        return None
+
     if spend.is_over_cap():
         logger.warning(
             "Skipping Claude call for '%s': monthly cap reached (total=$%.2f).",
