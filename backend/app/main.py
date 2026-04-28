@@ -186,6 +186,15 @@ class TranslationResponse(BaseModel):
     translation: str
 
 
+class BatchTranslationRequest(BaseModel):
+    question_ids: list[int]
+
+
+class BatchTranslationResponse(BaseModel):
+    translations: dict[int, str]
+    errors: dict[int, str]
+
+
 class AnswerRevealResponse(BaseModel):
     question_id: int
     correct_answer: bool
@@ -1764,6 +1773,30 @@ async def get_translation(request: Request, question_id: int) -> TranslationResp
         ) from exc
 
     return TranslationResponse(question_id=question_id, translation=translation)
+
+
+@app.post("/api/translations/batch", response_model=BatchTranslationResponse)
+async def get_translations_batch(
+    payload: BatchTranslationRequest,
+) -> BatchTranslationResponse:
+    if len(payload.question_ids) > 100:
+        raise HTTPException(status_code=400, detail="Batch is limited to 100 question IDs.")
+
+    unique_ids = list(dict.fromkeys(payload.question_ids))
+    translations: dict[int, str] = {}
+    errors: dict[int, str] = {}
+
+    for qid in unique_ids:
+        question = QUESTION_BY_ID.get(qid)
+        if question is None:
+            errors[qid] = "not_found"
+            continue
+        try:
+            translations[qid] = await asyncio.to_thread(translate_text, question["text"])
+        except Exception as exc:
+            errors[qid] = str(exc) or "translation_failed"
+
+    return BatchTranslationResponse(translations=translations, errors=errors)
 
 
 @app.get("/api/questions/{question_id}/answer", response_model=AnswerRevealResponse)

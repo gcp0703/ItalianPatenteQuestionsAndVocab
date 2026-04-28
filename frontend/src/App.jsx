@@ -703,6 +703,7 @@ function App() {
   const [topicAnswerFilter, setTopicAnswerFilter] = useState(true);
   const [topicQuestions, setTopicQuestions] = useState([]);
   const [topicsLoading, setTopicsLoading] = useState(false);
+  const [includeTranslations, setIncludeTranslations] = useState(false);
   const vocabBatchSummaryResolverRef = useRef(null);
   const knownVocabWords = deriveKnownWords(vocabBank, vocabFeedbackCounts, vocabHiddenWords);
 
@@ -792,6 +793,62 @@ function App() {
       .catch((err) => setScreenError(err.message))
       .finally(() => setTopicsLoading(false));
   }, [mode, selectedTopic, topicAnswerFilter]);
+
+  useEffect(() => {
+    if (mode !== "topics" || !includeTranslations || topicQuestions.length === 0) return;
+
+    const idsNeeded = topicQuestions
+      .map((q) => q.id)
+      .filter((id) => {
+        const cached = translations[id];
+        return !cached || cached.status === "error";
+      });
+    if (idsNeeded.length === 0) return;
+
+    setTranslations((previous) => {
+      const next = { ...previous };
+      for (const id of idsNeeded) {
+        next[id] = { status: "loading", text: "" };
+      }
+      return next;
+    });
+
+    fetch("/api/translations/batch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question_ids: idsNeeded }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorPayload = await response.json().catch(() => ({}));
+          throw new Error(errorPayload.detail || "Traduzione non disponibile.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setTranslations((previous) => {
+          const next = { ...previous };
+          for (const [id, text] of Object.entries(data.translations || {})) {
+            next[id] = { status: "ready", text };
+          }
+          for (const [id, err] of Object.entries(data.errors || {})) {
+            next[id] = { status: "error", text: err };
+          }
+          return next;
+        });
+      })
+      .catch((err) => {
+        setTranslations((previous) => {
+          const next = { ...previous };
+          for (const id of idsNeeded) {
+            if (next[id]?.status === "loading") {
+              next[id] = { status: "error", text: err.message };
+            }
+          }
+          return next;
+        });
+      });
+  }, [mode, includeTranslations, topicQuestions]);
 
   if (!currentUser) {
     return <LoginScreen onLogin={handleLogin} />;
@@ -1841,6 +1898,13 @@ function App() {
                 /> False
               </label>
             </fieldset>
+            <label className="topics-translate-toggle">
+              <input
+                type="checkbox"
+                checked={includeTranslations}
+                onChange={(e) => setIncludeTranslations(e.target.checked)}
+              /> Include English translation
+            </label>
           </div>
           {topicsLoading ? (
             <p>Caricamento...</p>
@@ -1849,16 +1913,39 @@ function App() {
           ) : topicQuestions.length === 0 ? (
             <p>Nessuna domanda trovata.</p>
           ) : (
-            <ul className="topics-question-list">
-              {topicQuestions.map((q) => (
-                <li key={q.id} className="topics-question-item">
-                  <p className="question-text">{q.text}</p>
-                  {q.image_url && (
-                    <img src={q.image_url} alt="" className="question-image" />
-                  )}
-                </li>
-              ))}
-            </ul>
+            <>
+              {(() => {
+                const distinctImages = [
+                  ...new Set(topicQuestions.map((q) => q.image_url).filter(Boolean)),
+                ];
+                return distinctImages.length > 0 ? (
+                  <div className="topics-image-bar">
+                    {distinctImages.map((url) => (
+                      <img key={url} src={url} alt="" className="topics-image" />
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+              <ul className="topics-question-list">
+                {topicQuestions.map((q) => {
+                  const tr = translations[q.id];
+                  return (
+                    <li key={q.id} className="topics-question-item">
+                      <p className="question-text">{q.text}</p>
+                      {includeTranslations && (
+                        <p className={`topics-question-translation ${tr?.status || "loading"}`}>
+                          {tr?.status === "ready"
+                            ? tr.text
+                            : tr?.status === "error"
+                            ? `Traduzione non disponibile: ${tr.text}`
+                            : "Traduzione in corso..."}
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
         </section>
       ) : mode === "history" ? (
