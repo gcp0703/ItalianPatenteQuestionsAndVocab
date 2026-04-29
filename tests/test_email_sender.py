@@ -44,6 +44,7 @@ def test_send_email_calls_smtp_with_starttls(monkeypatch):
 
 def test_send_email_returns_false_on_smtp_exception(monkeypatch):
     monkeypatch.setenv("GMAIL_APP_PASSWORD", "test-app-password")
+    monkeypatch.setenv("GMAIL_FROM_ADDRESS", "test@gmail.com")
     from backend.app import email_sender
 
     with patch("backend.app.email_sender.smtplib.SMTP", side_effect=OSError("network")):
@@ -53,6 +54,7 @@ def test_send_email_returns_false_on_smtp_exception(monkeypatch):
 
 def test_welcome_body_includes_token(monkeypatch):
     monkeypatch.setenv("GMAIL_APP_PASSWORD", "p")
+    monkeypatch.setenv("GMAIL_FROM_ADDRESS", "test@gmail.com")
     from backend.app import email_sender
 
     instance = MagicMock()
@@ -69,6 +71,7 @@ def test_welcome_body_includes_token(monkeypatch):
 
 def test_forgot_body_includes_token(monkeypatch):
     monkeypatch.setenv("GMAIL_APP_PASSWORD", "p")
+    monkeypatch.setenv("GMAIL_FROM_ADDRESS", "test@gmail.com")
     from backend.app import email_sender
 
     instance = MagicMock()

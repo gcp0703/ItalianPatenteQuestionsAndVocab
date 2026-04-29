@@ -1,9 +1,8 @@
 """Plain-text email via Gmail SMTP (TLS port 587).
 
-Reads GMAIL_FROM_ADDRESS (default eventhorizonpatenteb@gmail.com) and
-GMAIL_APP_PASSWORD from the environment. If the password is missing or empty,
-sends silently degrade to a logged warning so registration never fails because
-of an SMTP outage.
+Reads GMAIL_FROM_ADDRESS and GMAIL_APP_PASSWORD from the environment. Both
+must be set; if either is missing, sends silently degrade to a logged warning
+so registration never fails because of an SMTP outage.
 """
 from __future__ import annotations
 
@@ -15,23 +14,28 @@ from email.message import EmailMessage
 
 logger = logging.getLogger("uvicorn.error")
 
-DEFAULT_FROM = "eventhorizonpatenteb@gmail.com"
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587
 SMTP_TIMEOUT_SECONDS = 10
 
 
 def is_configured() -> bool:
-    return bool(os.environ.get("GMAIL_APP_PASSWORD", "").strip())
+    return bool(
+        os.environ.get("GMAIL_APP_PASSWORD", "").strip()
+        and os.environ.get("GMAIL_FROM_ADDRESS", "").strip()
+    )
 
 
 def send_email(to_address: str, subject: str, body: str) -> bool:
     """Send a plain-text email. Returns True on success, False on any failure."""
     if not is_configured():
-        logger.warning("GMAIL_APP_PASSWORD not set; skipping email to %s", to_address)
+        logger.warning(
+            "GMAIL_APP_PASSWORD or GMAIL_FROM_ADDRESS not set; skipping email to %s",
+            to_address,
+        )
         return False
 
-    from_address = os.environ.get("GMAIL_FROM_ADDRESS", DEFAULT_FROM).strip() or DEFAULT_FROM
+    from_address = os.environ["GMAIL_FROM_ADDRESS"].strip()
     password = os.environ["GMAIL_APP_PASSWORD"]
 
     msg = EmailMessage()
