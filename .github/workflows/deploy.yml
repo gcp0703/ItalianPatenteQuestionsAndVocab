@@ -43,23 +43,17 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
-      - name: Pull source on server
+      - name: Stream dist + pull + restart in one SSH connection
         run: |
-          ssh $SSH_OPTS "$SERVER_USER@$SERVER_HOST" \
-            "cd $REMOTE_DIR && git pull --ff-only origin main"
-
-      - name: Sync freshly built frontend bundle
-        run: |
-          rsync -az --delete \
-            -e "ssh $SSH_OPTS" \
-            frontend/dist/ \
-            "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/frontend/dist/"
-
-      - name: Install deps, restart service, health check
-        run: |
-          ssh $SSH_OPTS "$SERVER_USER@$SERVER_HOST" bash <<'REMOTE'
+          REMOTE_SCRIPT=$(cat <<'REMOTE'
           set -euo pipefail
           cd /home/azureuser/quizpatenteb
+          git pull --ff-only origin main
+          rm -rf frontend/dist.new
+          mkdir -p frontend/dist.new
+          tar -C frontend/dist.new -xzf -
+          rm -rf frontend/dist
+          mv frontend/dist.new frontend/dist
           source .venv/bin/activate
           pip install -e . --quiet
           sudo systemctl restart quizpatenteb
@@ -72,3 +66,6 @@ jobs:
             exit 1
           fi
           REMOTE
+          )
+          tar -C frontend/dist -czf - . | \
+            ssh $SSH_OPTS "$SERVER_USER@$SERVER_HOST" "$REMOTE_SCRIPT"
