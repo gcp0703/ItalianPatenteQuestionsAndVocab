@@ -17,7 +17,7 @@ jobs:
       SERVER_USER: azureuser
       SERVER_HOST: 172.173.116.28
       REMOTE_DIR: /home/azureuser/quizpatenteb
-      SSH_OPTS: "-i ~/.ssh/deploy_key -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4"
+      SSH_OPTS: "-i ~/.ssh/deploy_key -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=~/.ssh/known_hosts"
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,8 @@ jobs:
           chmod 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+          touch ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Stream dist + pull + restart in one SSH connection
         run: |
