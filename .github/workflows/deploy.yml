@@ -12,10 +12,12 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       SERVER_USER: azureuser
       SERVER_HOST: 172.173.116.28
       REMOTE_DIR: /home/azureuser/quizpatenteb
+      SSH_OPTS: "-i ~/.ssh/deploy_key -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4"
     steps:
       - uses: actions/checkout@v4
 
@@ -43,19 +45,19 @@ jobs:
 
       - name: Pull source on server
         run: |
-          ssh -i ~/.ssh/deploy_key "$SERVER_USER@$SERVER_HOST" \
+          ssh $SSH_OPTS "$SERVER_USER@$SERVER_HOST" \
             "cd $REMOTE_DIR && git pull --ff-only origin main"
 
       - name: Sync freshly built frontend bundle
         run: |
           rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key" \
+            -e "ssh $SSH_OPTS" \
             frontend/dist/ \
             "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/frontend/dist/"
 
-      - name: Install Python deps, restart service, health check
+      - name: Install deps, restart service, health check
         run: |
-          ssh -i ~/.ssh/deploy_key "$SERVER_USER@$SERVER_HOST" bash <<'REMOTE'
+          ssh $SSH_OPTS "$SERVER_USER@$SERVER_HOST" bash <<'REMOTE'
           set -euo pipefail
           cd /home/azureuser/quizpatenteb
           source .venv/bin/activate
