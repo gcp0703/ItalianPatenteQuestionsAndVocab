@@ -11,13 +11,10 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, production]
     timeout-minutes: 10
     env:
-      SERVER_USER: azureuser
-      SERVER_HOST: 172.173.116.28
-      REMOTE_DIR: /home/azureuser/quizpatenteb
-      SSH_OPTS: "-i ~/.ssh/deploy_key -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=~/.ssh/known_hosts"
+      PROD_DIR: /home/azureuser/quizpatenteb
     steps:
       - uses: actions/checkout@v4
 
@@ -33,40 +30,26 @@ jobs:
           npm ci
           npm run build
 
-      - name: Configure SSH
-        env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          touch ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+      - name: Pull source into production tree
+        run: git -C "$PROD_DIR" pull --ff-only origin main
 
-      - name: Stream dist + pull + restart in one SSH connection
+      - name: Sync freshly built dist into production tree
         run: |
-          REMOTE_SCRIPT=$(cat <<'REMOTE'
-          set -euo pipefail
-          cd /home/azureuser/quizpatenteb
-          git pull --ff-only origin main
-          rm -rf frontend/dist.new
-          mkdir -p frontend/dist.new
-          tar -C frontend/dist.new -xzf -
-          rm -rf frontend/dist
-          mv frontend/dist.new frontend/dist
-          source .venv/bin/activate
-          pip install -e . --quiet
+          rsync -a --delete frontend/dist/ "$PROD_DIR/frontend/dist/"
+
+      - name: Install Python deps in production venv
+        run: |
+          source "$PROD_DIR/.venv/bin/activate"
+          pip install -e "$PROD_DIR" --quiet
+
+      - name: Restart service and health-check
+        run: |
           sudo systemctl restart quizpatenteb
           sleep 3
           if curl -sf http://127.0.0.1:8500/api/health > /dev/null; then
             echo "Health check PASSED"
           else
             echo "Health check FAILED"
-            sudo journalctl -u quizpatenteb --no-pager -n 20
+            sudo journalctl -u quizpatenteb --no-pager -n 30
             exit 1
           fi
-          REMOTE
-          )
-          tar -C frontend/dist -czf - . | \
-            ssh $SSH_OPTS "$SERVER_USER@$SERVER_HOST" "$REMOTE_SCRIPT"
