@@ -1,0 +1,72 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SERVER_USER: azureuser
+      SERVER_HOST: 172.173.116.28
+      REMOTE_DIR: /home/azureuser/quizpatenteb
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Pull source on server
+        run: |
+          ssh -i ~/.ssh/deploy_key "$SERVER_USER@$SERVER_HOST" \
+            "cd $REMOTE_DIR && git pull --ff-only origin main"
+
+      - name: Sync freshly built frontend bundle
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            frontend/dist/ \
+            "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/frontend/dist/"
+
+      - name: Install Python deps, restart service, health check
+        run: |
+          ssh -i ~/.ssh/deploy_key "$SERVER_USER@$SERVER_HOST" bash <<'REMOTE'
+          set -euo pipefail
+          cd /home/azureuser/quizpatenteb
+          source .venv/bin/activate
+          pip install -e . --quiet
+          sudo systemctl restart quizpatenteb
+          sleep 3
+          if curl -sf http://127.0.0.1:8500/api/health > /dev/null; then
+            echo "Health check PASSED"
+          else
+            echo "Health check FAILED"
+            sudo journalctl -u quizpatenteb --no-pager -n 20
+            exit 1
+          fi
+          REMOTE
