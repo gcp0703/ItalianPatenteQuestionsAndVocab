@@ -430,6 +430,34 @@ function VocabHelpChip() {
   );
 }
 
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Mirrors backend/app/main.py:get_vocab_word_questions — stem-prefix match for
+// 4+ char stems (after stripping trailing aeio), otherwise exact word boundary.
+function highlightWordInText(text, word) {
+  if (!text || !word) return text;
+  const stem = word.replace(/[aeio]+$/i, "");
+  const pattern =
+    stem.length >= 4
+      ? new RegExp(`\\b${escapeRegex(stem)}[\\p{L}\\p{N}_]*`, "giu")
+      : new RegExp(`\\b${escapeRegex(word)}\\b`, "giu");
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(<strong key={`m-${match.index}`}>{match[0]}</strong>);
+    lastIndex = match.index + match[0].length;
+    if (match[0].length === 0) pattern.lastIndex++;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
+}
+
 function VocabFeedbackStats({ stats, onSearch }) {
   return (
     <p className="vocab-feedback-stats">
@@ -1831,7 +1859,7 @@ function App() {
                   <div key={q.id} className="vocab-question-item">
                     <div className="vocab-question-text">
                       {q.image_url && <img className="vocab-question-image" src={q.image_url} alt="" />}
-                      <p>{q.text}</p>
+                      <p>{highlightWordInText(q.text, vocabQuestionResults.word)}</p>
                     </div>
                     <div className="vocab-question-meta">
                       <span className={`vocab-question-answer ${q.answer ? "vero" : "falso"}`}>
