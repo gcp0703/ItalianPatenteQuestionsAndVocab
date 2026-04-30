@@ -466,8 +466,8 @@ function VocabFeedbackStats({ stats, onSearch }) {
       {onSearch && (
         <button
           className="vocab-search-button"
-          title="Show quiz questions with this word"
-          aria-label="Show quiz questions with this word"
+          title="Show all the questions that include forms of this word"
+          aria-label="Show all the questions that include forms of this word"
           onClick={onSearch}
         >
           📋
