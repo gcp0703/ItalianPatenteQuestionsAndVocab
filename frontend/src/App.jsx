@@ -438,10 +438,11 @@ function VocabFeedbackStats({ stats, onSearch }) {
       {onSearch && (
         <button
           className="vocab-search-button"
-          title="Find quiz questions with this word"
+          title="Show quiz questions with this word"
+          aria-label="Show quiz questions with this word"
           onClick={onSearch}
         >
-          🔍
+          📋
         </button>
       )}
     </p>
@@ -2382,7 +2383,10 @@ function App() {
                     <div className="vocab-copy">
                       <p className="vocab-language">Italiano</p>
                       <h3 className="vocab-word">{item.word}</h3>
-                      <VocabFeedbackStats stats={getWordFeedbackStats(item.word)} />
+                      <VocabFeedbackStats
+                        stats={getWordFeedbackStats(item.word)}
+                        onSearch={() => loadVocabQuestions(item.word)}
+                      />
                     </div>
                     <div className="vocab-copy">
                       <p className="vocab-language">English</p>
