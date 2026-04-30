@@ -1147,6 +1147,51 @@ button:disabled {
   padding: 32px 0;
 }
 
+.settings-modal-card {
+  position: relative;
+  width: min(420px, calc(100vw - 48px));
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: rgba(255, 252, 246, 0.98);
+  border: 1px solid rgba(255, 250, 242, 0.8);
+  box-shadow: 0 28px 60px rgba(31, 42, 51, 0.22);
+  text-align: left;
+}
+
+.settings-modal-card h2 {
+  margin: 0 0 18px;
+  font-size: 1.3rem;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.settings-label {
+  font-size: 0.95rem;
+  color: var(--ink, #1f2a33);
+  min-width: 90px;
+}
+
+.settings-select {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(31, 42, 51, 0.18);
+  background: #fff;
+  font-size: 1rem;
+  color: var(--ink, #1f2a33);
+  cursor: pointer;
+}
+
+.settings-select:focus {
+  outline: 2px solid rgba(31, 42, 51, 0.25);
+  outline-offset: 1px;
+}
+
 .vocab-questions-list {
   display: flex;
   flex-direction: column;

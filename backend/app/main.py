@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import html
 import json
 import logging
 import os
 import random
 import re
+import tempfile
 import time
+import unicodedata
 from contextlib import asynccontextmanager
 from html.parser import HTMLParser
 from functools import lru_cache
@@ -42,6 +45,11 @@ VOCAB_FILE = ROOT_DIR / "vocabolario_patente.json"
 NORMALIZED_VOCAB_FILE = ROOT_DIR / "vocabolario_patente.normalized.json"
 IMAGE_DIR = ROOT_DIR / "img_sign"
 FRONTEND_DIST = ROOT_DIR / "frontend" / "dist"
+BACKEND_DATA_DIR = ROOT_DIR / "backend" / "data"
+TRANSLATION_CACHE_FILE = BACKEND_DATA_DIR / "translations.en.json"
+TRANSLATION_CACHE_VERSION = 1
+TRANSLATION_CACHE_SOURCE_LANG = "it"
+TRANSLATION_CACHE_TARGET_LANG = "en"
 USER_DATA_DIR = Path(os.environ.get("QPB_USER_DATA_DIR") or (ROOT_DIR / "user_data"))
 USER_REGISTRY_FILE = USER_DATA_DIR / "_users.json"
 VOCAB_WRITE_LOCK = Lock()
@@ -881,17 +889,102 @@ def load_vocab_bank() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
     return items, by_word
 
 
-@lru_cache(maxsize=8192)
+def _translation_cache_key(text: str) -> str:
+    normalized = unicodedata.normalize("NFC", text).strip()
+    return hashlib.sha1(normalized.encode("utf-8")).hexdigest()
+
+
+class TranslationCache:
+    """Persistent, language-tagged translation cache.
+
+    Stores the *pre-override* raw Google output keyed by sha1 of the
+    NFC-normalized Italian source text. Phrase overrides are applied at
+    read time on every call so override edits never invalidate entries.
+    """
+
+    def __init__(self, path: Path) -> None:
+        self._path = path
+        self._lock = Lock()
+        self._entries: dict[str, dict[str, str]] = {}
+        self._load()
+
+    def _load(self) -> None:
+        if not self._path.exists():
+            logger.info("Translation cache file not found at %s; starting empty", self._path)
+            return
+        try:
+            data = json.loads(self._path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("Failed to load translation cache from %s: %s", self._path, exc)
+            return
+        entries = data.get("entries") if isinstance(data, dict) else None
+        if isinstance(entries, dict):
+            self._entries = {
+                str(k): v
+                for k, v in entries.items()
+                if isinstance(v, dict) and isinstance(v.get("dst"), str)
+            }
+        logger.info(
+            "Loaded %d translation cache entries from %s", len(self._entries), self._path
+        )
+
+    def get(self, text: str) -> str | None:
+        key = _translation_cache_key(text)
+        with self._lock:
+            entry = self._entries.get(key)
+            return entry["dst"] if entry else None
+
+    def put(self, text: str, dst: str) -> None:
+        key = _translation_cache_key(text)
+        with self._lock:
+            self._entries[key] = {"src": text, "dst": dst}
+            self._write_locked()
+
+    def _write_locked(self) -> None:
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "version": TRANSLATION_CACHE_VERSION,
+            "source_lang": TRANSLATION_CACHE_SOURCE_LANG,
+            "target_lang": TRANSLATION_CACHE_TARGET_LANG,
+            "entries": self._entries,
+        }
+        fd, tmp_path = tempfile.mkstemp(
+            prefix=".translations.", suffix=".tmp", dir=str(self._path.parent)
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                json.dump(payload, fh, ensure_ascii=False, indent=2, sort_keys=True)
+            os.replace(tmp_path, self._path)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
+
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._entries)
+
+
+_translation_cache = TranslationCache(TRANSLATION_CACHE_FILE)
+
+
 def translate_text(text: str) -> str:
     exact_override = DRIVING_TRANSLATION_OVERRIDES.get(text.strip().lower())
     if exact_override:
         return exact_override
+
+    cached = _translation_cache.get(text)
+    if cached is not None:
+        return _apply_phrase_overrides(cached)
 
     contextual_input = f"{TRANSLATION_CONTEXT_PREFIX}{text}"
     translated = GoogleTranslator(source="it", target="en").translate(contextual_input)
     if not translated:
         raise RuntimeError("Google Translate did not return a translation.")
     extracted = _extract_translated_target_text(translated)
+    _translation_cache.put(text, extracted)
     return _apply_phrase_overrides(extracted)
 
 

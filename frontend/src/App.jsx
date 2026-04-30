@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import {
+  AVAILABLE_LANGUAGES,
+  DEFAULT_LANGUAGE,
+  LANGUAGE_STORAGE_KEY,
+} from "./languages";
 
 const CURRENT_USER_STORAGE_KEY = "quiz-patente-b-current-user";
 const AUTH_TOKEN_STORAGE_KEY = "quiz-patente-b-auth-token";
@@ -716,6 +721,11 @@ function LoginScreen({ onLogin }) {
 function App() {
   const [currentUser, setCurrentUser] = useState(getSavedUser);
   const [mode, setMode] = useState("quiz");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [language, setLanguage] = useState(() => {
+    if (typeof window === "undefined") return DEFAULT_LANGUAGE;
+    return window.localStorage.getItem(LANGUAGE_STORAGE_KEY) || DEFAULT_LANGUAGE;
+  });
   const [quiz, setQuiz] = useState(emptyState.quiz);
   const [answers, setAnswers] = useState(emptyState.answers);
   const [currentIndex, setCurrentIndex] = useState(emptyState.currentIndex);
@@ -803,6 +813,13 @@ function App() {
     setResult(null);
     setQuizHistory([]);
     setMode("quiz");
+  }
+
+  function handleLanguageChange(nextCode) {
+    setLanguage(nextCode);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextCode);
+    }
   }
 
   useEffect(() => {
@@ -1860,6 +1877,27 @@ function App() {
           </div>
         </div>
       )}
+      {settingsOpen && (
+        <div className="vocab-batch-overlay" role="dialog" aria-modal="true" onClick={() => setSettingsOpen(false)}>
+          <div className="settings-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="vocab-questions-close" onClick={() => setSettingsOpen(false)}>&times;</button>
+            <h2>Settings</h2>
+            <div className="settings-row">
+              <label className="settings-label" htmlFor="settings-language">Language</label>
+              <select
+                id="settings-language"
+                className="settings-select"
+                value={language}
+                onChange={(e) => handleLanguageChange(e.target.value)}
+              >
+                {AVAILABLE_LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>{lang.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
       <section className={`hero-card ${mode === "vocab" ? "hero-card-with-progress" : ""}`}>
         <div className="hero-brand">
           <img className="hero-icon" src="/app-icon.svg" alt="Quiz Patente B" />
@@ -1909,6 +1947,12 @@ function App() {
               onClick={() => setMode("history")}
             >
               History
+            </button>
+            <button
+              className="secondary-button header-button"
+              onClick={() => setSettingsOpen(true)}
+            >
+              Settings
             </button>
             <button
               className="secondary-button header-button"
