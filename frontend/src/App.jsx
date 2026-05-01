@@ -2241,7 +2241,20 @@ function App() {
       ) : mode === "quiz" ? (
         <section className="content-grid">
           <article className="question-panel">
-            <p className="topic-tag">{currentQuestion.topic}</p>
+            <div className="question-panel-header">
+              <p className="topic-tag">{currentQuestion.topic}</p>
+              <label className="hard-toggle">
+                <input
+                  type="checkbox"
+                  checked={hardQuestionIds.has(currentQuestion.id)}
+                  onChange={(e) => toggleHardQuestion(currentQuestion.id, e.target.checked)}
+                />
+                <span>Hard</span>
+              </label>
+            </div>
+            {hardToggleError && (
+              <p className="inline-error hard-toggle-error">{hardToggleError}</p>
+            )}
             <h2 className="question-text">
               <button
                 className="quiz-search-button"
