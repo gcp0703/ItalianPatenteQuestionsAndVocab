@@ -2028,12 +2028,45 @@ function App() {
           )}
           <span className="user-indicator">{currentUser}</span>
           <div className="header-actions">
-            <button
-              className={`secondary-button header-button ${mode === "quiz" ? "active" : ""}`}
-              onClick={() => setMode("quiz")}
-            >
-              Quiz
-            </button>
+            <div className="quiz-menu-wrapper">
+              <button
+                className={`secondary-button header-button quiz-menu-trigger ${mode === "quiz" ? "active" : ""}`}
+                onClick={() => {
+                  setQuizMode("normal");
+                  setMode("quiz");
+                }}
+                aria-haspopup="menu"
+              >
+                Quiz <span className="quiz-menu-caret" aria-hidden="true">▾</span>
+              </button>
+              <div className="quiz-menu-dropdown" role="menu">
+                <button
+                  type="button"
+                  className="quiz-menu-item"
+                  role="menuitem"
+                  onClick={() => {
+                    setQuizMode("normal");
+                    setMode("quiz");
+                  }}
+                >
+                  Normal
+                </button>
+                <button
+                  type="button"
+                  className="quiz-menu-item"
+                  role="menuitem"
+                  aria-disabled={hardQuestionIds.size === 0}
+                  disabled={hardQuestionIds.size === 0}
+                  onClick={() => {
+                    if (hardQuestionIds.size === 0) return;
+                    setQuizMode("hard");
+                    setMode("quiz");
+                  }}
+                >
+                  Hard
+                </button>
+              </div>
+            </div>
             <button
               className={`secondary-button header-button ${mode === "vocab" ? "active" : ""}`}
               onClick={openVocabMode}

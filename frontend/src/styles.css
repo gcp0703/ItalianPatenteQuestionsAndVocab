@@ -1475,3 +1475,55 @@ button:disabled {
 .hard-toggle-error {
   margin: 0.25rem 0 0;
 }
+
+.quiz-menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.quiz-menu-caret {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.quiz-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 100%;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #d0d0d8);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0.25rem 0;
+  display: none;
+  z-index: 50;
+}
+
+.quiz-menu-wrapper:hover .quiz-menu-dropdown,
+.quiz-menu-wrapper:focus-within .quiz-menu-dropdown {
+  display: block;
+}
+
+.quiz-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.quiz-menu-item:hover:not(:disabled),
+.quiz-menu-item:focus:not(:disabled) {
+  background: var(--hover, rgba(0, 0, 0, 0.06));
+}
+
+.quiz-menu-item:disabled,
+.quiz-menu-item[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
