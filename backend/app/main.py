@@ -405,6 +405,7 @@ def _empty_user_data(email: str) -> dict[str, Any]:
             "feedback_counts": {},
             "hidden_words": [],
             "difficult_words": [],
+            "hard_questions": [],
         },
         "quiz_history": [],
     }
@@ -1240,10 +1241,12 @@ def persist_vocab_tracking_for_user(email: str, update: VocabTrackingSyncIn) -> 
     }
 
     user_data = load_user_data(email)
+    existing_hard = user_data.get("tracking", {}).get("hard_questions", [])
     user_data["tracking"] = {
         "feedback_counts": feedback_counts,
         "hidden_words": update.hidden_words,
         "difficult_words": update.difficult_words,
+        "hard_questions": existing_hard,
     }
     save_user_data(email, user_data)
     return len(feedback_counts)
@@ -1774,10 +1777,12 @@ async def migrate_legacy_tracking(email: str = Depends(get_current_user_email)) 
             difficult_words.append(word)
 
     user_data = load_user_data(email)
+    existing_hard = user_data.get("tracking", {}).get("hard_questions", [])
     user_data["tracking"] = {
         "feedback_counts": feedback_counts,
         "hidden_words": hidden_words,
         "difficult_words": difficult_words,
+        "hard_questions": existing_hard,
     }
     save_user_data(email, user_data)
 
