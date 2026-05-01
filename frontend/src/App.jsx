@@ -881,6 +881,13 @@ function App() {
   }, [currentUser]);
 
   useEffect(() => {
+    if (currentUser && mode === "quiz") {
+      loadQuiz();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizMode]);
+
+  useEffect(() => {
     if (mode !== "topics" || topics.length > 0) return;
     fetch("/api/topics")
       .then((r) => r.json())
@@ -1006,7 +1013,14 @@ function App() {
     setCheating(false);
 
     try {
-      const response = await fetch("/api/quiz");
+      const url = quizMode === "hard" ? "/api/quiz/hard" : "/api/quiz";
+      const response = quizMode === "hard"
+        ? await fetchWithUser(url, {}, currentUser)
+        : await fetch(url);
+      if (response.status === 409) {
+        setQuizMode("normal");
+        throw new Error("Nessuna domanda contrassegnata come Difficile. Torno alla modalità normale.");
+      }
       if (!response.ok) {
         throw new Error("Impossibile caricare il quiz.");
       }
@@ -1024,6 +1038,44 @@ function App() {
       setScreenError(error.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function toggleHardQuestion(questionId, nextChecked) {
+    if (!currentUser || !questionId) return;
+    setHardToggleError("");
+
+    // Optimistically update.
+    setHardQuestionIds((prev) => {
+      const next = new Set(prev);
+      if (nextChecked) next.add(questionId);
+      else next.delete(questionId);
+      return next;
+    });
+
+    try {
+      const response = await fetchWithUser(
+        `/api/quiz/hard-questions/${questionId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ hard: Boolean(nextChecked) }),
+        },
+        currentUser,
+      );
+      if (!response.ok) {
+        throw new Error(`Toggle failed (${response.status})`);
+      }
+    } catch (err) {
+      // Revert optimistic change.
+      setHardQuestionIds((prev) => {
+        const next = new Set(prev);
+        if (nextChecked) next.delete(questionId);
+        else next.add(questionId);
+        return next;
+      });
+      setHardToggleError("Impossibile aggiornare lo stato Difficile. Riprova.");
+      console.error(err);
     }
   }
 
