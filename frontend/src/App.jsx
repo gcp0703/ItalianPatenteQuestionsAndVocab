@@ -2217,6 +2217,9 @@ function App() {
                       </div>
                     ) : null;
                   })()}
+                  {hardToggleError && (
+                    <p className="inline-error hard-toggle-error">{hardToggleError}</p>
+                  )}
                   <ul className="topics-question-list">
                     {topicQuestions.map((q) => {
                       const tr = translations[q.id];
