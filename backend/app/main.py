@@ -2177,6 +2177,8 @@ async def get_hard_questions(
 ) -> HardQuestionsResponse:
     user_data = load_user_data(email)
     raw = user_data.get("tracking", {}).get("hard_questions", [])
+    if not isinstance(raw, list):
+        raw = []
     ids = [int(qid) for qid in raw if isinstance(qid, int) or (isinstance(qid, str) and qid.isdigit())]
     return HardQuestionsResponse(hard_question_ids=ids)
 

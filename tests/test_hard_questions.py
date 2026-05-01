@@ -91,3 +91,15 @@ def test_get_hard_questions_returns_persisted_set(client, isolated_env):
     r = client.get("/api/quiz/hard-questions", headers=_auth(token))
     assert r.status_code == 200
     assert sorted(r.json()["hard_question_ids"]) == [42, 138, 405]
+
+
+def test_get_hard_questions_handles_corrupt_non_list(client, isolated_env):
+    """A non-list value at tracking.hard_questions must yield an empty response, not iterate characters."""
+    token = _register(client, "alice@example.com")
+    path = _user_file(isolated_env, "alice@example.com")
+    data = json.loads(path.read_text())
+    data["tracking"]["hard_questions"] = "42"  # corrupt: string, not list
+    path.write_text(json.dumps(data))
+    r = client.get("/api/quiz/hard-questions", headers=_auth(token))
+    assert r.status_code == 200
+    assert r.json() == {"hard_question_ids": []}
