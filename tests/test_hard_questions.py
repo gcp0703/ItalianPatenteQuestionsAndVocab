@@ -164,3 +164,30 @@ def test_put_hard_question_unknown_id_returns_404(client):
         json={"hard": True},
     )
     assert r.status_code == 404
+
+
+def test_put_hard_question_rejects_empty_body(client):
+    token = _register(client, "alice@example.com")
+    r = client.put("/api/quiz/hard-questions/1", headers=_auth(token), json={})
+    assert r.status_code == 422
+
+
+def test_put_hard_question_rejects_null_hard(client):
+    token = _register(client, "alice@example.com")
+    r = client.put(
+        "/api/quiz/hard-questions/1",
+        headers=_auth(token),
+        json={"hard": None},
+    )
+    assert r.status_code == 422
+
+
+def test_put_hard_question_rejects_string_hard(client):
+    """StrictBool must reject string-typed booleans like "yes" or "true"."""
+    token = _register(client, "alice@example.com")
+    r = client.put(
+        "/api/quiz/hard-questions/1",
+        headers=_auth(token),
+        json={"hard": "yes"},
+    )
+    assert r.status_code == 422

@@ -28,7 +28,7 @@ from deep_translator import GoogleTranslator
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictBool
 
 # Dev-only: load repo-root .env so local runs pick up developer overrides.
 # Production sets QPB_LOAD_DOTENV=0 in the systemd unit so this is a no-op.
@@ -299,7 +299,9 @@ class HardQuestionsResponse(BaseModel):
 
 
 class HardQuestionToggleIn(BaseModel):
-    hard: bool
+    # StrictBool prevents Pydantic from coercing "yes"/"1"/"true" to True;
+    # only literal JSON true/false are accepted.
+    hard: StrictBool
 
 
 class QuestionMatchOut(BaseModel):
@@ -2189,6 +2191,10 @@ async def put_hard_question(
     payload: HardQuestionToggleIn,
     email: str = Depends(get_current_user_email),
 ) -> Response:
+    # Rate-limited at nginx (30/min for /api/) — slowapi's @limiter.limit
+    # decorator does not compose with from-future annotations on endpoints
+    # with Pydantic body params (FastAPI fails to resolve the body type via
+    # typing.get_type_hints on the slowapi wrapper).
     if question_id not in QUESTION_BY_ID:
         raise HTTPException(status_code=404, detail="Question not found.")
 
