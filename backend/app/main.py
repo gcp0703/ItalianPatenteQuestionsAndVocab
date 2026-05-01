@@ -1243,6 +1243,34 @@ def persist_quiz_result(email: str, total: int, correct: int) -> None:
     save_user_data(email, user_data)
 
 
+def _normalize_hard_ids(raw: Any, *, require_known: bool = True) -> list[int]:
+    """Coerce a persisted hard_questions value to a clean list of int IDs.
+
+    Handles legacy/corrupt inputs: non-list values yield []; non-numeric
+    elements are dropped; digit-strings are coerced to int. When
+    require_known=True, IDs not in QUESTION_BY_ID are filtered out so
+    callers never hand back stale IDs after the question bank changes.
+    Order is preserved (deduplication is the caller's choice).
+    """
+    if not isinstance(raw, list):
+        return []
+    result: list[int] = []
+    for qid in raw:
+        if isinstance(qid, bool):
+            # bool is a subclass of int — exclude it explicitly.
+            continue
+        if isinstance(qid, int):
+            cand = qid
+        elif isinstance(qid, str) and qid.isdigit():
+            cand = int(qid)
+        else:
+            continue
+        if require_known and cand not in QUESTION_BY_ID:
+            continue
+        result.append(cand)
+    return result
+
+
 def persist_vocab_tracking_for_user(email: str, update: VocabTrackingSyncIn) -> int:
     """Save vocab tracking data to the user's personal JSON file."""
     feedback_counts = {
@@ -2179,9 +2207,7 @@ async def get_hard_questions(
 ) -> HardQuestionsResponse:
     user_data = load_user_data(email)
     raw = user_data.get("tracking", {}).get("hard_questions", [])
-    if not isinstance(raw, list):
-        raw = []
-    ids = [int(qid) for qid in raw if isinstance(qid, int) or (isinstance(qid, str) and qid.isdigit())]
+    ids = _normalize_hard_ids(raw, require_known=True)
     return HardQuestionsResponse(hard_question_ids=ids)
 
 
@@ -2203,9 +2229,10 @@ async def put_hard_question(
             user_data = _read_user_data_unlocked(email)
             tracking = user_data.setdefault("tracking", {})
             current = tracking.get("hard_questions", [])
-            if not isinstance(current, list):
-                current = []
-            current_set = {int(q) for q in current if isinstance(q, int) or (isinstance(q, str) and q.isdigit())}
+            # require_known=False here: preserve unknown IDs that may already be
+            # persisted, even though the GET/Hard-quiz endpoints filter them out.
+            # The toggle should not silently drop IDs the user might re-validate later.
+            current_set = set(_normalize_hard_ids(current, require_known=False))
             if payload.hard:
                 current_set.add(question_id)
             else:
@@ -2226,19 +2253,7 @@ async def get_hard_quiz(
 ) -> QuizResponse:
     user_data = load_user_data(email)
     raw = user_data.get("tracking", {}).get("hard_questions", [])
-    if not isinstance(raw, list):
-        raw = []
-
-    hard_ids: list[int] = []
-    for qid in raw:
-        if isinstance(qid, int):
-            cand = qid
-        elif isinstance(qid, str) and qid.isdigit():
-            cand = int(qid)
-        else:
-            continue
-        if cand in QUESTION_BY_ID:
-            hard_ids.append(cand)
+    hard_ids = _normalize_hard_ids(raw, require_known=True)
 
     if not hard_ids:
         raise HTTPException(status_code=409, detail="no_hard_questions")

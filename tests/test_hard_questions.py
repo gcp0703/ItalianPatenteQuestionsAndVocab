@@ -251,3 +251,16 @@ def test_get_hard_quiz_filters_unknown_ids(client, isolated_env):
     # The valid Hard id must be present; the bogus id must not.
     assert 1 in returned_ids
     assert 99999999 not in returned_ids
+
+
+def test_get_hard_quiz_exact_count_match(client):
+    """When the Hard set size exactly matches count, return all Hard with no fillers."""
+    token = _register(client, "alice@example.com")
+    hard_ids = [1, 2, 3, 4, 5]
+    for qid in hard_ids:
+        client.put(f"/api/quiz/hard-questions/{qid}", headers=_auth(token), json={"hard": True})
+
+    r = client.get("/api/quiz/hard?count=5", headers=_auth(token))
+    assert r.status_code == 200
+    returned_ids = [q["id"] for q in r.json()["questions"]]
+    assert sorted(returned_ids) == [1, 2, 3, 4, 5]
