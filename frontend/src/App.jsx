@@ -750,6 +750,9 @@ function LoginScreen({ onLogin }) {
 function App() {
   const [currentUser, setCurrentUser] = useState(getSavedUser);
   const [mode, setMode] = useState("quiz");
+  const [quizMode, setQuizMode] = useState("normal"); // "normal" | "hard"
+  const [hardQuestionIds, setHardQuestionIds] = useState(() => new Set());
+  const [hardToggleError, setHardToggleError] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [language, setLanguage] = useState(() => {
     if (typeof window === "undefined") return DEFAULT_LANGUAGE;
@@ -870,6 +873,10 @@ function App() {
     if (currentUser) {
       loadQuiz();
       loadQuizHistory();
+      loadHardQuestions();
+    } else {
+      setHardQuestionIds(new Set());
+      setQuizMode("normal");
     }
   }, [currentUser]);
 
@@ -1029,6 +1036,22 @@ function App() {
       }
     } catch {
       // ignore
+    }
+  }
+
+  async function loadHardQuestions() {
+    if (!currentUser) return;
+    try {
+      const response = await fetchWithUser("/api/quiz/hard-questions", {}, currentUser);
+      if (!response.ok) {
+        console.warn("Failed to load hard questions", response.status);
+        return;
+      }
+      const data = await response.json();
+      const ids = Array.isArray(data.hard_question_ids) ? data.hard_question_ids : [];
+      setHardQuestionIds(new Set(ids));
+    } catch (err) {
+      console.warn("Failed to load hard questions", err);
     }
   }
 
