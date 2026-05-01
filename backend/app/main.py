@@ -294,6 +294,14 @@ class QuizHistoryResponse(BaseModel):
     history: list[QuizHistoryEntry]
 
 
+class HardQuestionsResponse(BaseModel):
+    hard_question_ids: list[int]
+
+
+class HardQuestionToggleIn(BaseModel):
+    hard: bool
+
+
 class QuestionMatchOut(BaseModel):
     id: int
     text: str
@@ -2160,6 +2168,17 @@ async def get_quiz_history(email: str = Depends(get_current_user_email)) -> Quiz
         except (TypeError, ValueError):
             continue
     return QuizHistoryResponse(history=entries)
+
+
+@app.get("/api/quiz/hard-questions", response_model=HardQuestionsResponse)
+@limiter.limit("60/minute")
+async def get_hard_questions(
+    request: Request, email: str = Depends(get_current_user_email)
+) -> HardQuestionsResponse:
+    user_data = load_user_data(email)
+    raw = user_data.get("tracking", {}).get("hard_questions", [])
+    ids = [int(qid) for qid in raw if isinstance(qid, int) or (isinstance(qid, str) and qid.isdigit())]
+    return HardQuestionsResponse(hard_question_ids=ids)
 
 
 if IMAGE_DIR.exists():

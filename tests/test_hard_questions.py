@@ -65,3 +65,29 @@ def test_migrate_preserves_hard_questions(client, isolated_env):
 
     after = json.loads(path.read_text())
     assert after["tracking"]["hard_questions"] == [11, 22, 33]
+
+
+def test_get_hard_questions_requires_auth(client):
+    r = client.get("/api/quiz/hard-questions")
+    assert r.status_code == 401
+
+
+def test_get_hard_questions_empty_for_new_user(client):
+    token = _register(client, "alice@example.com")
+    r = client.get("/api/quiz/hard-questions", headers=_auth(token))
+    assert r.status_code == 200
+    assert r.json() == {"hard_question_ids": []}
+
+
+def test_get_hard_questions_returns_persisted_set(client, isolated_env):
+    token = _register(client, "alice@example.com")
+
+    # Seed the user file directly.
+    path = _user_file(isolated_env, "alice@example.com")
+    data = json.loads(path.read_text())
+    data["tracking"]["hard_questions"] = [42, 138, 405]
+    path.write_text(json.dumps(data))
+
+    r = client.get("/api/quiz/hard-questions", headers=_auth(token))
+    assert r.status_code == 200
+    assert sorted(r.json()["hard_question_ids"]) == [42, 138, 405]
