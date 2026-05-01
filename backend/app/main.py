@@ -2217,6 +2217,55 @@ async def put_hard_question(
     return Response(status_code=204)
 
 
+@app.get("/api/quiz/hard", response_model=QuizResponse)
+@limiter.limit("30/minute")
+async def get_hard_quiz(
+    request: Request,
+    email: str = Depends(get_current_user_email),
+    count: int = Query(default=30, ge=1, le=100),
+) -> QuizResponse:
+    user_data = load_user_data(email)
+    raw = user_data.get("tracking", {}).get("hard_questions", [])
+    if not isinstance(raw, list):
+        raw = []
+
+    hard_ids: list[int] = []
+    for qid in raw:
+        if isinstance(qid, int):
+            cand = qid
+        elif isinstance(qid, str) and qid.isdigit():
+            cand = int(qid)
+        else:
+            continue
+        if cand in QUESTION_BY_ID:
+            hard_ids.append(cand)
+
+    if not hard_ids:
+        raise HTTPException(status_code=409, detail="no_hard_questions")
+
+    hard_set = set(hard_ids)
+    if len(hard_set) >= count:
+        chosen_ids = random.sample(list(hard_set), count)
+    else:
+        filler_pool = [item["id"] for item in QUESTION_BANK if item["id"] not in hard_set]
+        fillers_needed = count - len(hard_set)
+        # filler_pool will always be large enough because count <= 100 and the bank has 7139 questions.
+        fillers = random.sample(filler_pool, fillers_needed)
+        chosen_ids = list(hard_set) + fillers
+        random.shuffle(chosen_ids)
+
+    questions = [
+        QuestionOut(
+            id=QUESTION_BY_ID[qid]["id"],
+            text=QUESTION_BY_ID[qid]["text"],
+            image_url=QUESTION_BY_ID[qid]["image_url"],
+            topic=QUESTION_BY_ID[qid]["topic"],
+        )
+        for qid in chosen_ids
+    ]
+    return QuizResponse(questions=questions)
+
+
 if IMAGE_DIR.exists():
     app.mount("/img_sign", StaticFiles(directory=IMAGE_DIR), name="question-images")
 

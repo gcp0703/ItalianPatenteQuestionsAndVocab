@@ -191,3 +191,63 @@ def test_put_hard_question_rejects_string_hard(client):
         json={"hard": "yes"},
     )
     assert r.status_code == 422
+
+
+def test_get_hard_quiz_requires_auth(client):
+    r = client.get("/api/quiz/hard")
+    assert r.status_code == 401
+
+
+def test_get_hard_quiz_empty_set_returns_409(client):
+    token = _register(client, "alice@example.com")
+    r = client.get("/api/quiz/hard", headers=_auth(token))
+    assert r.status_code == 409
+    assert r.json()["detail"] == "no_hard_questions"
+
+
+def test_get_hard_quiz_pads_with_fillers(client):
+    token = _register(client, "alice@example.com")
+    hard_ids = [1, 2, 3, 4, 5]
+    for qid in hard_ids:
+        client.put(f"/api/quiz/hard-questions/{qid}", headers=_auth(token), json={"hard": True})
+
+    r = client.get("/api/quiz/hard?count=10", headers=_auth(token))
+    assert r.status_code == 200
+    data = r.json()
+    returned_ids = [q["id"] for q in data["questions"]]
+    assert len(returned_ids) == 10
+    assert len(set(returned_ids)) == 10  # no duplicates
+    # All Hard ids must be present.
+    assert set(hard_ids) <= set(returned_ids)
+
+
+def test_get_hard_quiz_samples_when_set_exceeds_count(client):
+    token = _register(client, "alice@example.com")
+    # Mark 20 hard, ask for 5.
+    for qid in range(1, 21):
+        client.put(f"/api/quiz/hard-questions/{qid}", headers=_auth(token), json={"hard": True})
+
+    r = client.get("/api/quiz/hard?count=5", headers=_auth(token))
+    assert r.status_code == 200
+    returned_ids = [q["id"] for q in r.json()["questions"]]
+    assert len(returned_ids) == 5
+    assert len(set(returned_ids)) == 5
+    # Every returned id must be from the Hard set.
+    assert set(returned_ids) <= set(range(1, 21))
+
+
+def test_get_hard_quiz_filters_unknown_ids(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    # Seed user file with one valid id and one bogus id.
+    path = _user_file(isolated_env, "alice@example.com")
+    data = json.loads(path.read_text())
+    data["tracking"]["hard_questions"] = [1, 99999999]
+    path.write_text(json.dumps(data))
+
+    r = client.get("/api/quiz/hard?count=3", headers=_auth(token))
+    assert r.status_code == 200
+    returned_ids = [q["id"] for q in r.json()["questions"]]
+    assert len(returned_ids) == 3
+    # The valid Hard id must be present; the bogus id must not.
+    assert 1 in returned_ids
+    assert 99999999 not in returned_ids
