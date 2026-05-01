@@ -170,6 +170,7 @@ summary {
 
 .hero-card {
   position: relative;
+  z-index: 30;
 }
 
 .hero-card-with-progress {
