@@ -48,3 +48,20 @@ def test_vocab_tracking_sync_preserves_hard_questions(client, isolated_env):
 
     after = json.loads(path.read_text())
     assert after["tracking"]["hard_questions"] == [1, 2, 3]
+
+
+def test_migrate_preserves_hard_questions(client, isolated_env):
+    """Calling /api/migrate must not wipe tracking.hard_questions."""
+    token = _register(client, "alice@example.com")
+
+    # Seed the user file with a hard_questions list.
+    path = _user_file(isolated_env, "alice@example.com")
+    data = json.loads(path.read_text())
+    data["tracking"]["hard_questions"] = [11, 22, 33]
+    path.write_text(json.dumps(data))
+
+    r = client.post("/api/migrate", headers=_auth(token))
+    assert r.status_code == 200, r.text
+
+    after = json.loads(path.read_text())
+    assert after["tracking"]["hard_questions"] == [11, 22, 33]

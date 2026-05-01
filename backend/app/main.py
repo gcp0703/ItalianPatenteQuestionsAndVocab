@@ -1242,6 +1242,8 @@ def persist_vocab_tracking_for_user(email: str, update: VocabTrackingSyncIn) -> 
 
     user_data = load_user_data(email)
     existing_hard = user_data.get("tracking", {}).get("hard_questions", [])
+    if not isinstance(existing_hard, list):
+        existing_hard = []
     user_data["tracking"] = {
         "feedback_counts": feedback_counts,
         "hidden_words": update.hidden_words,
@@ -1778,6 +1780,8 @@ async def migrate_legacy_tracking(email: str = Depends(get_current_user_email)) 
 
     user_data = load_user_data(email)
     existing_hard = user_data.get("tracking", {}).get("hard_questions", [])
+    if not isinstance(existing_hard, list):
+        existing_hard = []
     user_data["tracking"] = {
         "feedback_counts": feedback_counts,
         "hidden_words": hidden_words,
