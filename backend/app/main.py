@@ -25,7 +25,7 @@ from urllib.request import Request as UrllibRequest, urlopen
 from datetime import datetime, timezone
 
 from deep_translator import GoogleTranslator
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -2181,6 +2181,34 @@ async def get_hard_questions(
         raw = []
     ids = [int(qid) for qid in raw if isinstance(qid, int) or (isinstance(qid, str) and qid.isdigit())]
     return HardQuestionsResponse(hard_question_ids=ids)
+
+
+@app.put("/api/quiz/hard-questions/{question_id}", status_code=204)
+async def put_hard_question(
+    question_id: int,
+    payload: HardQuestionToggleIn,
+    email: str = Depends(get_current_user_email),
+) -> Response:
+    if question_id not in QUESTION_BY_ID:
+        raise HTTPException(status_code=404, detail="Question not found.")
+
+    def _apply() -> None:
+        with USER_DATA_LOCK:
+            user_data = _read_user_data_unlocked(email)
+            tracking = user_data.setdefault("tracking", {})
+            current = tracking.get("hard_questions", [])
+            if not isinstance(current, list):
+                current = []
+            current_set = {int(q) for q in current if isinstance(q, int) or (isinstance(q, str) and q.isdigit())}
+            if payload.hard:
+                current_set.add(question_id)
+            else:
+                current_set.discard(question_id)
+            tracking["hard_questions"] = sorted(current_set)
+            _write_user_data_unlocked(email, user_data)
+
+    await asyncio.to_thread(_apply)
+    return Response(status_code=204)
 
 
 if IMAGE_DIR.exists():

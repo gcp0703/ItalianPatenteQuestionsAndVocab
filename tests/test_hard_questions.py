@@ -103,3 +103,64 @@ def test_get_hard_questions_handles_corrupt_non_list(client, isolated_env):
     r = client.get("/api/quiz/hard-questions", headers=_auth(token))
     assert r.status_code == 200
     assert r.json() == {"hard_question_ids": []}
+
+
+def test_put_hard_question_requires_auth(client):
+    r = client.put("/api/quiz/hard-questions/1", json={"hard": True})
+    assert r.status_code == 401
+
+
+def test_put_hard_question_adds_id(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    r = client.put(
+        "/api/quiz/hard-questions/1",
+        headers=_auth(token),
+        json={"hard": True},
+    )
+    assert r.status_code == 204
+
+    r = client.get("/api/quiz/hard-questions", headers=_auth(token))
+    assert r.json()["hard_question_ids"] == [1]
+
+
+def test_put_hard_question_removes_id(client):
+    token = _register(client, "alice@example.com")
+    client.put("/api/quiz/hard-questions/1", headers=_auth(token), json={"hard": True})
+    client.put("/api/quiz/hard-questions/2", headers=_auth(token), json={"hard": True})
+
+    r = client.put(
+        "/api/quiz/hard-questions/1",
+        headers=_auth(token),
+        json={"hard": False},
+    )
+    assert r.status_code == 204
+
+    r = client.get("/api/quiz/hard-questions", headers=_auth(token))
+    assert r.json()["hard_question_ids"] == [2]
+
+
+def test_put_hard_question_idempotent(client):
+    token = _register(client, "alice@example.com")
+    # Adding twice is a no-op.
+    r1 = client.put("/api/quiz/hard-questions/5", headers=_auth(token), json={"hard": True})
+    r2 = client.put("/api/quiz/hard-questions/5", headers=_auth(token), json={"hard": True})
+    assert r1.status_code == 204
+    assert r2.status_code == 204
+
+    r = client.get("/api/quiz/hard-questions", headers=_auth(token))
+    assert r.json()["hard_question_ids"] == [5]
+
+    # Removing a not-present id is also a no-op.
+    r3 = client.put("/api/quiz/hard-questions/999", headers=_auth(token), json={"hard": False})
+    assert r3.status_code == 204
+
+
+def test_put_hard_question_unknown_id_returns_404(client):
+    token = _register(client, "alice@example.com")
+    # Question IDs are 1..7139 in the bundled bank. Pick one safely out of range.
+    r = client.put(
+        "/api/quiz/hard-questions/99999999",
+        headers=_auth(token),
+        json={"hard": True},
+    )
+    assert r.status_code == 404
