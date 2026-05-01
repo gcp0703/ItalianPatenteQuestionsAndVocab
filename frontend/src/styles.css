@@ -1415,6 +1415,16 @@ button:disabled {
   line-height: 1.4;
 }
 
+.topics-question-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.topics-hard-toggle {
+  align-self: flex-end;
+}
+
 .topics-image-bar {
   position: sticky;
   top: 0;

@@ -2189,16 +2189,26 @@ function App() {
                       const tr = translations[q.id];
                       return (
                         <li key={q.id} className="topics-question-item">
-                          <p className="question-text">{q.text}</p>
-                          {includeTranslations && (
-                            <p className={`topics-question-translation ${tr?.status || "loading"}`}>
-                              {tr?.status === "ready"
-                                ? tr.text
-                                : tr?.status === "error"
-                                ? `Traduzione non disponibile: ${tr.text}`
-                                : "Traduzione in corso..."}
-                            </p>
-                          )}
+                          <div className="topics-question-body">
+                            <p className="question-text">{q.text}</p>
+                            {includeTranslations && (
+                              <p className={`topics-question-translation ${tr?.status || "loading"}`}>
+                                {tr?.status === "ready"
+                                  ? tr.text
+                                  : tr?.status === "error"
+                                  ? `Traduzione non disponibile: ${tr.text}`
+                                  : "Traduzione in corso..."}
+                              </p>
+                            )}
+                          </div>
+                          <label className="hard-toggle topics-hard-toggle">
+                            <input
+                              type="checkbox"
+                              checked={hardQuestionIds.has(q.id)}
+                              onChange={(e) => toggleHardQuestion(q.id, e.target.checked)}
+                            />
+                            <span>Hard</span>
+                          </label>
                         </li>
                       );
                     })}
