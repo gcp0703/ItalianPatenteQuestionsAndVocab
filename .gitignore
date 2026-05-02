@@ -14,3 +14,6 @@ user_data/
 !.env.example
 backend/.env
 backend/.env.*
+.DS_Store
+backend/data/.translations.44yel278.tmp
+.claude/settings.json
