@@ -1955,6 +1955,9 @@ function App() {
             <button className="vocab-questions-close" onClick={() => setQuizVariantResults(null)}>&times;</button>
             <h2>Question Variants</h2>
             <p className="vocab-questions-count">{quizVariantResults.count} variant{quizVariantResults.count !== 1 ? "s" : ""}</p>
+            {hardToggleError && (
+              <p className="inline-error hard-toggle-error">{hardToggleError}</p>
+            )}
             <div className="vocab-questions-list">
               {quizVariantResults.questions.map((q) => (
                 <div key={q.id} className={`vocab-question-item${q.id === quizVariantResults.question_id ? " vocab-question-current" : ""}`}>
@@ -1966,6 +1969,14 @@ function App() {
                     <span className={`vocab-question-answer ${q.answer ? "vero" : "falso"}`}>
                       {q.answer ? "Vero" : "Falso"}
                     </span>
+                    <label className="hard-toggle">
+                      <input
+                        type="checkbox"
+                        checked={hardQuestionIds.has(q.id)}
+                        onChange={(e) => toggleHardQuestion(q.id, e.target.checked)}
+                      />
+                      <span>Hard</span>
+                    </label>
                   </div>
                 </div>
               ))}
