@@ -2048,7 +2048,7 @@ function App() {
                 }}
                 aria-haspopup="menu"
               >
-                Quiz <span className="quiz-menu-caret" aria-hidden="true">▾</span>
+                Quiz: {quizMode === "hard" ? "Hard" : "Normal"} <span className="quiz-menu-caret" aria-hidden="true">▾</span>
               </button>
               <div className="quiz-menu-dropdown" role="menu">
                 <button
