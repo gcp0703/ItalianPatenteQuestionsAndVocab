@@ -265,9 +265,9 @@ def test_get_hard_quiz_filters_unknown_ids(client, isolated_env):
     assert len(returned_ids) == 3
     # Bogus id must never appear.
     assert 99999999 not in returned_ids
-    # The valid id is in sub-cat A (IDs 1..7). At least one returned id
-    # must come from that sub-cat (in fact all should, since count=3 < 7).
-    assert any(qid in range(1, 8) for qid in returned_ids)
+    # The valid id is in sub-cat A (IDs 1..7). count=3 < 7 means no
+    # top-level expansion fires, so every returned id must be in sub-cat A.
+    assert all(qid in range(1, 8) for qid in returned_ids)
 
 
 def test_get_hard_quiz_pulls_from_marked_subcat_even_at_exact_match(client):
