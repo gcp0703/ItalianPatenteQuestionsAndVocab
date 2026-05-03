@@ -2244,6 +2244,122 @@ async def put_hard_question(
     return Response(status_code=204)
 
 
+def _select_hard_quiz_question_ids(
+    count: int,
+    hard_ids: list[int],
+    rng: random.Random,
+) -> list[int]:
+    """Pick `count` question IDs for a hard quiz.
+
+    Treats each hard mark as a signal "the user struggles with this sub-category"
+    rather than "the user wants this exact question." Samples from the
+    sub-categories containing the marks, weighted by mark count using the
+    largest-remainder method. If the marked sub-categories cannot supply
+    `count` distinct questions, expands to other sub-categories under the
+    same top-level categories (the segment before " / " in the topic string).
+
+    Returns [] when `hard_ids` is empty or every id is unknown; the caller
+    is responsible for the 409 response.
+    """
+    if not hard_ids:
+        return []
+
+    mark_counts: dict[str, int] = {}
+    for qid in hard_ids:
+        question = QUESTION_BY_ID.get(qid)
+        if question is None:
+            continue
+        topic = question["topic"]
+        mark_counts[topic] = mark_counts.get(topic, 0) + 1
+
+    if not mark_counts:
+        return []
+
+    questions_by_subcat: dict[str, list[int]] = {}
+    for question in QUESTION_BANK:
+        questions_by_subcat.setdefault(question["topic"], []).append(question["id"])
+
+    sorted_subcats = sorted(mark_counts.keys())
+    available: dict[str, list[int]] = {
+        sc: list(questions_by_subcat.get(sc, [])) for sc in sorted_subcats
+    }
+    picked: list[int] = []
+
+    def allocate(targets: list[str], total: int) -> dict[str, int]:
+        """Largest-remainder allocation across `targets`, weighted by mark_counts.
+
+        Ties on remainder are broken by sub-category name so the result is
+        deterministic in tests.
+        """
+        if total <= 0 or not targets:
+            return {sc: 0 for sc in targets}
+        marks_total = sum(mark_counts[sc] for sc in targets)
+        exact = {sc: mark_counts[sc] * total / marks_total for sc in targets}
+        floor = {sc: int(exact[sc]) for sc in targets}
+        remainders = {sc: exact[sc] - floor[sc] for sc in targets}
+        leftover = total - sum(floor.values())
+        ranked = sorted(targets, key=lambda sc: (-remainders[sc], sc))
+        result = dict(floor)
+        for sc in ranked[:leftover]:
+            result[sc] += 1
+        return result
+
+    def sample_from(sc: str, wanted: int) -> int:
+        pool = available[sc]
+        if wanted <= 0 or not pool:
+            return 0
+        if wanted >= len(pool):
+            picked.extend(pool)
+            available[sc] = []
+            return len(pool)
+        chosen = rng.sample(pool, wanted)
+        chosen_set = set(chosen)
+        available[sc] = [qid for qid in pool if qid not in chosen_set]
+        picked.extend(chosen)
+        return wanted
+
+    allocations = allocate(sorted_subcats, count)
+    surplus = 0
+    for sc in sorted_subcats:
+        wanted = allocations[sc]
+        got = sample_from(sc, wanted)
+        surplus += wanted - got
+
+    while surplus > 0:
+        candidates = [sc for sc in sorted_subcats if available[sc]]
+        if not candidates:
+            break
+        new_alloc = allocate(candidates, surplus)
+        new_surplus = 0
+        for sc in candidates:
+            wanted = new_alloc[sc]
+            got = sample_from(sc, wanted)
+            new_surplus += wanted - got
+        if new_surplus >= surplus:
+            break
+        surplus = new_surplus
+
+    if len(picked) < count:
+        marked_top_levels = {sc.split(" / ", 1)[0] for sc in sorted_subcats}
+        marked_subcat_set = set(sorted_subcats)
+        already_picked = set(picked)
+        expansion_pool = [
+            question["id"]
+            for question in QUESTION_BANK
+            if question["id"] not in already_picked
+            and question["topic"] not in marked_subcat_set
+            and question["topic"].split(" / ", 1)[0] in marked_top_levels
+        ]
+        needed = count - len(picked)
+        if needed >= len(expansion_pool):
+            picked.extend(expansion_pool)
+        else:
+            picked.extend(rng.sample(expansion_pool, needed))
+
+    rng.shuffle(picked)
+    return picked
+
+
 @app.get("/api/quiz/hard", response_model=QuizResponse)
 @limiter.limit("30/minute")
 async def get_hard_quiz(

@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import json
+import random
 from pathlib import Path
+
+from backend.app import main as main_mod
 
 
 def _register(client, email: str) -> str:
@@ -264,3 +267,122 @@ def test_get_hard_quiz_exact_count_match(client):
     assert r.status_code == 200
     returned_ids = [q["id"] for q in r.json()["questions"]]
     assert sorted(returned_ids) == [1, 2, 3, 4, 5]
+
+
+# ---------------------------------------------------------------------------
+# Unit tests for _select_hard_quiz_question_ids
+# ---------------------------------------------------------------------------
+
+# Both sub-categories below sit under top-level "definizioni generali doveri strada".
+SUBCAT_A = "definizioni generali doveri strada / carreggiata doppio senso"
+SUBCAT_A_IDS = list(range(1, 8))      # 7 questions
+SUBCAT_B = "definizioni generali doveri strada / strada sei corsie"
+SUBCAT_B_IDS = list(range(8, 16))     # 8 questions
+TOP_LEVEL = "definizioni generali doveri strada"
+
+
+def _topic(qid: int) -> str:
+    return main_mod.QUESTION_BY_ID[qid]["topic"]
+
+
+def test_helper_empty_hard_ids_returns_empty():
+    result = main_mod._select_hard_quiz_question_ids(30, [], random.Random(0))
+    assert result == []
+
+
+def test_helper_all_unknown_hard_ids_returns_empty():
+    result = main_mod._select_hard_quiz_question_ids(
+        30, [99999998, 99999999], random.Random(0)
+    )
+    assert result == []
+
+
+def test_helper_single_subcat_marks_fit():
+    """count < sub-cat size: result is `count` distinct questions, all from that sub-cat."""
+    rng = random.Random(0)
+    result = main_mod._select_hard_quiz_question_ids(
+        count=5, hard_ids=[1, 2, 3], rng=rng
+    )
+    assert len(result) == 5
+    assert len(set(result)) == 5
+    assert set(result) <= set(SUBCAT_A_IDS)
+
+
+def test_helper_weighted_distribution():
+    """5:1 mark split across two sub-cats with ample capacity:
+    largest-remainder gives 25 from A and 5 from B."""
+    by_subcat: dict[str, list[int]] = {}
+    for q in main_mod.QUESTION_BANK:
+        by_subcat.setdefault(q["topic"], []).append(q["id"])
+    big = sorted(
+        ((t, ids) for t, ids in by_subcat.items() if len(ids) >= 30),
+        key=lambda pair: pair[0],
+    )
+    assert len(big) >= 2, "test fixture requires two sub-cats with >=30 questions"
+    big_a_topic, big_a_ids = big[0]
+    big_b_topic, big_b_ids = big[1]
+    hard = big_a_ids[:5] + big_b_ids[:1]
+
+    result = main_mod._select_hard_quiz_question_ids(
+        count=30, hard_ids=hard, rng=random.Random(0)
+    )
+    assert len(result) == 30
+    assert len(set(result)) == 30
+    topics = [main_mod.QUESTION_BY_ID[qid]["topic"] for qid in result]
+    assert sum(1 for t in topics if t == big_a_topic) == 25
+    assert sum(1 for t in topics if t == big_b_topic) == 5
+
+
+def test_helper_subcat_capped_redistributes_to_other_marked_subcat():
+    """5 marks in A (size 7), 1 mark in B (size 8), count=15.
+
+    Allocation: A=13, B=2 (largest-remainder, alphabetic tie-break favors A).
+    A capped at 7 → surplus 6. B picks 2.
+    Redistribute: only B remains (A exhausted) → B picks 6 more → B at 8/8.
+    Final: all 7 from A and all 8 from B. No top-level expansion needed."""
+    rng = random.Random(0)
+    hard = SUBCAT_A_IDS[:5] + SUBCAT_B_IDS[:1]
+    result = main_mod._select_hard_quiz_question_ids(
+        count=15, hard_ids=hard, rng=rng
+    )
+    assert len(result) == 15
+    assert len(set(result)) == 15
+    assert set(result) == set(SUBCAT_A_IDS) | set(SUBCAT_B_IDS)
+
+
+def test_helper_all_marked_exhausted_expands_to_top_level():
+    """Same marks as previous test but count=30.
+
+    After redistribution, both A (7) and B (8) are exhausted (15 picked).
+    Top-level expansion pulls 15 more from other sub-cats under the same
+    top-level category, never re-using A or B."""
+    rng = random.Random(0)
+    hard = SUBCAT_A_IDS[:5] + SUBCAT_B_IDS[:1]
+    result = main_mod._select_hard_quiz_question_ids(
+        count=30, hard_ids=hard, rng=rng
+    )
+    assert len(result) == 30
+    assert len(set(result)) == 30
+    a_b_set = set(SUBCAT_A_IDS) | set(SUBCAT_B_IDS)
+    a_b_picks = [qid for qid in result if qid in a_b_set]
+    assert sorted(a_b_picks) == sorted(a_b_set)
+    expansion = [qid for qid in result if qid not in a_b_set]
+    assert len(expansion) == 15
+    for qid in expansion:
+        topic = _topic(qid)
+        assert topic.split(" / ", 1)[0] == TOP_LEVEL
+        assert topic != SUBCAT_A
+        assert topic != SUBCAT_B
+
+
+def test_helper_marked_questions_are_eligible_in_their_subcat():
+    """count = sub-cat size, marks within that sub-cat.
+
+    Result is exactly the whole sub-cat — including the originally-marked IDs,
+    confirming marked questions are NOT excluded from sampling."""
+    rng = random.Random(0)
+    hard = SUBCAT_A_IDS[:5]
+    result = main_mod._select_hard_quiz_question_ids(
+        count=7, hard_ids=hard, rng=rng
+    )
+    assert sorted(result) == sorted(SUBCAT_A_IDS)
