@@ -208,8 +208,12 @@ def test_get_hard_quiz_empty_set_returns_409(client):
     assert r.json()["detail"] == "no_hard_questions"
 
 
-def test_get_hard_quiz_pads_with_fillers(client):
+def test_get_hard_quiz_returns_count_distinct_questions(client):
+    """When the marked sub-cat is too small for `count`, the quiz expands to
+    the surrounding top-level category. All questions are distinct."""
     token = _register(client, "alice@example.com")
+    # IDs 1..5 all live in sub-cat "carreggiata doppio senso" (7 questions total)
+    # under top-level "definizioni generali doveri strada".
     hard_ids = [1, 2, 3, 4, 5]
     for qid in hard_ids:
         client.put(f"/api/quiz/hard-questions/{qid}", headers=_auth(token), json={"hard": True})
@@ -220,14 +224,20 @@ def test_get_hard_quiz_pads_with_fillers(client):
     returned_ids = [q["id"] for q in data["questions"]]
     assert len(returned_ids) == 10
     assert len(set(returned_ids)) == 10  # no duplicates
-    # All Hard ids must be present.
-    assert set(hard_ids) <= set(returned_ids)
+    # The marked sub-cat has only 7 questions, so all 7 must be in the result.
+    assert set(range(1, 8)) <= set(returned_ids)
+    # The remaining 3 must be under the same top-level category.
+    for q in data["questions"]:
+        assert q["topic"].split(" / ", 1)[0] == "definizioni generali doveri strada"
 
 
-def test_get_hard_quiz_samples_when_set_exceeds_count(client):
+def test_get_hard_quiz_samples_within_marked_subcats_when_set_exceeds_count(client):
+    """When marked sub-cats together hold more questions than `count`, the
+    result is drawn from those sub-cats only — no top-level expansion."""
     token = _register(client, "alice@example.com")
-    # Mark 20 hard, ask for 5.
-    for qid in range(1, 21):
+    # IDs 1..7 are sub-cat A (size 7); IDs 8..15 are sub-cat B (size 8).
+    # 14 marks across the two sub-cats; ask for 5 — well under 7+8.
+    for qid in range(1, 15):
         client.put(f"/api/quiz/hard-questions/{qid}", headers=_auth(token), json={"hard": True})
 
     r = client.get("/api/quiz/hard?count=5", headers=_auth(token))
@@ -235,11 +245,13 @@ def test_get_hard_quiz_samples_when_set_exceeds_count(client):
     returned_ids = [q["id"] for q in r.json()["questions"]]
     assert len(returned_ids) == 5
     assert len(set(returned_ids)) == 5
-    # Every returned id must be from the Hard set.
-    assert set(returned_ids) <= set(range(1, 21))
+    # Every returned id must belong to one of the two marked sub-cats.
+    assert set(returned_ids) <= set(range(1, 16))
 
 
 def test_get_hard_quiz_filters_unknown_ids(client, isolated_env):
+    """Unknown IDs in the persisted hard list must be ignored by the selector,
+    and the quiz must still draw from the valid id's sub-cat."""
     token = _register(client, "alice@example.com")
     # Seed user file with one valid id and one bogus id.
     path = _user_file(isolated_env, "alice@example.com")
@@ -251,22 +263,26 @@ def test_get_hard_quiz_filters_unknown_ids(client, isolated_env):
     assert r.status_code == 200
     returned_ids = [q["id"] for q in r.json()["questions"]]
     assert len(returned_ids) == 3
-    # The valid Hard id must be present; the bogus id must not.
-    assert 1 in returned_ids
+    # Bogus id must never appear.
     assert 99999999 not in returned_ids
+    # The valid id is in sub-cat A (IDs 1..7). At least one returned id
+    # must come from that sub-cat (in fact all should, since count=3 < 7).
+    assert any(qid in range(1, 8) for qid in returned_ids)
 
 
-def test_get_hard_quiz_exact_count_match(client):
-    """When the Hard set size exactly matches count, return all Hard with no fillers."""
+def test_get_hard_quiz_pulls_from_marked_subcat_even_at_exact_match(client):
+    """When `count` equals the size of the (single) marked sub-cat, the result
+    is exactly that sub-cat's questions, irrespective of which subset was marked."""
     token = _register(client, "alice@example.com")
+    # IDs 1..5 marked, all in sub-cat A (size 7). Ask for count=7.
     hard_ids = [1, 2, 3, 4, 5]
     for qid in hard_ids:
         client.put(f"/api/quiz/hard-questions/{qid}", headers=_auth(token), json={"hard": True})
 
-    r = client.get("/api/quiz/hard?count=5", headers=_auth(token))
+    r = client.get("/api/quiz/hard?count=7", headers=_auth(token))
     assert r.status_code == 200
     returned_ids = [q["id"] for q in r.json()["questions"]]
-    assert sorted(returned_ids) == [1, 2, 3, 4, 5]
+    assert sorted(returned_ids) == [1, 2, 3, 4, 5, 6, 7]
 
 
 # ---------------------------------------------------------------------------
