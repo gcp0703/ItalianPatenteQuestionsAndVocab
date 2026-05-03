@@ -2374,16 +2374,7 @@ async def get_hard_quiz(
     if not hard_ids:
         raise HTTPException(status_code=409, detail="no_hard_questions")
 
-    hard_set = set(hard_ids)
-    if len(hard_set) >= count:
-        chosen_ids = random.sample(list(hard_set), count)
-    else:
-        filler_pool = [item["id"] for item in QUESTION_BANK if item["id"] not in hard_set]
-        fillers_needed = count - len(hard_set)
-        # filler_pool will always be large enough because count <= 100 and the bank has 7139 questions.
-        fillers = random.sample(filler_pool, fillers_needed)
-        chosen_ids = list(hard_set) + fillers
-        random.shuffle(chosen_ids)
+    chosen_ids = _select_hard_quiz_question_ids(count, hard_ids, random.Random())
 
     questions = [
         QuestionOut(
