@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 
@@ -367,3 +368,61 @@ def test_get_vocab_custom_word_tracking_reflected(client):
     body = client.get("/api/vocab", headers=_auth(token)).json()
     entry = next(w for w in body["words"] if w["word"] == "ciao")
     assert entry["tracking"] == {"up": 1, "down": 2, "known": False, "difficult": True}
+
+
+def test_translate_unknown_word_returns_404(client):
+    """Words that aren't in the bank or in the user's custom vocab → 404."""
+    token = _register(client, "alice@example.com")
+    r = client.get(
+        "/api/vocab/translate",
+        headers=_auth(token),
+        params={"word": "thisisnotaword"},
+    )
+    assert r.status_code == 404
+
+
+def test_translate_custom_word_persists_back_to_user_file(
+    client, isolated_env, monkeypatch
+):
+    """Translating a custom word writes ai_definition into user_data, not the master file."""
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+
+    # Stub the AI / dictionary / translation pipeline so the test is hermetic.
+    main_mod = sys.modules["backend.app.main"]
+    monkeypatch.setattr(main_mod, "get_ai_definition", lambda w: "1. Hi.\n2. Hello.")
+    monkeypatch.setattr(main_mod, "get_dictionary_details", lambda w, hint: None)
+    monkeypatch.setattr(main_mod, "translate_text", lambda w: "hi")
+
+    r = client.get(
+        "/api/vocab/translate",
+        headers=_auth(token),
+        params={"word": "ciao"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert "Hi" in body["translation"] or body["translation"] == "hi"
+
+    # Custom word's ai_definition should now be persisted in user_data, NOT in the master file.
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    entry = data["custom_vocab"]["ciao"]
+    assert entry["ai_definition"]  # non-empty
+
+
+def test_translate_custom_word_for_different_user_still_404(client, monkeypatch):
+    """Bob's custom word isn't translatable by Alice."""
+    main_mod = sys.modules["backend.app.main"]
+    monkeypatch.setattr(main_mod, "get_ai_definition", lambda w: "x")
+    monkeypatch.setattr(main_mod, "get_dictionary_details", lambda w, hint: None)
+    monkeypatch.setattr(main_mod, "translate_text", lambda w: "x")
+
+    token_a = _register(client, "alice@example.com")
+    token_b = _register(client, "bob@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token_b), json={"input": "miaparola"})
+
+    r = client.get(
+        "/api/vocab/translate",
+        headers=_auth(token_a),
+        params={"word": "miaparola"},
+    )
+    assert r.status_code == 404

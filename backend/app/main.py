@@ -1420,6 +1420,33 @@ def delete_custom_vocab_word(email: str, raw_word: str) -> bool:
         return True
 
 
+def persist_custom_vocab_metadata(
+    email: str,
+    word: str,
+    *,
+    ai_definition: str | None = None,
+    ai_definition_failed: bool | None = None,
+    dictionary_cache: dict[str, Any] | None = None,
+    english: str | None = None,
+) -> None:
+    """Write resolved translation metadata back to a user's custom_vocab entry."""
+    with USER_DATA_LOCK:
+        data = _read_user_data_unlocked(email)
+        custom = data.get("custom_vocab")
+        if not isinstance(custom, dict) or word not in custom:
+            return
+        entry = custom[word]
+        if ai_definition is not None:
+            entry["ai_definition"] = ai_definition
+        if ai_definition_failed is not None:
+            entry["ai_definition_failed"] = ai_definition_failed
+        if dictionary_cache is not None:
+            entry["dictionary_cache"] = dictionary_cache
+        if english is not None:
+            entry["english"] = english
+        _write_user_data_unlocked(email, data)
+
+
 def unique_preserve_order(items: list[str]) -> list[str]:
     seen: set[str] = set()
     unique_items: list[str] = []
@@ -2162,18 +2189,28 @@ async def get_vocab_cache_stats() -> dict[str, int]:
 async def translate_vocab_word(
     request: Request,
     word: str = Query(min_length=1),
+    email: str = Depends(get_current_user_email),
 ) -> VocabTranslationResponse:
     entry = VOCAB_BY_WORD.get(word)
+    custom_source = False
+    if not entry:
+        user_data = await asyncio.to_thread(load_user_data, email)
+        custom = user_data.get("custom_vocab") or {}
+        if word in custom:
+            entry = {
+                "word": word,
+                "known_translation": (custom[word].get("english") or "").strip() or None,
+                "ai_definition": (custom[word].get("ai_definition") or "").strip() or None,
+                "ai_definition_failed": bool(custom[word].get("ai_definition_failed")),
+                "dictionary_cache": custom[word].get("dictionary_cache"),
+            }
+            custom_source = True
     if not entry:
         raise HTTPException(status_code=404, detail="Word not found.")
 
     translation = entry["known_translation"]
-
-    # Check for a persisted AI definition from the background worker.
     ai_definition: str | None = entry.get("ai_definition")
 
-    # If no persisted definition, use the local AI model live.
-    # Acquire the gate so the background worker yields to us.
     if not translation and not ai_definition:
         def _user_ai_call() -> str | None:
             AI_MODEL_GATE.user_acquire()
@@ -2185,7 +2222,15 @@ async def translate_vocab_word(
         try:
             ai_definition = await asyncio.to_thread(_user_ai_call)
             if ai_definition:
-                await asyncio.to_thread(persist_ai_definitions, {word: ai_definition})
+                if custom_source:
+                    await asyncio.to_thread(
+                        persist_custom_vocab_metadata,
+                        email,
+                        word,
+                        ai_definition=ai_definition,
+                    )
+                else:
+                    await asyncio.to_thread(persist_ai_definitions, {word: ai_definition})
         except Exception:
             pass
 
@@ -2212,6 +2257,13 @@ async def translate_vocab_word(
             else await asyncio.to_thread(get_dictionary_details, word, google_hint)
         )
         if dictionary_payload:
+            if custom_source and not cached_dict:
+                await asyncio.to_thread(
+                    persist_custom_vocab_metadata,
+                    email,
+                    word,
+                    dictionary_cache=dictionary_payload,
+                )
             dictionary = VocabDictionaryOut(
                 lookup_word=dictionary_payload["lookup_word"],
                 lemma=dictionary_payload["lemma"],
