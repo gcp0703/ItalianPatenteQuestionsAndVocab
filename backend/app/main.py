@@ -418,6 +418,7 @@ def _empty_user_data(email: str) -> dict[str, Any]:
             "hard_questions": [],
         },
         "quiz_history": [],
+        "custom_vocab": {},
     }
 
 
