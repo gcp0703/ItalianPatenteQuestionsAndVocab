@@ -16,7 +16,6 @@ const VOCAB_BATCH_OVERLAY_MS = 2000;
 const VOCAB_SOURCE_RANDOM = "random";
 const VOCAB_SOURCE_KNOWN = "known";
 const VOCAB_SOURCE_DIFFICULT = "difficult";
-const VOCAB_SOURCE_RANKED = "ranked";
 const VOCAB_SOURCE_CUSTOM = "custom";
 
 function getUserStorageKey(baseKey, email) {
@@ -261,25 +260,6 @@ function createUnknownFeedbackCounts(counts, word) {
   };
 }
 
-function getRankedVocabEntries(entries, feedbackCounts) {
-  const ranked = entries.filter((item) => (feedbackCounts[item.word]?.down ?? 0) > 0);
-  return ranked.sort((left, right) => {
-    const leftStats = feedbackCounts[left.word] ?? {};
-    const rightStats = feedbackCounts[right.word] ?? {};
-    const leftScore = (leftStats.down ?? 0) - (leftStats.up ?? 0);
-    const rightScore = (rightStats.down ?? 0) - (rightStats.up ?? 0);
-    if (rightScore !== leftScore) {
-      return rightScore - leftScore;
-    }
-    const leftDown = leftStats.down ?? 0;
-    const rightDown = rightStats.down ?? 0;
-    if (rightDown !== leftDown) {
-      return rightDown - leftDown;
-    }
-    return left.word.localeCompare(right.word);
-  });
-}
-
 function getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedbackCounts, customWords = []) {
   const unknownEntries = getUnknownVocabEntries(bank, hiddenWords, feedbackCounts);
   const knownEntries = getKnownVocabEntries(bank, hiddenWords, feedbackCounts);
@@ -293,10 +273,6 @@ function getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedba
     const difficultEntries = shuffleItems(unknownEntries.filter((item) => difficultSet.has(item.word)));
     const nonDifficultEntries = shuffleItems(unknownEntries.filter((item) => !difficultSet.has(item.word)));
     return [...difficultEntries, ...nonDifficultEntries];
-  }
-
-  if (source === VOCAB_SOURCE_RANKED) {
-    return getRankedVocabEntries(unknownEntries, feedbackCounts);
   }
 
   if (source === VOCAB_SOURCE_CUSTOM) {
@@ -1227,11 +1203,9 @@ function App() {
             ? "Nessuna parola difficile disponibile."
             : source === VOCAB_SOURCE_KNOWN
               ? "Nessuna parola conosciuta disponibile."
-              : source === VOCAB_SOURCE_RANKED
-                ? "Nessuna parola con feedback negativo. Aggiungine alcune con 👎 per iniziare il ranking."
-                : source === VOCAB_SOURCE_CUSTOM
-                  ? "Nessuna parola personalizzata. Aggiungile tramite l'icona ⚙️."
-                  : "Nessuna parola disponibile."
+              : source === VOCAB_SOURCE_CUSTOM
+                ? "Nessuna parola personalizzata. Aggiungile tramite l'icona ⚙️."
+                : "Nessuna parola disponibile."
         );
       }
 
@@ -2008,63 +1982,91 @@ function App() {
     }
   }
 
-  function CustomVocabPanel({ entries, loading, error, addInput, setAddInput, toast, onAdd, onDelete }) {
+  function VocabConfigPanel({
+    entries,
+    loading,
+    error,
+    addInput,
+    setAddInput,
+    toast,
+    onAdd,
+    onDelete,
+    onReset,
+    resetDisabled,
+  }) {
     return (
       <div className="vocab-custom-panel">
-        <form className="vocab-custom-add" onSubmit={onAdd}>
-          <input
-            type="text"
-            className="vocab-custom-input"
-            placeholder="Add words (comma-separated)"
-            value={addInput}
-            onChange={(e) => setAddInput(e.target.value)}
-            disabled={loading}
-            aria-label="Add words (comma-separated)"
-          />
+        <section className="vocab-config-section">
+          <h3 className="vocab-config-heading">Reset</h3>
+          <p className="vocab-config-description">
+            Clears all 👍/👎 feedback, known marks, and difficult-word marks for your account. Custom words are not removed.
+          </p>
           <button
-            type="submit"
-            className="primary-button"
-            disabled={loading || !addInput.trim()}
+            type="button"
+            className="secondary-button vocab-reset-button"
+            onClick={onReset}
+            disabled={resetDisabled}
           >
-            Add
+            Reset
           </button>
-        </form>
-        {toast && (
-          <p
-            className={`vocab-custom-toast vocab-custom-toast-${toast.kind}`}
-            aria-live="polite"
-          >
-            {toast.text}
-          </p>
-        )}
-        {error && <p className="inline-error">{error}</p>}
-        {loading ? (
-          <p>Loading…</p>
-        ) : entries.length === 0 ? (
-          <p className="vocab-custom-empty">
-            You haven't added any words yet. Type one or more Italian words above, separated by commas, then click Add.
-          </p>
-        ) : (
-          <ul className="vocab-custom-list">
-            {entries.map((entry) => (
-              <li key={entry.word} className="vocab-custom-row">
-                <span className="vocab-custom-word">{entry.word}</span>
-                <span className="vocab-custom-stats">
-                  👍 {entry.tracking.up}  👎 {entry.tracking.down}
-                </span>
-                <button
-                  type="button"
-                  className="vocab-custom-delete"
-                  onClick={() => onDelete(entry.word)}
-                  aria-label={`Delete ${entry.word}`}
-                  title="Delete this word"
-                >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        </section>
+        <section className="vocab-config-section">
+          <h3 className="vocab-config-heading">My Words</h3>
+          <form className="vocab-custom-add" onSubmit={onAdd}>
+            <input
+              type="text"
+              className="vocab-custom-input"
+              placeholder="Add words (comma-separated)"
+              value={addInput}
+              onChange={(e) => setAddInput(e.target.value)}
+              disabled={loading}
+              aria-label="Add words (comma-separated)"
+            />
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={loading || !addInput.trim()}
+            >
+              Add
+            </button>
+          </form>
+          {toast && (
+            <p
+              className={`vocab-custom-toast vocab-custom-toast-${toast.kind}`}
+              aria-live="polite"
+            >
+              {toast.text}
+            </p>
+          )}
+          {error && <p className="inline-error">{error}</p>}
+          {loading ? (
+            <p>Loading…</p>
+          ) : entries.length === 0 ? (
+            <p className="vocab-custom-empty">
+              You haven't added any words yet. Type one or more Italian words above, separated by commas, then click Add.
+            </p>
+          ) : (
+            <ul className="vocab-custom-list">
+              {entries.map((entry) => (
+                <li key={entry.word} className="vocab-custom-row">
+                  <span className="vocab-custom-word">{entry.word}</span>
+                  <span className="vocab-custom-stats">
+                    👍 {entry.tracking.up}  👎 {entry.tracking.down}
+                  </span>
+                  <button
+                    type="button"
+                    className="vocab-custom-delete"
+                    onClick={() => onDelete(entry.word)}
+                    aria-label={`Delete ${entry.word}`}
+                    title="Delete this word"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     );
   }
@@ -2660,26 +2662,12 @@ function App() {
                 <span className="vocab-source-count">{difficultVocabCount}</span>
               </button>
               <button
-                className={`secondary-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_RANKED ? "header-button active" : ""}`}
-                onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_RANKED); }}
-                disabled={vocabLoading || vocabRevealing}
-              >
-                Ranked
-              </button>
-              <button
                 className={`secondary-button vocab-source-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_CUSTOM ? "header-button active" : ""}`}
                 onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_CUSTOM); }}
                 disabled={vocabLoading || vocabRevealing}
               >
                 <span className="vocab-source-label">My Words</span>
                 <span className="vocab-source-count">{customVocabCount}</span>
-              </button>
-              <button
-                className="secondary-button vocab-reset-button"
-                onClick={resetVocabTracking}
-                disabled={vocabLoading || vocabRevealing}
-              >
-                Reset
               </button>
               <button
                 className={`secondary-button vocab-custom-gear ${customVocabManageOpen ? "header-button active" : ""}`}
@@ -2690,8 +2678,8 @@ function App() {
                     return next;
                   });
                 }}
-                aria-label="Manage custom words"
-                title="Manage custom words"
+                aria-label="Vocab settings"
+                title="Vocab settings"
               >
                 ⚙️
               </button>
@@ -2699,7 +2687,7 @@ function App() {
           </div>
 
           {customVocabManageOpen ? (
-            <CustomVocabPanel
+            <VocabConfigPanel
               entries={customVocab}
               loading={customVocabLoading}
               error={customVocabError}
@@ -2708,6 +2696,8 @@ function App() {
               toast={customVocabToast}
               onAdd={handleAddCustomVocab}
               onDelete={handleDeleteCustomVocab}
+              onReset={resetVocabTracking}
+              resetDisabled={vocabLoading || vocabRevealing}
             />
           ) : vocabLoading && !vocabCurrent ? (
             <p>Sto preparando una nuova parola.</p>

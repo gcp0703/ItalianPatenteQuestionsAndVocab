@@ -1638,3 +1638,28 @@ button:disabled {
   line-height: 1;
   padding: 0.5rem 0.75rem;
 }
+
+.vocab-config-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+}
+
+.vocab-config-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.vocab-config-heading {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.vocab-config-description {
+  margin: 0;
+  color: var(--color-muted, #666);
+  font-size: 0.9rem;
+}
