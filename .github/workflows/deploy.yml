@@ -31,7 +31,9 @@ jobs:
           npm run build
 
       - name: Pull source into production tree
-        run: git -C "$PROD_DIR" pull --ff-only origin main
+        run: |
+          git -C "$PROD_DIR" fetch origin main
+          git -C "$PROD_DIR" reset --hard origin/main
 
       - name: Sync freshly built dist into production tree
         run: |
