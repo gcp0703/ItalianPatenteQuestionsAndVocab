@@ -1393,6 +1393,33 @@ def add_custom_vocab_words(email: str, raw_input: str) -> dict[str, Any]:
     return {"added": added, "skipped": skipped}
 
 
+def delete_custom_vocab_word(email: str, raw_word: str) -> bool:
+    """Delete a custom word and its tracking entries. Returns True if deleted."""
+    normalized, reason = _normalize_custom_vocab_input(raw_word)
+    if reason is not None or normalized is None:
+        return False
+
+    with USER_DATA_LOCK:
+        data = _read_user_data_unlocked(email)
+        custom = data.get("custom_vocab")
+        if not isinstance(custom, dict) or normalized not in custom:
+            return False
+        del custom[normalized]
+
+        tracking = data.get("tracking")
+        if isinstance(tracking, dict):
+            feedback = tracking.get("feedback_counts")
+            if isinstance(feedback, dict):
+                feedback.pop(normalized, None)
+            for key in ("hidden_words", "difficult_words"):
+                values = tracking.get(key)
+                if isinstance(values, list):
+                    tracking[key] = [w for w in values if w != normalized]
+
+        _write_user_data_unlocked(email, data)
+        return True
+
+
 def unique_preserve_order(items: list[str]) -> list[str]:
     seen: set[str] = set()
     unique_items: list[str] = []
@@ -2258,6 +2285,17 @@ async def add_custom_vocab(
         added=result["added"],
         skipped=[CustomVocabSkipped(**s) for s in result["skipped"]],
     )
+
+
+@app.delete("/api/vocab/custom/{word}", status_code=204)
+async def delete_custom_vocab(
+    word: str,
+    email: str = Depends(get_current_user_email),
+):
+    deleted = await asyncio.to_thread(delete_custom_vocab_word, email, word)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Word not in your custom vocab.")
+    return Response(status_code=204)
 
 
 @app.post("/api/score", response_model=ScoreResponse)

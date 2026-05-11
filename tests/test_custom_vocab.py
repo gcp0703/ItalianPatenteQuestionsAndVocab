@@ -206,3 +206,70 @@ def test_add_custom_vocab_per_user_isolation(client, isolated_env):
     client.post("/api/vocab/custom", headers=_auth(token_a), json={"input": "ciao"})
     data_b = json.loads(_user_file(isolated_env, "bob@example.com").read_text())
     assert data_b["custom_vocab"] == {}
+
+
+def test_delete_custom_vocab_requires_auth(client):
+    r = client.delete("/api/vocab/custom/ciao")
+    assert r.status_code == 401
+
+
+def test_delete_custom_vocab_removes_entry(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+    r = client.delete("/api/vocab/custom/ciao", headers=_auth(token))
+    assert r.status_code == 204, r.text
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    assert "ciao" not in data["custom_vocab"]
+
+
+def test_delete_custom_vocab_normalizes_path(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+    r = client.delete("/api/vocab/custom/CIAO", headers=_auth(token))
+    assert r.status_code == 204, r.text
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    assert "ciao" not in data["custom_vocab"]
+
+
+def test_delete_custom_vocab_404_when_missing(client):
+    token = _register(client, "alice@example.com")
+    r = client.delete("/api/vocab/custom/nopesuchword", headers=_auth(token))
+    assert r.status_code == 404
+
+
+def test_delete_custom_vocab_cleans_tracking(client, isolated_env):
+    """Deleting a custom word also removes its tracking entries."""
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+
+    # Seed tracking data for "ciao" through the tracking endpoint.
+    client.post(
+        "/api/vocab/tracking",
+        headers=_auth(token),
+        json={
+            "feedback_counts": {"ciao": {"up": 2, "down": 1}},
+            "hidden_words": ["ciao"],
+            "difficult_words": ["ciao"],
+        },
+    )
+
+    # Now delete the custom word.
+    r = client.delete("/api/vocab/custom/ciao", headers=_auth(token))
+    assert r.status_code == 204, r.text
+
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    assert "ciao" not in data["custom_vocab"]
+    assert "ciao" not in data["tracking"]["feedback_counts"]
+    assert "ciao" not in data["tracking"]["hidden_words"]
+    assert "ciao" not in data["tracking"]["difficult_words"]
+
+
+def test_delete_custom_vocab_does_not_affect_other_users(client, isolated_env):
+    token_a = _register(client, "alice@example.com")
+    token_b = _register(client, "bob@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token_a), json={"input": "ciao"})
+    client.post("/api/vocab/custom", headers=_auth(token_b), json={"input": "ciao"})
+    client.delete("/api/vocab/custom/ciao", headers=_auth(token_a))
+
+    data_b = json.loads(_user_file(isolated_env, "bob@example.com").read_text())
+    assert "ciao" in data_b["custom_vocab"]
