@@ -76,8 +76,12 @@ def test_normalize_custom_vocab_input_nfc_normalizes():
     """Combining characters get normalized to single codepoints."""
     from backend.app.main import _normalize_custom_vocab_input
     # "café" with combining acute (U+0065 U+0301) → "café" with precomposed (U+00E9)
-    decomposed = "café"
-    precomposed = "café"
+    decomposed = "caf\u0065\u0301"  # e + combining acute = NFD
+    precomposed = "caf\u00e9"        # precomposed é = NFC
+    # Sanity check: the two strings differ at the byte/codepoint level.
+    # If this fails, the literals collapsed on save and the test below
+    # would be a tautology — see the code review of commit 24ff4bc.
+    assert decomposed != precomposed
     word, reason = _normalize_custom_vocab_input(decomposed)
     assert reason is None
     assert word == precomposed
