@@ -262,13 +262,20 @@ function createUnknownFeedbackCounts(counts, word) {
 }
 
 function getRankedVocabEntries(entries, feedbackCounts) {
-  return [...entries].sort((left, right) => {
-    const leftDown = feedbackCounts[left.word]?.down ?? 0;
-    const rightDown = feedbackCounts[right.word]?.down ?? 0;
+  const ranked = entries.filter((item) => (feedbackCounts[item.word]?.down ?? 0) > 0);
+  return ranked.sort((left, right) => {
+    const leftStats = feedbackCounts[left.word] ?? {};
+    const rightStats = feedbackCounts[right.word] ?? {};
+    const leftScore = (leftStats.down ?? 0) - (leftStats.up ?? 0);
+    const rightScore = (rightStats.down ?? 0) - (rightStats.up ?? 0);
+    if (rightScore !== leftScore) {
+      return rightScore - leftScore;
+    }
+    const leftDown = leftStats.down ?? 0;
+    const rightDown = rightStats.down ?? 0;
     if (rightDown !== leftDown) {
       return rightDown - leftDown;
     }
-
     return left.word.localeCompare(right.word);
   });
 }
@@ -1212,7 +1219,9 @@ function App() {
             ? "Nessuna parola difficile disponibile."
             : source === VOCAB_SOURCE_KNOWN
               ? "Nessuna parola conosciuta disponibile."
-              : "Nessuna parola disponibile."
+              : source === VOCAB_SOURCE_RANKED
+                ? "Nessuna parola con feedback negativo. Aggiungine alcune con 👎 per iniziare il ranking."
+                : "Nessuna parola disponibile."
         );
       }
 
