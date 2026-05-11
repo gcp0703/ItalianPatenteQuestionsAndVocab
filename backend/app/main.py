@@ -17,7 +17,7 @@ from functools import lru_cache
 from pathlib import Path
 import threading
 from threading import Lock
-from typing import Any
+from typing import Any, Literal
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request as UrllibRequest, urlopen
@@ -274,7 +274,7 @@ class CustomVocabAddIn(BaseModel):
 
 class CustomVocabSkipped(BaseModel):
     input: str
-    reason: str  # one of: already_in_bank, already_custom, empty, too_long, invalid_chars
+    reason: Literal["already_in_bank", "already_custom", "too_long", "invalid_chars"]
 
 
 class CustomVocabAddResponse(BaseModel):
@@ -1370,7 +1370,8 @@ def add_custom_vocab_words(email: str, raw_input: str) -> dict[str, Any]:
             if reason is not None:
                 skipped.append({"input": raw.strip(), "reason": reason})
                 continue
-            assert normalized is not None
+            if normalized is None:
+                continue  # defensive; _normalize_custom_vocab_input contract guarantees non-None when reason is None
             if normalized in VOCAB_BY_WORD:
                 skipped.append({"input": raw.strip(), "reason": "already_in_bank"})
                 continue
