@@ -321,3 +321,49 @@ def test_list_custom_vocab_reflects_tracking(client):
     assert r.status_code == 200, r.text
     entry = next(w for w in r.json()["words"] if w["word"] == "ciao")
     assert entry["tracking"] == {"up": 3, "down": 1, "known": True, "difficult": False}
+
+
+def test_get_vocab_includes_custom_words(client):
+    token = _register(client, "alice@example.com")
+    client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "ciao, diritto di precedenza"},
+    )
+    r = client.get("/api/vocab", headers=_auth(token))
+    assert r.status_code == 200, r.text
+    words = {w["word"]: w for w in r.json()["words"]}
+    assert "ciao" in words
+    assert "diritto di precedenza" in words
+    assert words["ciao"]["known_translation"] is None
+    assert words["ciao"]["tracking"] == {"up": 0, "down": 0, "known": False, "difficult": False}
+
+
+def test_get_vocab_custom_words_are_per_user(client):
+    token_a = _register(client, "alice@example.com")
+    token_b = _register(client, "bob@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token_a), json={"input": "ciao"})
+
+    body_a = client.get("/api/vocab", headers=_auth(token_a)).json()
+    body_b = client.get("/api/vocab", headers=_auth(token_b)).json()
+    words_a = {w["word"] for w in body_a["words"]}
+    words_b = {w["word"] for w in body_b["words"]}
+    assert "ciao" in words_a
+    assert "ciao" not in words_b
+
+
+def test_get_vocab_custom_word_tracking_reflected(client):
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+    client.post(
+        "/api/vocab/tracking",
+        headers=_auth(token),
+        json={
+            "feedback_counts": {"ciao": {"up": 1, "down": 2}},
+            "hidden_words": [],
+            "difficult_words": ["ciao"],
+        },
+    )
+    body = client.get("/api/vocab", headers=_auth(token)).json()
+    entry = next(w for w in body["words"] if w["word"] == "ciao")
+    assert entry["tracking"] == {"up": 1, "down": 2, "known": False, "difficult": True}

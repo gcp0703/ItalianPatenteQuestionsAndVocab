@@ -208,6 +208,13 @@ class AnswerRevealResponse(BaseModel):
     correct_answer: bool
 
 
+class VocabTrackingOut(BaseModel):
+    up: int
+    down: int
+    known: bool
+    difficult: bool
+
+
 class VocabWordOut(BaseModel):
     word: str
     known_translation: str | None
@@ -236,13 +243,6 @@ class VocabTranslationResponse(BaseModel):
     word: str
     translation: str
     dictionary: VocabDictionaryOut | None = None
-
-
-class VocabTrackingOut(BaseModel):
-    up: int
-    down: int
-    known: bool
-    difficult: bool
 
 
 class VocabFeedbackCountsIn(BaseModel):
@@ -2113,6 +2113,23 @@ async def get_vocab(email: str = Depends(get_current_user_email)) -> VocabRespon
         words.append(VocabWordOut(
             word=word,
             known_translation=item["known_translation"],
+            tracking=tracking,
+        ))
+
+    # Append per-user custom words.
+    custom = user_data.get("custom_vocab") or {}
+    for word, entry in custom.items():
+        counts = user_counts.get(word, {})
+        tracking = VocabTrackingOut(
+            up=_coerce_non_negative_int(counts.get("up", 0)),
+            down=_coerce_non_negative_int(counts.get("down", 0)),
+            known=word in user_hidden,
+            difficult=word in user_difficult,
+        )
+        english = (entry.get("english") or "").strip() or None
+        words.append(VocabWordOut(
+            word=word,
+            known_translation=english,
             tracking=tracking,
         ))
 
