@@ -2295,11 +2295,15 @@ async def translate_vocab_word(
 
 @app.get("/api/vocab/{word}/questions", response_model=VocabQuestionsResponse)
 async def get_vocab_word_questions(word: str) -> VocabQuestionsResponse:
-    stem = re.sub(r"[aeio]+$", "", word)
-    if len(stem) >= 4:
-        pattern = re.compile(rf"\b{re.escape(stem)}\w*", re.IGNORECASE)
+    if " " in word:
+        # Multi-word phrase: literal substring match, case-insensitive.
+        pattern = re.compile(re.escape(word), re.IGNORECASE)
     else:
-        pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
+        stem = re.sub(r"[aeio]+$", "", word)
+        if len(stem) >= 4:
+            pattern = re.compile(rf"\b{re.escape(stem)}\w*", re.IGNORECASE)
+        else:
+            pattern = re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE)
     matches = [
         QuestionMatchOut(
             id=q["id"],

@@ -426,3 +426,34 @@ def test_translate_custom_word_for_different_user_still_404(client, monkeypatch)
         params={"word": "miaparola"},
     )
     assert r.status_code == 404
+
+
+def test_vocab_questions_single_word_uses_stem_prefix(client):
+    """Existing single-word behavior must be preserved."""
+    r = client.get("/api/vocab/abbagliante/questions")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["count"] >= 1
+    # The stem-prefix regex should also match plural "abbaglianti"
+    matches_plural = any("abbaglianti" in q["text"].lower() for q in body["questions"])
+    matches_singular = any("abbagliante" in q["text"].lower() for q in body["questions"])
+    assert matches_plural or matches_singular
+
+
+def test_vocab_questions_phrase_uses_substring_match(client):
+    """Multi-word phrases use literal substring match (case-insensitive)."""
+    # Pick a phrase known to appear in the question bank.
+    r = client.get("/api/vocab/diritto%20di%20precedenza/questions")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    # If any question contains the literal substring, count > 0.
+    for q in body["questions"]:
+        assert "diritto di precedenza" in q["text"].lower()
+
+
+def test_vocab_questions_phrase_with_no_matches_returns_zero(client):
+    r = client.get("/api/vocab/parola%20inventata%20xyz/questions")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["count"] == 0
+    assert body["questions"] == []
