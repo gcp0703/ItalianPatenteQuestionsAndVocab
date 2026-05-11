@@ -1539,7 +1539,11 @@ function App() {
     setVocabError("");
 
     try {
-      const response = await fetch(`/api/vocab/translate?word=${encodeURIComponent(vocabCurrent.word)}`);
+      const response = await fetchWithUser(
+        `/api/vocab/translate?word=${encodeURIComponent(vocabCurrent.word)}`,
+        {},
+        currentUser,
+      );
       if (!response.ok) {
         const errorPayload = await response.json().catch(() => ({}));
         throw new Error(errorPayload.detail || "Impossibile tradurre la parola.");
@@ -1665,7 +1669,11 @@ function App() {
     setVocabError("");
 
     try {
-      const response = await fetch(`/api/vocab/translate?word=${encodeURIComponent(vocabCurrent.word)}`);
+      const response = await fetchWithUser(
+        `/api/vocab/translate?word=${encodeURIComponent(vocabCurrent.word)}`,
+        {},
+        currentUser,
+      );
       if (!response.ok) {
         const errorPayload = await response.json().catch(() => ({}));
         throw new Error(errorPayload.detail || "Impossibile tradurre la parola.");
