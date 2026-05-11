@@ -1241,6 +1241,7 @@ function App() {
     if (!vocabCurrent && !vocabLoading) {
       await loadVocab(vocabSource);
     }
+    loadCustomVocab();
   }
 
   async function loadCustomVocab() {
@@ -1469,6 +1470,8 @@ function App() {
   const totalVocabWords = vocabBank.length;
   const knownVocabCount = knownVocabWords.length;
   const unknownVocabCount = Math.max(totalVocabWords - knownVocabCount, 0);
+  const difficultVocabCount = vocabDifficultWords.length;
+  const customVocabCount = customVocab.length;
   const currentBatchSize = vocabBatch.length;
   const currentBatchSolvedCount = vocabBatchSolvedWords.length;
   const currentBatchQuestionNumber =
@@ -2611,25 +2614,28 @@ function App() {
             <p className="eyebrow">Vocab</p>
             <div className="vocab-source-actions">
               <button
-                className={`secondary-button ${vocabSource === VOCAB_SOURCE_RANDOM ? "header-button active" : ""}`}
+                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_RANDOM ? "header-button active" : ""}`}
                 onClick={() => loadVocab(VOCAB_SOURCE_RANDOM)}
                 disabled={vocabLoading || vocabRevealing}
               >
-                Unknown
+                <span className="vocab-source-label">Unknown</span>
+                <span className="vocab-source-count">{unknownVocabCount}</span>
               </button>
               <button
-                className={`secondary-button ${vocabSource === VOCAB_SOURCE_KNOWN ? "header-button active" : ""}`}
+                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_KNOWN ? "header-button active" : ""}`}
                 onClick={() => loadVocab(VOCAB_SOURCE_KNOWN)}
                 disabled={vocabLoading || vocabRevealing}
               >
-                Known
+                <span className="vocab-source-label">Known</span>
+                <span className="vocab-source-count">{knownVocabCount}</span>
               </button>
               <button
-                className={`secondary-button ${vocabSource === VOCAB_SOURCE_DIFFICULT ? "header-button active" : ""}`}
+                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_DIFFICULT ? "header-button active" : ""}`}
                 onClick={() => loadVocab(VOCAB_SOURCE_DIFFICULT)}
                 disabled={vocabLoading || vocabRevealing}
               >
-                Difficult Words
+                <span className="vocab-source-label">Difficult Words</span>
+                <span className="vocab-source-count">{difficultVocabCount}</span>
               </button>
               <button
                 className={`secondary-button ${vocabSource === VOCAB_SOURCE_RANKED ? "header-button active" : ""}`}
@@ -2639,14 +2645,15 @@ function App() {
                 Ranked
               </button>
               <button
-                className={`secondary-button ${vocabSource === VOCAB_SOURCE_CUSTOM ? "header-button active" : ""}`}
+                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_CUSTOM ? "header-button active" : ""}`}
                 onClick={() => {
                   setVocabSource(VOCAB_SOURCE_CUSTOM);
                   loadCustomVocab();
                 }}
                 disabled={vocabLoading || vocabRevealing}
               >
-                My Words
+                <span className="vocab-source-label">My Words</span>
+                <span className="vocab-source-count">{customVocabCount}</span>
               </button>
               <button
                 className="secondary-button vocab-reset-button"
