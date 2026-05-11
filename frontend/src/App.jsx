@@ -17,6 +17,7 @@ const VOCAB_SOURCE_RANDOM = "random";
 const VOCAB_SOURCE_KNOWN = "known";
 const VOCAB_SOURCE_DIFFICULT = "difficult";
 const VOCAB_SOURCE_RANKED = "ranked";
+const VOCAB_SOURCE_CUSTOM = "custom";
 
 function getUserStorageKey(baseKey, email) {
   return `${baseKey}-${email}`;
@@ -791,6 +792,11 @@ function App() {
   const [vocabRevealing, setVocabRevealing] = useState(false);
   const [vocabPendingTransition, setVocabPendingTransition] = useState(null);
   const [vocabError, setVocabError] = useState("");
+  const [customVocab, setCustomVocab] = useState([]);
+  const [customVocabLoading, setCustomVocabLoading] = useState(false);
+  const [customVocabError, setCustomVocabError] = useState("");
+  const [customVocabAddInput, setCustomVocabAddInput] = useState("");
+  const [customVocabToast, setCustomVocabToast] = useState(null);
   const [quizHistory, setQuizHistory] = useState([]);
   const [vocabQuestionResults, setVocabQuestionResults] = useState(null);
   const [quizVariantResults, setQuizVariantResults] = useState(null);
@@ -1228,6 +1234,22 @@ function App() {
 
     if (!vocabCurrent && !vocabLoading) {
       await loadVocab(vocabSource);
+    }
+  }
+
+  async function loadCustomVocab() {
+    setCustomVocabLoading(true);
+    setCustomVocabError("");
+    try {
+      const res = await fetchWithUser("/api/vocab/custom", {}, currentUser);
+      if (!res.ok) throw new Error("Impossibile caricare le tue parole.");
+      const data = await res.json();
+      setCustomVocab(data.words || []);
+    } catch (err) {
+      setCustomVocabError(err.message || "Errore di rete.");
+      setCustomVocab([]);
+    } finally {
+      setCustomVocabLoading(false);
     }
   }
 
@@ -1874,6 +1896,15 @@ function App() {
     );
   }
 
+  // Temporary stubs; replaced in tasks 11 and 12.
+  function handleAddCustomVocab() { setCustomVocabToast({ kind: "info", text: "Coming soon." }); }
+  function handleDeleteCustomVocab() {}
+  function CustomVocabPanel({ entries, loading, error }) {
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p className="inline-error">{error}</p>;
+    return <p>Custom vocab: {entries.length} entries.</p>;
+  }
+
   if (screenError) {
     return (
       <main className="app-shell">
@@ -2469,6 +2500,16 @@ function App() {
                 Ranked
               </button>
               <button
+                className={`secondary-button ${vocabSource === VOCAB_SOURCE_CUSTOM ? "header-button active" : ""}`}
+                onClick={() => {
+                  setVocabSource(VOCAB_SOURCE_CUSTOM);
+                  loadCustomVocab();
+                }}
+                disabled={vocabLoading || vocabRevealing}
+              >
+                My Words
+              </button>
+              <button
                 className="secondary-button vocab-reset-button"
                 onClick={resetVocabTracking}
                 disabled={vocabLoading || vocabRevealing}
@@ -2478,7 +2519,18 @@ function App() {
             </div>
           </div>
 
-          {vocabLoading && !vocabCurrent ? (
+          {vocabSource === VOCAB_SOURCE_CUSTOM ? (
+            <CustomVocabPanel
+              entries={customVocab}
+              loading={customVocabLoading}
+              error={customVocabError}
+              addInput={customVocabAddInput}
+              setAddInput={setCustomVocabAddInput}
+              toast={customVocabToast}
+              onAdd={handleAddCustomVocab}
+              onDelete={handleDeleteCustomVocab}
+            />
+          ) : vocabLoading && !vocabCurrent ? (
             <p>Sto preparando una nuova parola.</p>
           ) : vocabError && !vocabCurrent ? (
             <div>
