@@ -1944,7 +1944,36 @@ function App() {
     }
   }
 
-  function handleDeleteCustomVocab() {}
+  async function handleDeleteCustomVocab(word) {
+    if (!word) return;
+    if (!window.confirm(`Remove "${word}" from your custom vocabulary?`)) return;
+
+    setCustomVocabLoading(true);
+    setCustomVocabError("");
+    try {
+      const res = await fetchWithUser(
+        `/api/vocab/custom/${encodeURIComponent(word)}`,
+        { method: "DELETE" },
+        currentUser,
+      );
+      if (res.status === 404) {
+        setCustomVocabToast({ kind: "info", text: `"${word}" was already gone.` });
+      } else if (!res.ok) {
+        throw new Error("Impossibile rimuovere la parola.");
+      } else {
+        setCustomVocabToast({ kind: "success", text: `Removed "${word}".` });
+      }
+
+      // Optimistic local removal + cache invalidation.
+      setCustomVocab((prev) => prev.filter((e) => e.word !== word));
+      setVocabBank([]);
+      await loadCustomVocab();
+    } catch (err) {
+      setCustomVocabError(err.message || "Errore di rete.");
+    } finally {
+      setCustomVocabLoading(false);
+    }
+  }
 
   function CustomVocabPanel({ entries, loading, error, addInput, setAddInput, toast, onAdd, onDelete }) {
     return (
