@@ -736,6 +736,95 @@ function LoginScreen({ onLogin }) {
   );
 }
 
+function VocabConfigPanel({
+  entries,
+  loading,
+  error,
+  addInput,
+  setAddInput,
+  toast,
+  onAdd,
+  onDelete,
+  onReset,
+  resetDisabled,
+}) {
+  return (
+    <div className="vocab-custom-panel">
+      <section className="vocab-config-section">
+        <h3 className="vocab-config-heading">Reset</h3>
+        <p className="vocab-config-description">
+          Clears all 👍/👎 feedback, known marks, and difficult-word marks for your account. Custom words are not removed.
+        </p>
+        <button
+          type="button"
+          className="secondary-button vocab-reset-button"
+          onClick={onReset}
+          disabled={resetDisabled}
+        >
+          Reset
+        </button>
+      </section>
+      <section className="vocab-config-section">
+        <h3 className="vocab-config-heading">My Words</h3>
+        <form className="vocab-custom-add" onSubmit={onAdd}>
+          <input
+            type="text"
+            className="vocab-custom-input"
+            placeholder="Add words (comma-separated)"
+            value={addInput}
+            onChange={(e) => setAddInput(e.target.value)}
+            disabled={loading}
+            aria-label="Add words (comma-separated)"
+          />
+          <button
+            type="submit"
+            className="primary-button"
+            disabled={loading || !addInput.trim()}
+          >
+            Add
+          </button>
+        </form>
+        {toast && (
+          <p
+            className={`vocab-custom-toast vocab-custom-toast-${toast.kind}`}
+            aria-live="polite"
+          >
+            {toast.text}
+          </p>
+        )}
+        {error && <p className="inline-error">{error}</p>}
+        {loading ? (
+          <p>Loading…</p>
+        ) : entries.length === 0 ? (
+          <p className="vocab-custom-empty">
+            You haven't added any words yet. Type one or more Italian words above, separated by commas, then click Add.
+          </p>
+        ) : (
+          <ul className="vocab-custom-list">
+            {entries.map((entry) => (
+              <li key={entry.word} className="vocab-custom-row">
+                <span className="vocab-custom-word">{entry.word}</span>
+                <span className="vocab-custom-stats">
+                  👍 {entry.tracking.up}  👎 {entry.tracking.down}
+                </span>
+                <button
+                  type="button"
+                  className="vocab-custom-delete"
+                  onClick={() => onDelete(entry.word)}
+                  aria-label={`Delete ${entry.word}`}
+                  title="Delete this word"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
 function App() {
   const [currentUser, setCurrentUser] = useState(getSavedUser);
   const [mode, setMode] = useState("quiz");
@@ -1980,95 +2069,6 @@ function App() {
     } finally {
       setCustomVocabLoading(false);
     }
-  }
-
-  function VocabConfigPanel({
-    entries,
-    loading,
-    error,
-    addInput,
-    setAddInput,
-    toast,
-    onAdd,
-    onDelete,
-    onReset,
-    resetDisabled,
-  }) {
-    return (
-      <div className="vocab-custom-panel">
-        <section className="vocab-config-section">
-          <h3 className="vocab-config-heading">Reset</h3>
-          <p className="vocab-config-description">
-            Clears all 👍/👎 feedback, known marks, and difficult-word marks for your account. Custom words are not removed.
-          </p>
-          <button
-            type="button"
-            className="secondary-button vocab-reset-button"
-            onClick={onReset}
-            disabled={resetDisabled}
-          >
-            Reset
-          </button>
-        </section>
-        <section className="vocab-config-section">
-          <h3 className="vocab-config-heading">My Words</h3>
-          <form className="vocab-custom-add" onSubmit={onAdd}>
-            <input
-              type="text"
-              className="vocab-custom-input"
-              placeholder="Add words (comma-separated)"
-              value={addInput}
-              onChange={(e) => setAddInput(e.target.value)}
-              disabled={loading}
-              aria-label="Add words (comma-separated)"
-            />
-            <button
-              type="submit"
-              className="primary-button"
-              disabled={loading || !addInput.trim()}
-            >
-              Add
-            </button>
-          </form>
-          {toast && (
-            <p
-              className={`vocab-custom-toast vocab-custom-toast-${toast.kind}`}
-              aria-live="polite"
-            >
-              {toast.text}
-            </p>
-          )}
-          {error && <p className="inline-error">{error}</p>}
-          {loading ? (
-            <p>Loading…</p>
-          ) : entries.length === 0 ? (
-            <p className="vocab-custom-empty">
-              You haven't added any words yet. Type one or more Italian words above, separated by commas, then click Add.
-            </p>
-          ) : (
-            <ul className="vocab-custom-list">
-              {entries.map((entry) => (
-                <li key={entry.word} className="vocab-custom-row">
-                  <span className="vocab-custom-word">{entry.word}</span>
-                  <span className="vocab-custom-stats">
-                    👍 {entry.tracking.up}  👎 {entry.tracking.down}
-                  </span>
-                  <button
-                    type="button"
-                    className="vocab-custom-delete"
-                    onClick={() => onDelete(entry.word)}
-                    aria-label={`Delete ${entry.word}`}
-                    title="Delete this word"
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-    );
   }
 
   if (screenError) {
