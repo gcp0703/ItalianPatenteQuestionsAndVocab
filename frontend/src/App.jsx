@@ -1006,6 +1006,12 @@ function App() {
       });
   }, [mode, includeTranslations, topicQuestions]);
 
+  useEffect(() => {
+    if (!customVocabToast) return;
+    const timer = setTimeout(() => setCustomVocabToast(null), 4500);
+    return () => clearTimeout(timer);
+  }, [customVocabToast]);
+
   if (!currentUser) {
     return <LoginScreen onLogin={handleLogin} />;
   }
@@ -1896,13 +1902,109 @@ function App() {
     );
   }
 
-  // Temporary stubs; replaced in tasks 11 and 12.
-  function handleAddCustomVocab() { setCustomVocabToast({ kind: "info", text: "Coming soon." }); }
+  async function handleAddCustomVocab(event) {
+    if (event) event.preventDefault();
+    const input = customVocabAddInput.trim();
+    if (!input) return;
+
+    setCustomVocabLoading(true);
+    setCustomVocabError("");
+    try {
+      const res = await fetchWithUser(
+        "/api/vocab/custom",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input }),
+        },
+        currentUser,
+      );
+      if (!res.ok) throw new Error("Impossibile aggiungere parole.");
+      const data = await res.json();
+
+      const addedCount = (data.added || []).length;
+      const skipped = data.skipped || [];
+      const parts = [];
+      if (addedCount) parts.push(`Added ${addedCount}.`);
+      if (skipped.length) {
+        const reasons = skipped.map((s) => `${s.input} (${s.reason.replace(/_/g, " ")})`).join(", ");
+        parts.push(`Skipped ${skipped.length}: ${reasons}.`);
+      }
+      if (!parts.length) parts.push("No changes.");
+      setCustomVocabToast({ kind: addedCount ? "success" : "info", text: parts.join(" ") });
+
+      setCustomVocabAddInput("");
+      // Invalidate the cached master bank so the next study session refetches with new words.
+      setVocabBank([]);
+      await loadCustomVocab();
+    } catch (err) {
+      setCustomVocabError(err.message || "Errore di rete.");
+    } finally {
+      setCustomVocabLoading(false);
+    }
+  }
+
   function handleDeleteCustomVocab() {}
-  function CustomVocabPanel({ entries, loading, error }) {
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p className="inline-error">{error}</p>;
-    return <p>Custom vocab: {entries.length} entries.</p>;
+
+  function CustomVocabPanel({ entries, loading, error, addInput, setAddInput, toast, onAdd, onDelete }) {
+    return (
+      <div className="vocab-custom-panel">
+        <form className="vocab-custom-add" onSubmit={onAdd}>
+          <input
+            type="text"
+            className="vocab-custom-input"
+            placeholder="Add words (comma-separated)"
+            value={addInput}
+            onChange={(e) => setAddInput(e.target.value)}
+            disabled={loading}
+            aria-label="Add words (comma-separated)"
+          />
+          <button
+            type="submit"
+            className="primary-button"
+            disabled={loading || !addInput.trim()}
+          >
+            Add
+          </button>
+        </form>
+        {toast && (
+          <p
+            className={`vocab-custom-toast vocab-custom-toast-${toast.kind}`}
+            aria-live="polite"
+          >
+            {toast.text}
+          </p>
+        )}
+        {error && <p className="inline-error">{error}</p>}
+        {loading ? (
+          <p>Loading…</p>
+        ) : entries.length === 0 ? (
+          <p className="vocab-custom-empty">
+            You haven't added any words yet. Type one or more Italian words above, separated by commas, then click Add.
+          </p>
+        ) : (
+          <ul className="vocab-custom-list">
+            {entries.map((entry) => (
+              <li key={entry.word} className="vocab-custom-row">
+                <span className="vocab-custom-word">{entry.word}</span>
+                <span className="vocab-custom-stats">
+                  👍 {entry.tracking.up}  👎 {entry.tracking.down}
+                </span>
+                <button
+                  type="button"
+                  className="vocab-custom-delete"
+                  onClick={() => onDelete(entry.word)}
+                  aria-label={`Delete ${entry.word}`}
+                  title="Delete this word"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
   }
 
   if (screenError) {
