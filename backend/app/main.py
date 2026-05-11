@@ -268,6 +268,31 @@ class VocabPrefetchResponse(BaseModel):
     queued_words: int
 
 
+class CustomVocabAddIn(BaseModel):
+    input: str = Field(min_length=1, max_length=2000)
+
+
+class CustomVocabSkipped(BaseModel):
+    input: str
+    reason: str  # one of: already_in_bank, already_custom, empty, too_long, invalid_chars
+
+
+class CustomVocabAddResponse(BaseModel):
+    added: list[str]
+    skipped: list[CustomVocabSkipped]
+
+
+class CustomVocabEntryOut(BaseModel):
+    word: str
+    added_at: str
+    english: str
+    tracking: VocabTrackingOut
+
+
+class CustomVocabListResponse(BaseModel):
+    words: list[CustomVocabEntryOut]
+
+
 class UserOut(BaseModel):
     email: str
     created: str
