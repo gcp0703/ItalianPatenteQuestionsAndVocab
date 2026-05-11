@@ -273,3 +273,51 @@ def test_delete_custom_vocab_does_not_affect_other_users(client, isolated_env):
 
     data_b = json.loads(_user_file(isolated_env, "bob@example.com").read_text())
     assert "ciao" in data_b["custom_vocab"]
+
+
+def test_list_custom_vocab_requires_auth(client):
+    r = client.get("/api/vocab/custom")
+    assert r.status_code == 401
+
+
+def test_list_custom_vocab_empty(client):
+    token = _register(client, "alice@example.com")
+    r = client.get("/api/vocab/custom", headers=_auth(token))
+    assert r.status_code == 200, r.text
+    assert r.json() == {"words": []}
+
+
+def test_list_custom_vocab_returns_entries(client):
+    token = _register(client, "alice@example.com")
+    client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "ciao, diritto di precedenza"},
+    )
+    r = client.get("/api/vocab/custom", headers=_auth(token))
+    assert r.status_code == 200, r.text
+    body = r.json()
+    words = {w["word"]: w for w in body["words"]}
+    assert set(words.keys()) == {"ciao", "diritto di precedenza"}
+    for entry in body["words"]:
+        assert entry["english"] == ""
+        assert entry["added_at"]
+        assert entry["tracking"] == {"up": 0, "down": 0, "known": False, "difficult": False}
+
+
+def test_list_custom_vocab_reflects_tracking(client):
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+    client.post(
+        "/api/vocab/tracking",
+        headers=_auth(token),
+        json={
+            "feedback_counts": {"ciao": {"up": 3, "down": 1}},
+            "hidden_words": ["ciao"],
+            "difficult_words": [],
+        },
+    )
+    r = client.get("/api/vocab/custom", headers=_auth(token))
+    assert r.status_code == 200, r.text
+    entry = next(w for w in r.json()["words"] if w["word"] == "ciao")
+    assert entry["tracking"] == {"up": 3, "down": 1, "known": True, "difficult": False}

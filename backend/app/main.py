@@ -2298,6 +2298,36 @@ async def delete_custom_vocab(
     return Response(status_code=204)
 
 
+@app.get("/api/vocab/custom", response_model=CustomVocabListResponse)
+async def list_custom_vocab(
+    email: str = Depends(get_current_user_email),
+) -> CustomVocabListResponse:
+    data = await asyncio.to_thread(load_user_data, email)
+    tracking = data.get("tracking") or {}
+    feedback_counts = tracking.get("feedback_counts") or {}
+    hidden = set(tracking.get("hidden_words") or [])
+    difficult = set(tracking.get("difficult_words") or [])
+    custom = data.get("custom_vocab") or {}
+
+    out_words: list[CustomVocabEntryOut] = []
+    for word, entry in custom.items():
+        counts = feedback_counts.get(word) or {}
+        out_words.append(
+            CustomVocabEntryOut(
+                word=word,
+                added_at=str(entry.get("added_at") or ""),
+                english=str(entry.get("english") or ""),
+                tracking=VocabTrackingOut(
+                    up=_coerce_non_negative_int(counts.get("up", 0)),
+                    down=_coerce_non_negative_int(counts.get("down", 0)),
+                    known=word in hidden,
+                    difficult=word in difficult,
+                ),
+            )
+        )
+    return CustomVocabListResponse(words=out_words)
+
+
 @app.post("/api/score", response_model=ScoreResponse)
 async def score_quiz(
     submission: ScoreSubmission, email: str = Depends(get_current_user_email)
