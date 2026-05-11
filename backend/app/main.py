@@ -361,6 +361,29 @@ def _coerce_non_negative_int(value: Any) -> int:
         return 0
 
 
+CUSTOM_VOCAB_MAX_LEN = 60
+_CUSTOM_VOCAB_ALLOWED_RE = re.compile(r"^[a-zà-ÿ' \-]+$")
+
+
+def _normalize_custom_vocab_input(raw: str) -> tuple[str | None, str | None]:
+    """Normalize a user-entered custom vocab word.
+
+    Returns (normalized, None) on success, or (None, reason) on rejection.
+    Reasons: "empty", "too_long", "invalid_chars".
+    """
+    if not isinstance(raw, str):
+        return None, "invalid_chars"
+    text = unicodedata.normalize("NFC", raw).strip().lower()
+    text = re.sub(r"\s+", " ", text)
+    if not text:
+        return None, "empty"
+    if len(text) > CUSTOM_VOCAB_MAX_LEN:
+        return None, "too_long"
+    if not _CUSTOM_VOCAB_ALLOWED_RE.match(text):
+        return None, "invalid_chars"
+    return text, None
+
+
 # ---------------------------------------------------------------------------
 # User data helpers
 # ---------------------------------------------------------------------------
