@@ -280,7 +280,7 @@ function getRankedVocabEntries(entries, feedbackCounts) {
   });
 }
 
-function getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedbackCounts) {
+function getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedbackCounts, customWords = []) {
   const unknownEntries = getUnknownVocabEntries(bank, hiddenWords, feedbackCounts);
   const knownEntries = getKnownVocabEntries(bank, hiddenWords, feedbackCounts);
 
@@ -299,11 +299,16 @@ function getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedba
     return getRankedVocabEntries(unknownEntries, feedbackCounts);
   }
 
+  if (source === VOCAB_SOURCE_CUSTOM) {
+    const customSet = new Set(customWords);
+    return shuffleItems(bank.filter((item) => customSet.has(item.word)));
+  }
+
   return shuffleItems(unknownEntries);
 }
 
-function createVocabBatch(bank, hiddenWords, source, difficultWords, feedbackCounts) {
-  const sourceEntries = getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedbackCounts);
+function createVocabBatch(bank, hiddenWords, source, difficultWords, feedbackCounts, customWords = []) {
+  const sourceEntries = getVocabSourceEntries(bank, hiddenWords, source, difficultWords, feedbackCounts, customWords);
   const batch = sourceEntries.slice(0, VOCAB_BATCH_SIZE);
   const queue = [...batch];
 
@@ -804,6 +809,7 @@ function App() {
   const [customVocabError, setCustomVocabError] = useState("");
   const [customVocabAddInput, setCustomVocabAddInput] = useState("");
   const [customVocabToast, setCustomVocabToast] = useState(null);
+  const [customVocabManageOpen, setCustomVocabManageOpen] = useState(false);
   const [quizHistory, setQuizHistory] = useState([]);
   const [vocabQuestionResults, setVocabQuestionResults] = useState(null);
   const [quizVariantResults, setQuizVariantResults] = useState(null);
@@ -1197,12 +1203,14 @@ function App() {
         setVocabFeedbackCounts(feedbackCounts);
       }
 
+      const customWords = customVocab.map((entry) => entry.word);
       const { batch, queue, entry } = createVocabBatch(
         bank,
         hiddenWords,
         source,
         difficultWords,
-        feedbackCounts
+        feedbackCounts,
+        customWords,
       );
       if (!entry) {
         setVocabBatch([]);
@@ -1221,7 +1229,9 @@ function App() {
               ? "Nessuna parola conosciuta disponibile."
               : source === VOCAB_SOURCE_RANKED
                 ? "Nessuna parola con feedback negativo. Aggiungine alcune con 👎 per iniziare il ranking."
-                : "Nessuna parola disponibile."
+                : source === VOCAB_SOURCE_CUSTOM
+                  ? "Nessuna parola personalizzata. Aggiungile tramite l'icona ⚙️."
+                  : "Nessuna parola disponibile."
         );
       }
 
@@ -1605,7 +1615,8 @@ function App() {
                 nextHiddenWords,
                 vocabSource,
                 vocabDifficultWords,
-                nextFeedbackCounts
+                nextFeedbackCounts,
+                customVocab.map((entry) => entry.word),
               );
               setVocabBatch(nextBatch.batch);
               setVocabQueue(nextBatch.queue);
@@ -1727,7 +1738,8 @@ function App() {
             nextHiddenWords,
             vocabSource,
             vocabDifficultWords,
-            nextFeedbackCounts
+            nextFeedbackCounts,
+            customVocab.map((entry) => entry.word),
           )
         : getNextBatchStep(vocabBatch, vocabQueue, nextBatchSolvedWords);
 
@@ -1818,7 +1830,8 @@ function App() {
         nextHiddenWords,
         vocabSource,
         vocabDifficultWords,
-        nextFeedbackCounts
+        nextFeedbackCounts,
+        customVocab.map((entry) => entry.word),
       );
       setVocabBatch(nextBatch.batch);
       setVocabQueue(nextBatch.queue);
@@ -2623,42 +2636,39 @@ function App() {
             <p className="eyebrow">Vocab</p>
             <div className="vocab-source-actions">
               <button
-                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_RANDOM ? "header-button active" : ""}`}
-                onClick={() => loadVocab(VOCAB_SOURCE_RANDOM)}
+                className={`secondary-button vocab-source-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_RANDOM ? "header-button active" : ""}`}
+                onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_RANDOM); }}
                 disabled={vocabLoading || vocabRevealing}
               >
                 <span className="vocab-source-label">Unknown</span>
                 <span className="vocab-source-count">{unknownVocabCount}</span>
               </button>
               <button
-                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_KNOWN ? "header-button active" : ""}`}
-                onClick={() => loadVocab(VOCAB_SOURCE_KNOWN)}
+                className={`secondary-button vocab-source-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_KNOWN ? "header-button active" : ""}`}
+                onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_KNOWN); }}
                 disabled={vocabLoading || vocabRevealing}
               >
                 <span className="vocab-source-label">Known</span>
                 <span className="vocab-source-count">{knownVocabCount}</span>
               </button>
               <button
-                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_DIFFICULT ? "header-button active" : ""}`}
-                onClick={() => loadVocab(VOCAB_SOURCE_DIFFICULT)}
+                className={`secondary-button vocab-source-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_DIFFICULT ? "header-button active" : ""}`}
+                onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_DIFFICULT); }}
                 disabled={vocabLoading || vocabRevealing}
               >
                 <span className="vocab-source-label">Difficult Words</span>
                 <span className="vocab-source-count">{difficultVocabCount}</span>
               </button>
               <button
-                className={`secondary-button ${vocabSource === VOCAB_SOURCE_RANKED ? "header-button active" : ""}`}
-                onClick={() => loadVocab(VOCAB_SOURCE_RANKED)}
+                className={`secondary-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_RANKED ? "header-button active" : ""}`}
+                onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_RANKED); }}
                 disabled={vocabLoading || vocabRevealing}
               >
                 Ranked
               </button>
               <button
-                className={`secondary-button vocab-source-button ${vocabSource === VOCAB_SOURCE_CUSTOM ? "header-button active" : ""}`}
-                onClick={() => {
-                  setVocabSource(VOCAB_SOURCE_CUSTOM);
-                  loadCustomVocab();
-                }}
+                className={`secondary-button vocab-source-button ${!customVocabManageOpen && vocabSource === VOCAB_SOURCE_CUSTOM ? "header-button active" : ""}`}
+                onClick={() => { setCustomVocabManageOpen(false); loadVocab(VOCAB_SOURCE_CUSTOM); }}
                 disabled={vocabLoading || vocabRevealing}
               >
                 <span className="vocab-source-label">My Words</span>
@@ -2671,10 +2681,24 @@ function App() {
               >
                 Reset
               </button>
+              <button
+                className={`secondary-button vocab-custom-gear ${customVocabManageOpen ? "header-button active" : ""}`}
+                onClick={() => {
+                  setCustomVocabManageOpen((open) => {
+                    const next = !open;
+                    if (next) loadCustomVocab();
+                    return next;
+                  });
+                }}
+                aria-label="Manage custom words"
+                title="Manage custom words"
+              >
+                ⚙️
+              </button>
             </div>
           </div>
 
-          {vocabSource === VOCAB_SOURCE_CUSTOM ? (
+          {customVocabManageOpen ? (
             <CustomVocabPanel
               entries={customVocab}
               loading={customVocabLoading}
