@@ -408,6 +408,10 @@
       "dst": "Driving on the emergency lane on the motorway, outside of the foreseen cases, leads to a loss of points on the license",
       "src": "Circolare sulla corsia di emergenza in autostrada, al di fuori dei casi previsti, comporta una perdita di punti sulla patente"
     },
+    "03d49f4cd352e97cc6ad8adb5ba0a00a4faea090": {
+      "dst": "perfectly",
+      "src": "perfettamente"
+    },
     "03e6da68cb7c9b964cc9c8cc840c022c875bb9c3": {
       "dst": "When driving behind a vehicle with a protruding load, it may be difficult to notice that it intends to turn if the direction indicators are hidden by dangling goods",
       "src": "Circolando dietro ad un veicolo che ha un carico sporgente, può risultare difficile accorgersi che intende svoltare, se gli indicatori di direzione sono nascosti dalla merce penzolante"
@@ -1491,6 +1495,14 @@
     "0d6bab5d5b02924584311dff293175cdf32afff8": {
       "dst": "The depicted sign can be supplemented with flashing yellow lights",
       "src": "Il segnale raffigurato può essere completato con luci gialle lampeggianti"
+    },
+    "0d73694e519057b7743fe69cc925fd8cfae127cb": {
+      "dst": "generic",
+      "src": "generico"
+    },
+    "0d7a1d05401b7b02f43e3b0c1d38db9458d68aac": {
+      "dst": "voltage",
+      "src": "tensione"
     },
     "0d8048357e37ffae158df9be8e5cc4887468ea38": {
       "dst": "Having to cross the intersection shown in the figure, vehicle A must wait for vehicle E to pass",
@@ -3040,6 +3052,10 @@
       "dst": "The additional panel shown advises you to reduce speed in case of rain, because the road becomes slippery",
       "src": "Il pannello integrativo raffigurato invita a diminuire la velocità in caso di pioggia, perché la strada diventa sdrucciolevole"
     },
+    "1c69013e5473a0b475bfbdf6ae2d102975ebf385": {
+      "dst": "burden",
+      "src": "gravare"
+    },
     "1c7cf05ed1b0c9c0bf3969647b306ee317a9d5d2": {
       "dst": "It is legal to find the yellow TAXI writing on the pavement, to indicate areas reserved for parking taxis in service",
       "src": "E' regolamentare trovare sulla pavimentazione la scritta TAXI di colore giallo, per indicare zone riservate alla sosta dei taxi in servizio"
@@ -4428,6 +4444,10 @@
       "dst": "During the stop the driver must not impede the normal flow of traffic with his vehicle",
       "src": "Durante la fermata il conducente non deve impedire con il proprio autoveicolo il normale flusso del traffico"
     },
+    "2957a496a96b16956c808368d9089abffc81e404": {
+      "dst": "tow",
+      "src": "traino"
+    },
     "297107cb18dbe40bf40dbe1e01a713f4af8e81f4": {
       "dst": "On a one-way road to turn left you must keep to the left edge",
       "src": "Su strada a senso unico per svoltare a sinistra bisogna tenersi sul margine sinistro"
@@ -4735,6 +4755,10 @@
     "2c70cfcb924db6a39294ac7b12e3af2d768e3d94": {
       "dst": "When traveling in parallel rows, it is possible that in the right lane you drive at a higher speed than the left lane",
       "src": "Quando si viaggia per file parallele, è possibile che nella corsia di destra si circoli ad una velocità superiore a quella di sinistra"
+    },
+    "2c733f81705a627f317a327f663e749b7bd84595": {
+      "dst": "semi-barriers",
+      "src": "semibarriere"
     },
     "2c759b9b680577de24a0fd866ddc5b6402736b50": {
       "dst": "The transverse white stripe in the figure can be completed with the word STOP, painted on the road pavement",
@@ -5688,6 +5712,10 @@
       "dst": "The flashing red lights in the figure force you not to cross the transverse stop line",
       "src": "Le luci rosse accese lampeggianti in figura obbligano a non superare la striscia trasversale d'arresto"
     },
+    "35f7ff918e4bc44a83a4e4682c27fd45e95e971b": {
+      "dst": "recall",
+      "src": "richiamare"
+    },
     "35fd857320f7858e5f4dada7e0c0df8ce8426533": {
       "dst": "Driving ability may be compromised if hallucinogens (LSD, ecstasy, etc.) are used",
       "src": "L'idoneità alla guida può essere compromessa se si fa uso di allucinogeni (LSD, ecstasy, ecc.)"
@@ -6112,6 +6140,10 @@
       "dst": "It is not mandatory to help an injured person on the road if doing so creates an obstruction to traffic",
       "src": "Non è obbligatorio soccorrere un ferito della strada, se per farlo, si crea intralcio alla circolazione"
     },
+    "3a186bddc3ea814ffe2662affae6df76f4ad4f20": {
+      "dst": "end",
+      "src": "estremità"
+    },
     "3a2c7e046ca95b29452f9824ed5a69aad799d861": {
       "dst": "The signal shown announces the end of the previously imposed obligation",
       "src": "Il segnale raffigurato preannuncia la fine dell'obbligo precedentemente imposto"
@@ -6496,6 +6528,10 @@
       "dst": "The sign shown indicates a mobile police station nearby",
       "src": "Il segnale raffigurato indica una postazione mobile di Polizia nelle vicinanze"
     },
+    "3d7daf93e725a44928f5888b58ed18cc200581ed": {
+      "dst": "injectors",
+      "src": "iniettori"
+    },
     "3d7e4d3a453b32cd37798df911e42beae034deeb": {
       "dst": "The driver involved in a road accident must provide his/her personal details and details of the licence, license plate and insurance of the vehicle to the injured persons",
       "src": "Il conducente coinvolto in un incidente stradale deve fornire le proprie generalità e gli estremi della patente, della targa e dell'assicurazione del veicolo alle persone danneggiate"
@@ -6767,6 +6803,14 @@
     "4080c117764f918f32254a309395b3e1a6339887": {
       "dst": "In the presence of the signs in the figure it is permitted to change lanes as long as the stripes are still discontinuous (dashed)",
       "src": "In presenza della segnaletica in figura è consentito cambiare corsia fino a che le strisce sono ancora discontinue(tratteggiate)"
+    },
+    "409517459680f4269f8b9f9d543ee96339789b75": {
+      "dst": "move forward",
+      "src": "avanzare"
+    },
+    "40966b287528212dd81baaf41fb3ff636daa8e88": {
+      "dst": "acoustic",
+      "src": "acustica"
     },
     "40a12db240032b867ffe669e49aef652f16dfe34": {
       "dst": "Cars are subject to inspection every five years",
@@ -7364,6 +7408,10 @@
       "dst": "Arriving at an intersection, regulated with roundabout traffic, before entering it is advisable to moderate speed and use maximum caution, at the same time monitoring the behavior of other users",
       "src": "Giungendo ad un incrocio, regolato con circolazione rotatoria, prima di immettersi è opportuno moderare la velocità ed usare la massima prudenza, controllando nel contempo il comportamento degli altri utenti"
     },
+    "4622441e7bbf8cc1c192488d9b3805328c0b9f46": {
+      "dst": "get off",
+      "src": "discendere"
+    },
     "4625f681a314d0eb78c7ab7a77036d2787a9ee38": {
       "dst": "Overloading does not cause problems with the shock absorbers of a motor vehicle if the driver adopts a prudent driving style",
       "src": "Il sovraccarico non causa problemi agli ammortizzatori di un veicolo a motore se il conducente adotta uno stile di guida prudente"
@@ -7615,6 +7663,10 @@
     "48d5313653a4bd259523305cf61c065bc1e6079f": {
       "dst": "Arriving at the intersection shown in the figure, vehicle L passes first",
       "src": "Giungendo all'incrocio rappresentato in figura il veicolo L passa per primo"
+    },
+    "48e86bd9945ad520c6a10ea4067c5acf051553d3": {
+      "dst": "mobile phone",
+      "src": "cellulare"
     },
     "48e948acb146937372f9743f006128832441422d": {
       "dst": "The pavement is a part of the roadway",
@@ -7991,6 +8043,10 @@
     "4c2e3776d00ddf97011f8ca803cd755ba1ea931a": {
       "dst": "The sign shown prohibits turning left at the intersection",
       "src": "Il segnale raffigurato vieta la svolta a sinistra all'incrocio"
+    },
+    "4c2f65997d3e1137e1ec45338bcaf45ee61c5ec0": {
+      "dst": "garage",
+      "src": "garage"
     },
     "4c321b43b59c0ac709d5d8aee8c06dd56b8caf3d": {
       "dst": "In the presence of the sign shown, the danger is less in case of rain",
@@ -8600,6 +8656,10 @@
       "dst": "The sign shown indicates the distance of the reachable locations on the motorway",
       "src": "Il segnale raffigurato indica in autostrada la distanza delle località raggiungibili"
     },
+    "51cb75265c3fd352c344ae8453a354ed0c63d5bc": {
+      "dst": "incur",
+      "src": "incorrere"
+    },
     "51d3db77dd0ac9c198a9d5172f3c20c73aa60f16": {
       "dst": "If you go down a long hill with the gearbox in neutral and the engine off, it becomes difficult to move the steering if the vehicle is equipped with power steering",
       "src": "Se si percorre una lunga discesa con il cambio in folle e a motore spento, diventa difficoltoso muovere lo sterzo se il veicolo è dotato di servosterzo"
@@ -8764,6 +8824,10 @@
       "dst": "The sign shown can pre-signal a motorway toll booth",
       "src": "Il segnale raffigurato può presegnalare un casello autostradale"
     },
+    "534cd6bd60d0b3616d3b7356eee7ff09aa700206": {
+      "dst": "welcome",
+      "src": "accogliere"
+    },
     "534d2a8b68b4916cf5737ea39d7d0c3f8ed8bd8e": {
       "dst": "The driver who intends to make a U-turn on a two-way road must activate the direction indicator",
       "src": "Il conducente che intende effettuare l'inversione di marcia su una strada a doppio senso deve azionare l'indicatore di direzione"
@@ -8775,6 +8839,10 @@
     "5367a91f6576e81bd7f61f83843fd7a6f6b7bb98": {
       "dst": "In case of rain it is necessary to use the danger warning light (four arrows flashing simultaneously) while driving",
       "src": "In caso di pioggia occorre utilizzare, durante la marcia, la segnalazione luminosa di pericolo (quattro frecce lampeggianti simultaneamente)"
+    },
+    "537dec7f56976da6dbdb065a4d25d29b8248ec91": {
+      "dst": "coverage",
+      "src": "copertura"
     },
     "537fa9942e3b70c9289f40649b7d5533ae6b259f": {
       "dst": "The sign depicted is located on a two-way roadway",
@@ -9060,6 +9128,14 @@
       "dst": "A red warning light marked with the symbol in the figure, if turned on while driving, indicates that the battery is overcharged",
       "src": "Una spia di colore rosso contrassegnata dal simbolo di figura, se accesa durante la marcia, indica che la batteria è sovraccarica"
     },
+    "564ee6d812e37aa8fdf965259aba4e9d2b9dbe46": {
+      "dst": "elastic",
+      "src": "elastico"
+    },
+    "565dd81ff15c0a263e8612c6198c4b817052732f": {
+      "dst": "satin",
+      "src": "raso"
+    },
     "56642d3e360a1a1787be4240829cbc6088124408": {
       "dst": "The sign shown forces you to turn left or right at the intersection",
       "src": "Il segnale raffigurato obbliga a svoltare a sinistra o a destra all'incrocio"
@@ -9123,6 +9199,10 @@
     "57334d7da9b0fdadc46233f047dad77547508489": {
       "dst": "The seat belt retractor can be deactivated or modified by the driver if it creates discomfort for the passenger",
       "src": "L’arrotolatore delle cinture di sicurezza può essere disattivato o modificato dal conducente, se crea fastidio al passeggero"
+    },
+    "57391d3c4acbad9a6634b538efa868ca537f8909": {
+      "dst": "glider",
+      "src": "aliante"
     },
     "57600af743d06c325b641475f4f36615e2ade317": {
       "dst": "The sign shown precedes an intersection where it is mandatory to turn left",
@@ -9379,6 +9459,10 @@
     "59629bc7c0042edee0f4327f9f7185ddc1809c45": {
       "dst": "The sign shown indicates the distance to a service area",
       "src": "Il segnale raffigurato indica la distanza da un'area di servizio"
+    },
+    "5966d1d7f9c5b0528778507f24371c120941c29a": {
+      "dst": "defective",
+      "src": "difettoso"
     },
     "59688db9442dda0e37b8c45b7f1914ceb3a3601e": {
       "dst": "The signal shown indicates, generally at 150 m, a double dangerous curve",
@@ -9823,6 +9907,10 @@
     "5e5238b28e82703bdb8bc40e6dc3326dc78bd1f4": {
       "dst": "The presence of one of the two supplementary panels in the figure indicates the intersection with a road from which trucks coming from a landfill enter",
       "src": "La presenza di uno dei due pannelli integrativi in figura indica l’incrocio con una strada dalla quale si immettono autocarri provenienti da una discarica"
+    },
+    "5e58a5aecab6f71684a7268ddb1e0f2dcc526b30": {
+      "dst": "fixing",
+      "src": "fissaggio"
     },
     "5e5bdd768261d664b905206898f0788db9d0b697": {
       "dst": "The category B license enables you to drive cars, even if they tow trailers with a mass exceeding 3,500 kilograms",
@@ -10732,6 +10820,10 @@
       "dst": "With the category A1 license you can drive motor tricycles with a power not exceeding 15 kW",
       "src": "Con la patente di categoria A1 si possono condurre i tricicli a motore di potenza non superiore a 15 kW"
     },
+    "67b48196a736c3dea2568cd3b5778581a533df5c": {
+      "dst": "stay",
+      "src": "alloggiare"
+    },
     "67b52f2c91bb1822a83ae1d9799f56d3ecb81ff3": {
       "dst": "The sign shown indicates that after parking the car it is possible to take bus no. 8 or n. 45",
       "src": "Il segnale raffigurato indica che dopo aver parcheggiato l'autovettura è possibile prendere l'autobus n. 8 o n. 45"
@@ -10851,6 +10943,10 @@
     "68ded84b0e2fab8f86779c226f8e4feda5f434a3": {
       "dst": "The sign shown obliges cyclists to give way to vehicles",
       "src": "Il segnale raffigurato obbliga i ciclisti a dare la precedenza ai veicoli"
+    },
+    "68feb8abf99544b23dba56ab054e8fb2c0e48c04": {
+      "dst": "accustomed",
+      "src": "abituato"
     },
     "6927895819a6d77745c993c20ce3ea25d97d186f": {
       "dst": "The motorway has independent carriageways or separated by traffic islands",
@@ -11144,6 +11240,10 @@
       "dst": "The panel shown indicates a parking area for cars",
       "src": "Il pannello raffigurato indica un'area di parcheggio per autovetture"
     },
+    "6b8b1fb497e14c182a85f674c302ad3ead8b62fa": {
+      "dst": "slow",
+      "src": "lento"
+    },
     "6ba6c285c52e8ad368014506c82495e68346b791": {
       "dst": "The low adhesion coefficient makes sudden braking dangerous",
       "src": "Il coefficiente di aderenza basso rende pericolose le frenate brusche"
@@ -11163,6 +11263,10 @@
     "6be95db422e080f5e7dcb1f5b916f6ab8bbb2860": {
       "dst": "At the intersection shown in the figure, vehicle C must give way to vehicle H",
       "src": "Nell'incrocio rappresentato in figura il veicolo C deve dare la precedenza al veicolo H"
+    },
+    "6c0d4a38747c87924b00f182aaa05dc7efc86c8a": {
+      "dst": "load",
+      "src": "carica"
     },
     "6c205d5287099819313a19850fce4977cc78a87f": {
       "dst": "In the presence of the sign shown, transit of tankers transporting water is permitted",
@@ -11644,6 +11748,10 @@
       "dst": "In one-way urban streets, parking is also permitted along the left edge of the roadway, provided there remains sufficient space for at least one row of vehicles to pass",
       "src": "Nelle strade urbane a senso unico di marcia, la sosta è consentita anche lungo il margine sinistro della carreggiata, purché rimanga uno spazio sufficiente al transito almeno di una fila di veicoli"
     },
+    "702f4a969471ec4f87d64dcbb60087b0e4edf650": {
+      "dst": "due",
+      "src": "dovuto"
+    },
     "703c2ef15d9cadb6f7e0f72b589c6f70052d85d1": {
       "dst": "The revision of the driving license can be ordered with the obligation to undergo a medical examination and/or a technical suitability exam",
       "src": "La revisione della patente di guida può essere disposta con l’obbligo di sottoporsi a visita medica e/o ad esame di idoneità tecnica"
@@ -11731,6 +11839,10 @@
     "70d6b8a65b868c55c15db4b96ac4017d17ab3687": {
       "dst": "The signal shown warns you to stop before entering the intersection",
       "src": "Il segnale raffigurato preannuncia di arrestarsi prima di impegnare l'incrocio"
+    },
+    "70d90f06eeaaa839783828c498e605fe3a79ca38": {
+      "dst": "order",
+      "src": "ordine"
     },
     "70e9842864facc13d32493c5835aa4a6d1862cba": {
       "dst": "The driving license is immediately withdrawn, during circulation, when the driver circulates without having the vehicle ownership certificate with him",
@@ -12595,6 +12707,10 @@
     "78a2421d676ac099796ff7cfef0947ff92b29e20": {
       "dst": "In a two-way roadway, to turn left you have to go around the center of the intersection like vehicle H in the figure, if there is a roundabout sign",
       "src": "In una carreggiata a doppio senso di circolazione per svoltare a sinistra bisogna girare intorno al centro dell'incrocio come il veicolo H in figura, se c'è il segnale di rotatoria"
+    },
+    "78b260715fa5efb35aed76aced7a96e7991755d5": {
+      "dst": "crossroads",
+      "src": "bivio"
     },
     "78bb2bebbeb462c4c8a903eb2ff14f9529cd6b18": {
       "dst": "Stopping a vehicle is the temporary suspension of travel to allow people to get on or off",
@@ -13500,6 +13616,10 @@
       "dst": "On motorcycles it is forbidden to carry objects that prevent or limit the driver's visibility",
       "src": "Sui motocicli è vietato trasportare oggetti che impediscano o limitino la visibilità al conducente"
     },
+    "81288f0a85ccbb6c010f7be7704e14eadad33a22": {
+      "dst": "judge",
+      "src": "giudice"
+    },
     "8135ff07392f645eef21b14bf521914cd91703c3": {
       "dst": "When driving a vehicle near a bus stop for schoolchildren, you must pay attention to children, who could run across the road to get on the school bus",
       "src": "Alla guida di un veicolo, in vicinanza di una piazzola per la fermata di autobus per scolari, occorre fare attenzione ai bambini, che potrebbero attraversare di corsa la strada per salire sullo scuolabus"
@@ -13836,6 +13956,10 @@
       "dst": "The sign shown warns of a stretch of road with a dangerous shoulder",
       "src": "Il segnale raffigurato preannuncia un tratto di strada con banchina pericolosa"
     },
+    "8416491ab51c86cf4ea92279ac168f8397feece2": {
+      "dst": "track",
+      "src": "tracciato"
+    },
     "8418ca5f707016b6996aba2cdf6f6c8bdf711eab": {
       "dst": "In the intersection shown in the figure the vehicles clear the intersection in the following order: E, C, L",
       "src": "Nell'incrocio rappresentato in figura i veicoli disimpegnano l'incrocio nel seguente ordine: E, C, L"
@@ -13968,6 +14092,10 @@
       "dst": "On secondary extra-urban roads the maximum speed limit is 80 km/h for cars with trailer",
       "src": "Su strade extraurbane secondarie il limite massimo di velocità è di 80 km/h per autovetture con carrello appendice"
     },
+    "853a003bbb3e18e43737ea49fd63e242c0a979cf": {
+      "dst": "on the",
+      "src": "sul"
+    },
     "853b2991e3773203b6393b713dc2f0e7f439027d": {
       "dst": "The sign shown indicates that it is not possible to turn left at the first intersection",
       "src": "Il segnale raffigurato indica che non è possibile svoltare a sinistra al primo incrocio"
@@ -13999,6 +14127,10 @@
     "858c952718891d91667185879886219b8ebfe31f": {
       "dst": "The sign shown allows access to mopeds",
       "src": "Il segnale raffigurato consente l'accesso ai ciclomotori"
+    },
+    "859c1726de345b74cd41b715b3d2d1f48f8c2441": {
+      "dst": "react",
+      "src": "reagire"
     },
     "859e5ca00a6040ce3578a621ab31bbaee9ebe2ec": {
       "dst": "The speed at which you travel affects the safety distance",
@@ -14227,6 +14359,10 @@
     "8788701c24de0f8afb2082e1781162447fd2bafe": {
       "dst": "The sign shown prohibits prolonged abandonment of the vehicle",
       "src": "Il segnale raffigurato vieta l'abbandono prolungato nel tempo del veicolo"
+    },
+    "878a4f3190426ef8f7cabdeaabb9f4202c55abd1": {
+      "dst": "toll booth",
+      "src": "casello"
     },
     "87932cfe1b87746a7ed34387616cd331d0dd6e44": {
       "dst": "Stopping is prohibited after the NO PARKING sign",
@@ -15668,6 +15804,10 @@
       "dst": "The A.B.S. it is able to act on all the wheels, intervening from time to time on those that are about to block during braking",
       "src": "L’A.B.S. è in grado di agire su tutte le ruote, intervenendo di volta in volta su quelle che stanno per bloccarsi durante la frenata"
     },
+    "95707b4a21e1a49540ebe68c4b55719cc1559f5f": {
+      "dst": "history",
+      "src": "storico"
+    },
     "95768339b31db84671454b164b07e41ed9280ce6": {
       "dst": "The sign shown announces that it is advisable for trucks to turn right",
       "src": "Il segnale raffigurato preannuncia che per gli autocarri è consigliato svoltare a destra"
@@ -15795,6 +15935,10 @@
     "969eadaa9572afc964f8b8764051b89b66ab7d66": {
       "dst": "The sign shown allows local traffic to circulate in both directions",
       "src": "Il segnale raffigurato consente la circolazione del traffico locale in entrambi i sensi"
+    },
+    "96a10c1be533a4cd3960a2b877a41e38b54c9e75": {
+      "dst": "disable",
+      "src": "disabilitazione"
     },
     "96a33002470d97585cea68bd6fa8f5e810ef4ecc": {
       "dst": "When at an urban intersection, at the green light signal, the vehicle in front is slow to start moving again, it is advisable to wait patiently for it to start moving again",
@@ -15935,6 +16079,10 @@
     "97aa277eefc0f91d576bd692442616d113f5fb76": {
       "dst": "The sign shown is located at the beginning of a country road",
       "src": "Il segnale raffigurato si trova all'inizio di una strada di campagna"
+    },
+    "97b62bbd246edd6ea93076117772a7ca2b09dc79": {
+      "dst": "possibly",
+      "src": "possibilmente"
     },
     "97b658172956612f4d436b5590d2ae5be077502f": {
       "dst": "The load must be placed on the vehicles in such a way that it does not protrude from the rear by more than three-tenths of the length of the vehicle",
@@ -16292,6 +16440,10 @@
       "dst": "When at night, on an extra-urban road, we come across a vehicle with high beam headlights on, it is necessary to look away from the light beam so as not to be dazzled",
       "src": "Allorché di notte, su strada extraurbana, incrociamo un veicolo con fari a luce abbagliante accesi, occorre distogliere lo sguardo dal fascio luminoso per non essere abbagliati"
     },
+    "9ab20d203eba91e6c575fc097c4745f52d7d157e": {
+      "dst": "milliseconds",
+      "src": "millisecondi"
+    },
     "9ac3db9b040c362f95aba24c16024307325ded79": {
       "dst": "The traffic policeman positioned with his arms at a right angle as in the figure allows vehicles arriving from his left to turn right",
       "src": "Il vigile disposto con le braccia ad angolo retto come in figura consente di svoltare a destra ai veicoli che arrivano dalla sua sinistra"
@@ -16299,6 +16451,10 @@
     "9ac42d93a5088c5ac07bbc0de87e2afca09dc51f": {
       "dst": "At the intersection shown in the figure the vehicles pass in the following order: C, N, S",
       "src": "Nell'incrocio rappresentato nella figura i veicoli passano nel seguente ordine: C, N, S"
+    },
+    "9ac5df343216e5f41e8782d778423fb6b56a3694": {
+      "dst": "exchange",
+      "src": "scambiare"
     },
     "9acb5724c2c23ffbb62c1c6bfb4d6f62b3bab845": {
       "dst": "Outside inhabited centres, at night, it is mandatory to pre-signal with the mobile triangular danger sign any load which accidentally falls from the vehicle onto the roadway",
@@ -17656,6 +17812,10 @@
       "dst": "We must maintain a speed regulated according to the time we have available",
       "src": "Si deve tenere una velocità regolata in funzione del tempo che abbiamo a disposizione"
     },
+    "a665bdd059779de695cbb316e2940773abe48ba6": {
+      "dst": "driveways",
+      "src": "carrabili"
+    },
     "a66d49d348692c0d6628ef157c19a3847595d83c": {
       "dst": "The sign shown announces a crossroads to the airport",
       "src": "Il segnale raffigurato preannuncia un bivio per l'aeroporto"
@@ -18055,6 +18215,10 @@
     "aa2b2ac93ff54cfa16c8ae84a8062012525b5ee5": {
       "dst": "In the presence of the sign shown it is necessary to drive around curves more carefully in case of rain",
       "src": "In presenza del segnale raffigurato è necessario percorrere le curve con più attenzione in caso di pioggia"
+    },
+    "aa2eb52f5d12af50dd74d0c90c72b78de6381d95": {
+      "dst": "undermining",
+      "src": "scalzamenti"
     },
     "aa3eba7f862794a24dad7a91afa550ece9c10fb2": {
       "dst": "The supplementary panel shown, located on the motorway, can advise you to exit to avoid probable slowdowns or traffic jams",
@@ -18884,6 +19048,10 @@
       "dst": "Near a traffic-lighted intersection it is permitted to stop at a pedestrian crossing if the traffic light for pedestrians is set to red",
       "src": "In vicinanza di un incrocio semaforizzato è consentito arrestarsi sulle strisce pedonali, se il semaforo per i pedoni è disposto al rosso"
     },
+    "b0da26f1592975f504b2df5baa9ad37bb508066e": {
+      "dst": "boot",
+      "src": "stivale"
+    },
     "b0dac80bad711804e7aba4e6558daa499903dc6d": {
       "dst": "Variable message signs provide danger warnings but cannot have prescriptive (mandatory, prohibitory) value",
       "src": "I pannelli a messaggio variabile forniscono indicazioni di pericolo ma non possono avere valore prescrittivo (di obbligo, di divieto)"
@@ -19047,6 +19215,10 @@
     "b28f1868ff409a024b23dc7d743227083d86b45e": {
       "dst": "The load must be marked, during the day, with a red cloth if it protrudes from the rear",
       "src": "Il carico deve essere segnalato, di giorno, con un panno rosso se sporge dalla parte posteriore"
+    },
+    "b2932639659a2fe66752118edbbe704bd390489c": {
+      "dst": "independently",
+      "src": "indipendentemente"
     },
     "b29e5de37bbd5c795cc1a1facc1ab5abe87bb4ae": {
       "dst": "In the presence of the sign shown, priority must only be given to pedestrians crossing from the left",
@@ -20248,6 +20420,10 @@
       "dst": "The sign shown indicates that it is mandatory to fit winter tires",
       "src": "Il segnale raffigurato indica che è obbligatorio montare gli pneumatici invernali"
     },
+    "bdd9b993f664e8e91470d197a0e2482a38bca521": {
+      "dst": "stay",
+      "src": "stare"
+    },
     "bddd5c9474f8439867de29a214a599a785124272": {
       "dst": "It is forbidden to overtake a second time without first turning to the right",
       "src": "E' vietato effettuare un secondo sorpasso senza prima essersi riportati a destra"
@@ -21251,6 +21427,10 @@
     "c7373a9ba57174da566a874ccd76d6e1805f6453": {
       "dst": "The light signals in the figure also apply to bicycles",
       "src": "I segnali luminosi in figura valgono anche per le biciclette"
+    },
+    "c73d4bb3e27cc67d827b576dd04e92dfa60c18e8": {
+      "dst": "lighting",
+      "src": "illuminazione"
     },
     "c75b36cdfc1fc5edfd65884a3d6f86dd5b81d4c1": {
       "dst": "To protect the environment from air pollution, you must press the accelerator pedal several times when the vehicle is cold",
@@ -22564,6 +22744,10 @@
       "dst": "The driver must adjust the speed in relation to the load of the vehicle",
       "src": "Il conducente deve regolare la velocità in relazione al carico del veicolo"
     },
+    "d37438621833b1b75066f164c6f7d502b2a139c9": {
+      "dst": "further",
+      "src": "ulteriore"
+    },
     "d379b686633c11be7a8808337f635b46566e93a1": {
       "dst": "According to the precedence rules at the intersection shown in the figure, vehicles D and B pass at the same time",
       "src": "Secondo le norme di precedenza nell'incrocio rappresentato in figura i veicoli D e B passano contemporaneamente"
@@ -22872,6 +23056,10 @@
       "dst": "Parking is permitted in areas intended for vehicles for loading and unloading things, during the established hours, only if of short duration",
       "src": "La sosta è consentita sulle aree destinate ai veicoli per il carico e lo scarico di cose, nelle ore stabilite, soltanto se di breve durata"
     },
+    "d6fbefe1cc9fab53ef1951d2b06165d4f236adb7": {
+      "dst": "knowledge",
+      "src": "conoscenza"
+    },
     "d6fd194b110250d5df11a63dee20960075c5eefc": {
       "dst": "The sign shown indicates a ban on turning left",
       "src": "Il segnale raffigurato indica il divieto di svoltare a sinistra"
@@ -23135,6 +23323,10 @@
     "d952e0185bcf81e9bdff6836983293a34695c905": {
       "dst": "The sign shown requires you to slow down",
       "src": "Il segnale raffigurato richiede di moderare la velocità"
+    },
+    "d95bec9a007b984420d47503b8fefdaa63bf8a39": {
+      "dst": "roadman",
+      "src": "cantoniero"
     },
     "d95cc3d23b901efc9394ea9a586b75855c8675bc": {
       "dst": "The sign shown indicates right lane closed for road maintenance",
@@ -23564,6 +23756,10 @@
       "dst": "The sign shown announces a level crossing with barriers or semi-barriers",
       "src": "Il segnale raffigurato preannuncia un passaggio a livello con barriere o con semibarriere"
     },
+    "dd184165db1fcc83aee776988b92e7c71975e7fd": {
+      "dst": "bring",
+      "src": "portare"
+    },
     "dd238223f1148394fb5e4fc072e08465e9f6e4ce": {
       "dst": "In the presence of the signal shown and the three-light traffic light we must give way if the traffic light is flashing yellow",
       "src": "In presenza del segnale raffigurato e del semaforo a tre luci dobbiamo dare la precedenza se il semaforo è a luce lampeggiante gialla"
@@ -23671,6 +23867,10 @@
     "dde307e0f8a33339dc2fb116becd95824a264f73": {
       "dst": "The sign shown indicates the end of a one-way road",
       "src": "Il segnale raffigurato indica la fine di una strada a senso unico"
+    },
+    "de039d3d04eecbac6cc9ec3d3503323a530d70eb": {
+      "dst": "beginner",
+      "src": "principiante"
     },
     "de08dba4929001f5200489bfd97900e2ca299375": {
       "dst": "The sign shown announces the ban on continuing to travel on that road",
@@ -24259,6 +24459,10 @@
     "e378e1a6f98d32f3f8deb8b09f7621216e972056": {
       "dst": "On motorways and main extra-urban roads, the circulation of vehicles with disordered loads that are not solidly secured or which protrude beyond the permitted limits is prohibited",
       "src": "Sulle autostrade e strade extraurbane principali è vietata la circolazione di veicoli con carico disordinato e non solidamente assicurato o sporgente oltre i limiti consentiti"
+    },
+    "e388c83e686398a0232411b40acd8413b80ae36c": {
+      "dst": "combustion",
+      "src": "combustione"
     },
     "e390c88dcb2a73572c26bd38f8a3c55620e7b0d9": {
       "dst": "The sign shown indicates a change in the number of available lanes",
@@ -25652,6 +25856,10 @@
       "dst": "Road collisions occur more often if the safety distance is not respected",
       "src": "I tamponamenti stradali avvengono maggiormente se non si rispetta la distanza di sicurezza"
     },
+    "efe0f72eb088e6958685c9719ef3e5357c37dbd6": {
+      "dst": "weak",
+      "src": "debole"
+    },
     "eff21b523eac41d5de20456a7bf227b995ba7413": {
       "dst": "It is not compulsory to use seat belts in a car when making journeys of less than one kilometer in built-up areas",
       "src": "Non è obbligatorio utilizzare le cinture di sicurezza su una autovettura quando si effettuano tragitti di lunghezza inferiore a un chilometro all’interno dei centri abitati"
@@ -26152,6 +26360,10 @@
       "dst": "The high visibility retro-reflective vest is used to ask for help from passing motorists",
       "src": "Il giubbotto retroriflettente ad alta visibilità serve per chiedere aiuto agli automobilisti in transito"
     },
+    "f4c4ee6ea26b5533197365afc0d3f782fd85885e": {
+      "dst": "point",
+      "src": "punto"
+    },
     "f4c5d618b595077d708ca428d2a650f4c74a9148": {
       "dst": "It is mandatory to reduce speed and, if necessary, stop when the animals on the road show signs of fear",
       "src": "E' obbligatorio ridurre la velocità e all'occorrenza fermarsi quando gli animali che si trovano sulla strada danno segni di spavento"
@@ -26496,6 +26708,10 @@
       "dst": "In order to circulate, a motor vehicle must be equipped with a mobile danger signal (triangle)",
       "src": "Un autoveicolo per poter circolare deve essere munito del segnale mobile di pericolo (triangolo)"
     },
+    "f7d3237ab0a722451b6e419320ca3b4ff4bc243a": {
+      "dst": "take off",
+      "src": "decollare"
+    },
     "f7d8ce6e2ef37e3ed47088fec3b45c19ab86ab4f": {
       "dst": "On carriageways, ramps and junctions of motorways and main extra-urban roads it is forbidden to reverse the direction of travel and cross the traffic island, even at the height of the gates",
       "src": "Sulle carreggiate, sulle rampe e sugli svincoli di autostrade e strade extraurbane principali è vietato invertire il senso di marcia e attraversare lo spartitraffico, anche all'altezza dei varchi"
@@ -26519,6 +26735,10 @@
     "f809a5808b7fb0f6f2a2d1fed2d2e42b31907558": {
       "dst": "On snow-covered roads it is necessary to accelerate at maximum speed when starting",
       "src": "Su strade coperte di neve occorre alla partenza, accelerare al massimo"
+    },
+    "f8112c75c37afdb3f7cb618b06f22420eca0f4c5": {
+      "dst": "increase",
+      "src": "aumento"
     },
     "f81ad2b5697d799ff0f13dbdde48e588fbb3267a": {
       "dst": "It is forbidden to use a motor vehicle on public roads when the vehicle is not covered by civil liability insurance",

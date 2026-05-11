@@ -422,7 +422,33 @@
         "abituati"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "abituato",
+        "lemma": "abituàto",
+        "meanings": [
+          "past participle of habituate in the meanings of the verb",
+          "who has contracted a habit of something or of doing something; accustomed, prepared",
+          "habitual archaic",
+          "rare trained, practiced, practiced"
+        ],
+        "related": [
+          {
+            "term": "bene abituato",
+            "meaning": "di persona: educato con cura, che ha ricevuto una buona educazione",
+            "english": "in person: educated with care, who has received a good education"
+          },
+          {
+            "term": "abituato agli agi e alle mollezze; viziato",
+            "meaning": "abituato agli agi e alle mollezze; viziato",
+            "english": "accustomed to comfort and luxury; spoiled"
+          },
+          {
+            "term": "male abituato",
+            "meaning": "di persona: maleducato, che ha ricevuto una pessima educazione",
+            "english": "in person: rude, who has received a terrible education"
+          }
+        ]
+      },
       "ai_definition": "1. A driver who is accustomed to specific road conditions or traffic patterns.\n2. Someone who has developed a habit of performing a specific action.\n3. A person who is used to a particular environment or routine."
     },
     "abrasione": {
@@ -994,7 +1020,43 @@
         "accogliere"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "accogliere",
+        "lemma": "accògliere",
+        "meanings": [
+          "of people: to receive, to give shelter, to host with oneself []",
+          "receive someone or something upon arrival; welcome",
+          "admit, include",
+          "accept, like, approve"
+        ],
+        "related": [
+          {
+            "term": "accogliere, ricevere a pomodorate",
+            "meaning": "figurato fare una cattiva accoglienza a qualcuno",
+            "english": "let alone giving someone a bad reception"
+          },
+          {
+            "term": "accogliere, cacciare con male parole",
+            "meaning": "accogliere o mandar via qualcuno, con frasi sgarbate, con insulti",
+            "english": "welcoming or sending someone away, with rude phrases, with insults"
+          },
+          {
+            "term": "accogliere a, con fischi",
+            "meaning": "accogliere qualcuno manifestando ostilità o disapprovazione",
+            "english": "welcome someone by showing hostility or disapproval"
+          },
+          {
+            "term": "accogliere a braccia spalancate",
+            "meaning": "figurato ricevere con grande piacere",
+            "english": "figuratively receiving with great pleasure"
+          },
+          {
+            "term": "ACCOGLIERE una casa accogliente",
+            "meaning": "casa nella quale si sta bene",
+            "english": "house where you feel good"
+          }
+        ]
+      },
       "ai_definition": "1. To accept or admit a vehicle into a specific lane or traffic flow.\n2. To receive or welcome a person or guest.\n3. To adopt or approve a proposal, law, or suggestion.\n4. To provide shelter or lodging for someone."
     },
     "accompagnare": {
@@ -1379,7 +1441,31 @@
         "acustiche"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "acustica",
+        "lemma": "acùstica",
+        "meanings": [
+          "physics part of mechanical physics that studies the generation, propagation and reception of sound",
+          "physical property of a place, of an environment to spread sounds without altering them"
+        ],
+        "related": [
+          {
+            "term": "acustica musicale",
+            "meaning": "fisica parte dell'acustica che si occupa dei suoni musicali",
+            "english": "physical part of acoustics that deals with musical sounds"
+          },
+          {
+            "term": "acustica ambientale",
+            "meaning": "fisica lo stesso, ma meno comune, che acustica architettonica",
+            "english": "physics the same, but less common, than architectural acoustics"
+          },
+          {
+            "term": "acustica architettonica",
+            "meaning": "fisica parte della fisica tecnica che studia le caratteristiche degli ambienti per ottenere una buona audizione dei suoni",
+            "english": "physics part of technical physics that studies the characteristics of environments to obtain good hearing of sounds"
+          }
+        ]
+      },
       "ai_definition": "1. Relating to the sound produced by a vehicle's horn or engine, often referenced in regulations regarding noise pollution and mandatory acoustic signals.\n2. The branch of physics dealing with the production, transmission, and effects of sound.\n3. Pertaining to the quality of sound insulation or noise reduction within a vehicle cabin.\n4. Describing the study of sound waves in general architectural or environmental contexts."
     },
     "acusticamente": {
@@ -2615,7 +2701,17 @@
         "alianti"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "aliante",
+        "lemma": "aliànte, aliànte",
+        "meanings": [
+          "aviation fixed-wing aircraft, structurally not dissimilar to the airplane, without an engine, which stays in the air by exploiting the currents; takes off using an aerotow and climbs to altitude using ascending air currents; Glider flying is commonly called gliding",
+          "present participle of aliare in the meanings of the verb",
+          "flying literary []",
+          "literary figurative hovering, looming []"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A glider or sailplane, an aircraft without an engine that relies on air currents for flight.\n2. A person who pilots a glider.\n3. A type of kite or hang glider used for recreational flying.\n4. A metaphorical term for someone who drifts or floats without direction."
     },
     "alimentare": {
@@ -3027,7 +3123,23 @@
         "alloggio"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "alloggiare",
+        "lemma": "alloggiàre",
+        "meanings": [
+          "give accommodation to someone, host, lodge",
+          "figuratively rare to have, to welcome within oneself, to cherish in one's soul",
+          "mechanics place a piece or a mechanical structure in its appropriate location",
+          "military to house the soldiers"
+        ],
+        "related": [
+          {
+            "term": "chi tardi arriva male alloggia",
+            "meaning": "chi arriva dopo gli altri si deve accontentare di quel che è avanzato",
+            "english": "those who arrive after the others must be satisfied with what is left over"
+          }
+        ]
+      },
       "ai_definition": "1. To park or leave a vehicle in a designated area.\n2. To lodge or stay at a place.\n3. To accommodate or house someone.\n4. To fit or insert something into a space."
     },
     "allontanare": {
@@ -7224,7 +7336,17 @@
         "aumenti"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "aumentare",
+        "lemma": "aumentàre",
+        "meanings": [
+          "(BE) become larger in size or quantity, more intense, more numerous; grow",
+          "(BE) familiar increase in price",
+          "make it greater in size, quantity, intensity; increase, increase, magnify",
+          "familiar to cheer up"
+        ],
+        "related": []
+      },
       "ai_definition": "1. An increase in speed, traffic volume, or fines.\n2. A rise in the cost of fuel or insurance premiums.\n3. A general growth or expansion in size or quantity.\n4. An addition of a new element to an existing set."
     },
     "auricolare": {
@@ -8017,7 +8139,43 @@
         "avanzare"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "avanzare",
+        "lemma": "avanzàre 1",
+        "meanings": [
+          "(BE) proceed, go, push forward in the desired or established direction, frequently with the specification of the way and place towards which one is directed",
+          "(BE) military to move on the enemy in order to attack him, conquer land or positions",
+          "(BE) sport in football: running with the ball towards the opposing team's goal",
+          "(BE) figuratively progress, unfold regularly"
+        ],
+        "related": [
+          {
+            "term": "avanzare a grandi a grandissime giornate",
+            "meaning": "procedere facendo maggior cammino di quanto si è soliti fare in un giorno",
+            "english": "proceed by covering more distance than you usually do in a day"
+          },
+          {
+            "term": "avanzare in buon ordine",
+            "meaning": "militare avanzare in formazione prestabilita",
+            "english": "soldier advance in pre-established formation"
+          },
+          {
+            "term": "la vita, il tempo che avanza",
+            "meaning": "la vita, il tempo che ancora deve trascorrere",
+            "english": "life, the time that still has to pass"
+          },
+          {
+            "term": "avanzare in età, avanzare negli anni",
+            "meaning": "figurato invecchiare, divenire attempato",
+            "english": "figurative to grow old, become elderly"
+          },
+          {
+            "term": "avanzare di grado",
+            "meaning": "ottenere una promozione",
+            "english": "get a promotion"
+          }
+        ]
+      },
       "ai_definition": "1. To move forward or proceed in a vehicle.\n2. To advance in rank or position.\n3. To make progress in a project or discussion.\n4. To extend or project outward from a surface."
     },
     "avanzato": {
@@ -9729,7 +9887,17 @@
         "bivio"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "bivio",
+        "lemma": "bìvio",
+        "meanings": [
+          "point where a road forks; meeting point of two roads",
+          "figurative decisive moment or condition in which a choice between two different solutions or possibilities is imposed",
+          "railways diversion device used to pass from one line to another which branches off from the first; switch",
+          "zoology in the irregular Echinoids: the set of the two posterior ambulacral rays"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A road junction where a single road splits into two separate paths.\n2. A fork in the road.\n3. A point of decision or choice.\n4. A crossroads or turning point in a situation."
     },
     "blindare": {
@@ -10926,7 +11094,12 @@
         "cantonieri"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "cantoniero",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. A worker responsible for maintaining roads, bridges, and traffic signs.\n2. A person employed by the state to perform general public works or infrastructure repairs."
     },
     "capace": {
@@ -11323,7 +11496,12 @@
         "carrabili"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "carrabili",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. Roads or paths that are suitable for vehicle travel.\n2. (General) Capable of being driven on by cars."
     },
     "carreggiare": {
@@ -11654,7 +11832,14 @@
         "casello"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "casello",
+        "lemma": "casèllo",
+        "meanings": [
+          "roadman's house"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A toll booth or toll station where drivers pay a fee to use a highway.\n2. A small booth or kiosk used for ticketing or information.\n3. A small room or office, often for administrative purposes."
     },
     "caserma": {
@@ -12297,7 +12482,41 @@
         "cellulari"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "cellulare",
+        "lemma": "cellulàre",
+        "meanings": [
+          "made up of cells",
+          "divided into cells"
+        ],
+        "related": [
+          {
+            "term": "fusione cellulare",
+            "meaning": "biologia unione, specialmente indotta in vitro, di due cellule aventi caratteristiche genetiche diverse o appartenenti a specie diverse; queste ultime si chiamano ibridazioni cellulari",
+            "english": "biology union, especially induced in vitro, of two cells having different genetic characteristics or belonging to different species; the latter are called cellular hybridizations"
+          },
+          {
+            "term": "botanica unione di varie cellule che avviene per distruzione parziale delle pareti, e formano un tubo cribroso, una trachea o simili",
+            "meaning": "botanica unione di varie cellule che avviene per distruzione parziale delle pareti, e formano un tubo cribroso, una trachea o simili",
+            "english": "botany union of various cells which occurs by partial destruction of the walls, and forms a sieve tube, a trachea or similar"
+          },
+          {
+            "term": "memoria cellulare",
+            "meaning": "biologia si dice per indicare un certo tipo di regolazione dei geni fissato in una cellula che non si modifica nelle generazioni cellulari successive",
+            "english": "biology is said to indicate a certain type of gene regulation fixed in a cell that does not change in subsequent cell generations"
+          },
+          {
+            "term": "micrurgia cellulare",
+            "meaning": "biologia la moderna tecnica della microdissezione della cellula eseguita col micromanipolatore",
+            "english": "biology the modern technique of microdissection of the cell performed with the micromanipulator"
+          },
+          {
+            "term": "tessuto cellulare muriforme",
+            "meaning": "botanica tessuto dei raggi midollari",
+            "english": "botany tissue of the medullary rays"
+          }
+        ]
+      },
       "ai_definition": "1. A mobile phone, the use of which while driving is strictly prohibited unless hands-free.\n2. A portable telephone device used for personal communication.\n3. A small, individual compartment or room.\n4. A single biological unit or organism."
     },
     "cenno": {
@@ -14385,7 +14604,35 @@
         "combustione"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "combustione",
+        "lemma": "combustióne",
+        "meanings": [
+          "chemical phenomenon in which a body reacts with an oxidizing substance by burning with the development of heat and light"
+        ],
+        "related": [
+          {
+            "term": "camera di combustione",
+            "meaning": "meccanica nei motori a scoppio: lo stesso che camera a scoppio",
+            "english": "mechanics in internal combustion engines: the same as internal combustion chamber"
+          },
+          {
+            "term": "tecnologia nelle macchine e negli impianti termici: ambiente opportunamente delimitato entro il quale avviene la reazione tra un combustibile e un comburente",
+            "meaning": "tecnologia nelle macchine e negli impianti termici: ambiente opportunamente delimitato entro il quale avviene la reazione tra un combustibile e un comburente",
+            "english": "technology in machines and heating systems: appropriately delimited environment within which the reaction between a fuel and an oxidizer takes place"
+          },
+          {
+            "term": "caldaia a combustione nucleare",
+            "meaning": "tecnologia caldaia in cui l'energia termica è fornita da un reattore nucleare",
+            "english": "boiler technology in which the thermal energy is provided by a nuclear reactor"
+          },
+          {
+            "term": "calore di combustione",
+            "meaning": "fisica quantità di calore che si sviluppa dalla combustione completa di una grammo–molecola di una sostanza",
+            "english": "physical quantity of heat that develops from the complete combustion of a gram-molecule of a substance"
+          }
+        ]
+      },
       "ai_definition": "1. The process of burning fuel in an engine to generate power.\n2. The chemical reaction between fuel and oxygen that releases energy.\n3. The act of burning or setting something on fire.\n4. A state of intense inflammation or fever in a medical context."
     },
     "comfort": {
@@ -15935,7 +16182,33 @@
         "conoscenze"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "conoscenza",
+        "lemma": "conoscènza",
+        "meanings": [
+          "knowing",
+          "thing known",
+          "known person",
+          "faculty of understanding and reasoning"
+        ],
+        "related": [
+          {
+            "term": "mettere a qualcuno a conoscenza di qualcosa",
+            "meaning": "informare qualcuno di qualcosa",
+            "english": "inform someone of something"
+          },
+          {
+            "term": "conoscenza mediata",
+            "meaning": "conoscenza non acquisita direttamente",
+            "english": "knowledge not acquired directly"
+          },
+          {
+            "term": "portare a conoscenza",
+            "meaning": "fare conoscere, rendere noto",
+            "english": "make known, make known"
+          }
+        ]
+      },
       "ai_definition": "1. The required theoretical knowledge of traffic laws and road signs needed to pass the driving exam.\n2. Familiarity with a specific route or area.\n3. Awareness of a situation or fact.\n4. Acquaintance with a person."
     },
     "conoscere": {
@@ -18707,7 +18980,17 @@
         "decollo"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "decollare",
+        "lemma": "decollàre 1",
+        "meanings": [
+          "(HAVE or BE) of a plane, helicopter or other aircraft: take flight by lifting off the starting surface",
+          "(HAVE or BE) figuratively gain momentum by making decisive progress, establish oneself, acquire prestige",
+          "rare to decapitate, cut off the head",
+          "by extension rare to detach the end of something"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To take off (referring to an aircraft, not applicable to standard road vehicles).\n2. To lift off the ground.\n3. To peel off or detach.\n4. To start or begin (colloquial)."
     },
     "decurtare": {
@@ -19788,7 +20071,21 @@
         "difettoso"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "difettoso",
+        "lemma": "difettóso",
+        "meanings": [
+          "which has some flaws",
+          "lacking, poor"
+        ],
+        "related": [
+          {
+            "term": "andature laterali o difettose",
+            "meaning": "equitazione andature in cui il cavallo muove prima un bipede laterale e poi l'altro, come nell'ambio",
+            "english": "riding gaits in which the horse first moves one lateral biped and then the other, as in the amble"
+          }
+        ]
+      },
       "ai_definition": "1. Defective or faulty, referring to a vehicle part or system that is not working correctly and makes the car unsafe to drive.\n2. Flawed or imperfect, describing a general object or situation that has a noticeable fault.\n3. Faulty, used to describe a person's character or behavior that is morally or ethically lacking."
     },
     "differente": {
@@ -20452,7 +20749,16 @@
         "disabilitazione"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "disabilitazione",
+        "lemma": "disabilitazióne",
+        "meanings": [
+          "the act and effect of disabling, of being disabled",
+          "operation with which a connection or service is disabled",
+          "railways the abolition of all local connections"
+        ],
+        "related": []
+      },
       "ai_definition": "1. The deactivation or disabling of a vehicle system, such as traction control or stability control.\n2. The loss of physical or mental capacity preventing a person from driving.\n3. The cancellation of a driver's license due to medical reasons or legal violations.\n4. The rendering of a specific function or feature inoperative."
     },
     "disappannamento": {
@@ -22374,7 +22680,43 @@
         "dovuti"
       ],
       "source_count": 3,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "dovere",
+        "lemma": "dovére",
+        "meanings": [
+          "what man must do to obey morality, reason, the laws",
+          "the right, the convenient",
+          "have the obligation, the necessity, the convenience; be necessary",
+          "need to do something"
+        ],
+        "related": [
+          {
+            "term": "non dover render conto a nessuno",
+            "meaning": "essere indipendente, agire liberamente e autonomamente",
+            "english": "be independent, act freely and autonomously"
+          },
+          {
+            "term": "una cosa che non si deve dire da non dirsi",
+            "meaning": "una cosa segreta",
+            "english": "something secret"
+          },
+          {
+            "term": "i doveri gli oneri il governo della famiglia",
+            "meaning": "arcaico il complesso delle cure familiari, sia economiche sia morali",
+            "english": "the complex of family care, both economic and moral, is archaic"
+          },
+          {
+            "term": "bisogna dovete sapere che ...",
+            "meaning": "di dice per dare rilevanza a un discorso appena iniziato o per richiamare l'attenzione su ciò che si sta per raccontare []",
+            "english": "is said to give relevance to a speech that has just begun or to draw attention to what is about to be told []"
+          },
+          {
+            "term": "dovete sapere che...",
+            "meaning": "si dice per richiamare l’attenzione dell’ascoltatore o introdurre la narrazione di un fatto",
+            "english": "it is said to draw the listener's attention or introduce the narrative of a fact"
+          }
+        ]
+      },
       "ai_definition": "1. The mandatory payment of a fee or fine required by law.\n2. A debt or obligation that must be fulfilled.\n3. Something that is owed or due to someone.\n4. Proper or fitting in a specific context."
     },
     "dritto": {
@@ -24791,7 +25133,31 @@
         "estremità"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "estremità",
+        "lemma": "estremità",
+        "meanings": [
+          "the point, the extreme part of something",
+          "the hands and more especially the feet of a person"
+        ],
+        "related": [
+          {
+            "term": "flittenosi recidivante delle estremità o acrodermatite continua",
+            "meaning": "medicina malattia di origine ignota, caratterizzata dalla comparsa di flittene o pustole alle mani o ai piedi, talvolta estese anche agli arti e al tronco, ad andamento cronico",
+            "english": "medicine disease of unknown origin, characterized by the appearance of blisters or pustules on the hands or feet, sometimes also extending to the limbs and trunk, with a chronic course"
+          },
+          {
+            "term": "polo o estremità orale",
+            "meaning": "zoologia la parte del corpo in cui si apre la bocca",
+            "english": "zoology the part of the body where the mouth opens"
+          },
+          {
+            "term": "estremità craniale",
+            "meaning": "anatomia in anatomia comparata: la pate del corpo dov'è situato il cranio nei vertebrati Cranioti; si contrappone all'estremità caudale",
+            "english": "anatomy in comparative anatomy: the part of the body where the skull is located in Craniote vertebrates; it is opposed to the caudal end"
+          }
+        ]
+      },
       "ai_definition": "1. The end or extremity of a road, lane, or vehicle.\n2. The furthest point or limit of a geographical area.\n3. The tip or edge of an object.\n4. The most severe degree of a condition or feeling."
     },
     "estremo": {
@@ -26523,7 +26889,14 @@
         "fisse"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "fissa",
+        "lemma": "fìssa",
+        "meanings": [
+          "familiar fixed idea, obsessive, fixed thought; fixation, physima"
+        ],
+        "related": []
+      },
       "ai_definition": "1. Fixed or stationary, referring to a sign, object, or lane marking that does not move.\n2. A specific, unchanging speed limit or rule that must be strictly obeyed.\n3. A rigid or stubborn attitude, often used to describe a driver who refuses to yield or follow traffic flow.\n4. A set point or target, such as a designated parking spot or a specific location on a map."
     },
     "fissaggio": {
@@ -26540,7 +26913,14 @@
         "fissaggio"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "fissaggio",
+        "lemma": "fissàggio",
+        "meanings": [
+          "the act, the operation of staring; specifically, the chemical process by which a developed photographic image is rendered unalterable by light"
+        ],
+        "related": []
+      },
       "ai_definition": "1. The act of securing or fastening a vehicle part, such as a license plate or safety equipment, to the car.\n2. The fixing of a specific price or rate, often used in the context of insurance premiums or service fees.\n3. The establishment of a fixed point or location, such as a designated parking spot or traffic control zone.\n4. The setting of a specific date or time for an administrative appointment, like a driving test."
     },
     "fissare": {
@@ -28288,7 +28668,14 @@
         "garage"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "garage",
+        "lemma": "garàge",
+        "meanings": [
+          "French garage"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A building or enclosed space used for parking and repairing vehicles.\n2. A workshop where mechanics perform maintenance and repairs on cars.\n3. A room in a house used for storage or hobbies.\n4. A place where artists or musicians rehearse or perform."
     },
     "garantire": {
@@ -28547,7 +28934,27 @@
         "generico"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "generico",
+        "lemma": "genèrico",
+        "meanings": [
+          "which concerns gender",
+          "general, not very concrete and precise",
+          "person who does not carry out specialist activities within their profession"
+        ],
+        "related": [
+          {
+            "term": "farmaco generico",
+            "meaning": "medicina farmacologia farmaco costituito da un principio attivo il cui brevetto è scaduto e che può essere messo in vendita da qualunque industria farmaceutica, solitamente a un prezzo più contenuto",
+            "english": "medicine pharmacology drug consisting of an active ingredient whose patent has expired and which can be put on sale by any pharmaceutical industry, usually at a lower price"
+          },
+          {
+            "term": "attenuante generica",
+            "meaning": "diritto attenuante a discrezione del giudice in quanto non indicata esplicitamente dalla legge",
+            "english": "mitigating right at the judge's discretion as not explicitly indicated by law"
+          }
+        ]
+      },
       "ai_definition": "1. A general or non-specific category of vehicle or rule not tied to a particular model or situation.\n2. A common or ordinary type of product without a specific brand name.\n3. A broad classification used in general discussions rather than specific technical details."
     },
     "gestire": {
@@ -29015,7 +29422,42 @@
         "giudice"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "giudice",
+        "lemma": "giùdice",
+        "meanings": [
+          "who is called to judge; who judges",
+          "the member of the judiciary",
+          "in Jewish history, name of political-religious leaders"
+        ],
+        "related": [
+          {
+            "term": "essere buon giudice in qualche materia",
+            "meaning": "intendersi di qualche materia, averne sicura competenza",
+            "english": "understand some subject, have certain competence"
+          },
+          {
+            "term": "giudice giudizio di prima istanza",
+            "meaning": "diritto giudice, giudizio di primo grado",
+            "english": "judge law, first instance judgement"
+          },
+          {
+            "term": "giudice giudizio di seconda istanza",
+            "meaning": "diritto giudice, giudizio di secondo grado, di appello",
+            "english": "judge law, second degree judgment, appeal"
+          },
+          {
+            "term": "giudice istruttore",
+            "meaning": "diritto in passato, magistrato al quale, nel procedimento giudiziario, era affidata la fase diretta alla raccolta degli elementi necessari per la decisione",
+            "english": "law in the past, magistrate who, in judicial proceedings, was entrusted with the phase aimed at gathering the elements necessary for the decision"
+          },
+          {
+            "term": "giudice del lavoro",
+            "meaning": "diritto il giudice competente nelle controversie di lavoro individuali e in materia di previdenza e assistenza obbligatoria",
+            "english": "the judge competent in individual labor disputes and in matters of compulsory social security and assistance has the right to do so"
+          }
+        ]
+      },
       "ai_definition": "1. A judicial officer who presides over traffic court cases involving driving violations or license suspensions.\n2. A person who evaluates contestants in a competition.\n3. A person who forms an opinion or makes a judgment about a situation."
     },
     "giungere": {
@@ -29803,7 +30245,43 @@
         "guidato"
       ],
       "source_count": 4,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "guidare",
+        "lemma": "guidàre",
+        "meanings": [
+          "precede, lead, accompany as a guide, along a path or towards a destination",
+          "serve as a point of reference",
+          "educate, train by providing the necessary teachings and examples; direct towards the ideal plan",
+          "concretely, regulate, constrain the movement of an object, accompanying it or ensuring that it goes in the desired direction"
+        ],
+        "related": [
+          {
+            "term": "guidare il campo elettromagnetico",
+            "meaning": "fisica fare in modo che l'energia elettromagnetica passi dalla sorgente allo strumento in cui si utilizza senza dispersioni",
+            "english": "physics ensure that electromagnetic energy passes from the source to the instrument in which it is used without dispersion"
+          },
+          {
+            "term": "farsi guidare dal cuore più che dalla ragione",
+            "meaning": "seguire più i sentimenti che il ragionamento",
+            "english": "follow feelings more than reasoning"
+          },
+          {
+            "term": "guidare la mano",
+            "meaning": "dirigere qualcuno, indirizzare nel compimento di qualcosa",
+            "english": "direct someone, direct in the accomplishment of something"
+          },
+          {
+            "term": "guidare i passi",
+            "meaning": "aiutare una persona, specialmente giovane o inesperta, consigliandola e sostenendola",
+            "english": "help a person, especially a young or inexperienced person, by advising and supporting them"
+          },
+          {
+            "term": "guidare la vita",
+            "meaning": "arcaico tirare avanti",
+            "english": "archaic to get by"
+          }
+        ]
+      },
       "ai_definition": "1. To operate a motor vehicle by controlling its direction and speed.\n2. To lead or direct a group of people or animals.\n3. To steer a ship or aircraft.\n4. To guide or influence the course of an event or discussion."
     },
     "guinzaglio": {
@@ -31656,7 +32134,14 @@
         "incorrere"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "incorrere",
+        "lemma": "incórrere",
+        "meanings": [
+          "run into something unpleasant"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To incur a penalty or fine for violating traffic laws.\n2. To fall into a specific situation or difficulty.\n3. To run into an obstacle or problem."
     },
     "incosciente": {
@@ -32131,7 +32616,15 @@
         "indipendentemente"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "indipendentemente",
+        "lemma": "indipendenteménte",
+        "meanings": [
+          "independently, without any dependence",
+          "regardless, leaving aside, without taking into account"
+        ],
+        "related": []
+      },
       "ai_definition": "1. Regardless of other conditions or circumstances, such as weather or time of day, when a traffic rule applies.\n2. Without being influenced by external factors or other people's actions.\n3. In a way that is not connected to or dependent on something else."
     },
     "indirizzare": {
@@ -32933,7 +33426,12 @@
         "iniettori"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "iniettori",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. Fuel injectors that spray gasoline or diesel into the engine cylinders.\n2. Medical devices used to administer medication via a needle.\n3. Mechanical components that force a fluid into a system under pressure."
     },
     "iniezione": {
@@ -35911,7 +36409,43 @@
         "lento"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "lento",
+        "lemma": "lènto",
+        "meanings": [
+          "devoid of concern",
+          "long lasting and low intensity",
+          "of hair that falls freely",
+          "not very fast"
+        ],
+        "related": [
+          {
+            "term": "bruciare cuocere a fuoco lento",
+            "meaning": "figurato essere in preda a una forte passione che consuma a poco a poco",
+            "english": "figuratively being in the grip of a strong passion that consumes little by little"
+          },
+          {
+            "term": "a fuoco lento",
+            "meaning": "si dice di cottura con la fiamma moderata",
+            "english": "it is called cooking with moderate flame"
+          },
+          {
+            "term": "concia in fossa o lenta",
+            "meaning": "conciaria concia fatta in passato usando legni e cortecce vegetali",
+            "english": "tanning tanning done in the past using wood and vegetable bark"
+          },
+          {
+            "term": "morire di morte lenta",
+            "meaning": "morire in maniera lunga e dolorosa",
+            "english": "die a long and painful death"
+          },
+          {
+            "term": "figurato sottoporsi a una lunga attesa prima di conoscere il risultato di cosa",
+            "meaning": "figurato sottoporsi a una lunga attesa prima di conoscere il risultato di cosa",
+            "english": "figuratively undergo a long wait before knowing the outcome of what"
+          }
+        ]
+      },
       "ai_definition": "1. A vehicle moving at a speed significantly slower than the normal flow of traffic, often required to display a specific warning sign.\n2. Moving or operating at a reduced speed.\n3. Slow in reaction time or mental processing.\n4. Not quick or rapid in general action."
     },
     "lesione": {
@@ -38830,7 +39364,12 @@
         "millisecondi"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "millisecondi",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. A unit of time equal to one-thousandth of a second, often used to measure reaction times or sensor delays in vehicle safety systems.\n2. A very brief moment in general conversation.\n3. A technical unit used in computing and electronics for timing operations."
     },
     "minacciare": {
@@ -40080,7 +40619,17 @@
         "muniti"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "munire",
+        "lemma": "munìre",
+        "meanings": [
+          "provide means suitable for defense or attack; fortify",
+          "by extension, provide something that provides security",
+          "provide oneself, provide oneself, equip oneself (also in a figurative sense)",
+          "rare to fortify oneself, to strengthen oneself"
+        ],
+        "related": []
+      },
       "ai_definition": "1. Equipped with or provided with a specific safety device or document required by law.\n2. Possessing a particular quality or attribute.\n3. Fortified or defended against attack.\n4. Supplied with necessary provisions or supplies."
     },
     "muovere": {
@@ -42426,7 +42975,43 @@
         "ordini"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "ordine",
+        "lemma": "órdine",
+        "meanings": [
+          "convenient and methodical functional arrangement of everything in its appropriate place, according to a specific organic and reasoned criterion, responding to the purposes of practicality, opportunity and harmony; also in a figurative sense with reference to immaterial or abstract things",
+          "the criterion, the very way on which the arrangement of a series of elements in space, time or in an ideal succession is based",
+          "condition of what is kept ordered, rationally disposed",
+          "succession, sequence, ordered series, mostly arranged horizontally, of several things, including non-material ones"
+        ],
+        "related": [
+          {
+            "term": "buono di consegna ordine di consegna",
+            "meaning": "economia ordine scritto al depositario di una cosa affinché la consegni all'avente diritto",
+            "english": "economy written order to the custodian of a thing to deliver it to the person entitled to it"
+          },
+          {
+            "term": "buono d'ordine",
+            "meaning": "commercio nelle vendite per corrispondenza la cartolina che l'acquirente invia alla ditta per ricevere la merce acquistata",
+            "english": "in mail order sales, the postcard that the buyer sends to the company to receive the purchased goods"
+          },
+          {
+            "term": "in buon ordine",
+            "meaning": "rimanendo al proprio posto",
+            "english": "staying in place"
+          },
+          {
+            "term": "camera d'ordini o centrale d'ordini",
+            "meaning": "militare sulle navi, locale in comunicazione con la torre di comando, che contiene gli apparecchi per la trasmissione di ordini agli altri compartimenti, e gli organi per il governo della nave",
+            "english": "military on ships, a room in communication with the command tower, which contains the devices for transmitting orders to the other compartments, and the organs for governing the ship"
+          },
+          {
+            "term": "essere nella realtà nell'ordine delle cose",
+            "meaning": "essere normale, naturale; accadere secondo il naturale svolgersi dei fatti",
+            "english": "be normal, natural; happen according to the natural unfolding of facts"
+          }
+        ]
+      },
       "ai_definition": "1. A police officer's command to stop, yield, or proceed in a specific manner.\n2. A legal directive issued by a court or authority regarding traffic violations.\n3. The sequence or arrangement of vehicles in a line or queue.\n4. A request for goods or services, such as ordering a rental car."
     },
     "organico": {
@@ -44819,7 +45404,15 @@
         "perfettamente"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "perfettamente",
+        "lemma": "perfettaménte",
+        "meanings": [
+          "perfectly",
+          "completely, absolutely"
+        ],
+        "related": []
+      },
       "ai_definition": "1. In a completely correct or compliant manner, as required for passing a driving test or following traffic rules.\n2. In a flawless or ideal way, describing the perfect execution of a driving maneuver.\n3. Absolutely or entirely, used to emphasize the total absence of errors or defects.\n4. Very well, indicating a high degree of satisfaction or quality in a general context."
     },
     "perfetto": {
@@ -46726,7 +47319,14 @@
         "possibilmente"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "possibilmente",
+        "lemma": "possibilménte",
+        "meanings": [
+          "being able, if it is possible; as far as means or circumstances allow"
+        ],
+        "related": []
+      },
       "ai_definition": "1. As much as possible, used to indicate that a driving maneuver or action should be performed to the greatest extent feasible under current conditions.\n2. Possibly, indicating that an event or situation might occur.\n3. Preferably, suggesting a recommended course of action when alternatives exist."
     },
     "posta": {
@@ -48397,7 +48997,14 @@
         "principiante"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "principiante",
+        "lemma": "principiànte",
+        "meanings": [
+          "who has only recently applied himself to a study, to an art and the like"
+        ],
+        "related": []
+      },
       "ai_definition": "1. A new driver who must display a specific sign on their vehicle and adhere to stricter speed limits.\n2. A beginner or novice in any skill or activity.\n3. Someone who is inexperienced or unskilled in a particular field."
     },
     "principio": {
@@ -50153,7 +50760,43 @@
         "punti"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "punto",
+        "lemma": "pùnto",
+        "meanings": [
+          "geometry elementary geometric entity that has no dimensions, whose properties are defined by the system of postulates that characterizes the reference geometry []",
+          "geometry in a topological space: element of space",
+          "mathematics in the Cartesian plane: pair of real numbers; in Cartesian space: triple of real numbers",
+          "linguistics graphic sign consisting of a small circle placed on the lowercase i, after an abbreviation or with a punctuation function to conclude a proposition; in this sense the diminutive dot is equally frequent without any difference in meaning"
+        ],
+        "related": [
+          {
+            "term": "andare a punto",
+            "meaning": "sport, nel gioco delle bocce, tirare la propria boccia il più vicino possibile al pallino senza bocciarlo",
+            "english": "sport, in the game of bowls, throw your ball as close as possible to the cue ball without hitting it"
+          },
+          {
+            "term": "punto anfidromico",
+            "meaning": "geografia il punto dell'asse nodale, ovvero della linea dove le opposte onde di marea si annullano, attorno al quale le correnti di marea ruotano, in senso antiorario nell'emisfero nord, e in senso orario nell'emisfero sud",
+            "english": "geography the point of the nodal axis, i.e. the line where the opposing tidal waves cancel each other out, around which the tidal currents rotate, counterclockwise in the northern hemisphere, and clockwise in the southern hemisphere"
+          },
+          {
+            "term": "braccio di un vettore applicato rispetto a un punto",
+            "meaning": "fisica la distanza del punto dalla retta di applicazione del vettore",
+            "english": "physical distance of the point from the line of application of the vector"
+          },
+          {
+            "term": "punti asmogeni",
+            "meaning": "medicina zone di organi malati che favoriscono l'insorgenza degli attacchi di asma",
+            "english": "medicine areas of diseased organs that favor the onset of asthma attacks"
+          },
+          {
+            "term": "essere avanti indietro a buon punto col lavoro",
+            "meaning": "trovarsi avanti, indietro, a buon punto rispetto alle previsioni, al programma, o all'impegno assunto",
+            "english": "being ahead, behind, well on track with respect to the forecast, the program, or the commitment made"
+          }
+        ]
+      },
       "ai_definition": "1. A specific location or spot on the road, such as a designated stopping point or a reference point for maneuvers.\n2. A dot or period used in written traffic signs or official documents.\n3. A point awarded or deducted in a driver's license scoring system.\n4. A moment in time, often referring to a specific deadline or instant."
     },
     "puramente": {
@@ -51258,7 +51901,40 @@
         "raso"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "raso",
+        "lemma": "ràso",
+        "meanings": [
+          "very shiny and compact silk or cotton fabric"
+        ],
+        "related": [
+          {
+            "term": "a raso bocca",
+            "meaning": "si dice di liquido che riempie completamente fino all'orlo un recipiente, specialmente una bottiglia",
+            "english": "it is said of a liquid that fills a container, especially a bottle, completely to the brim"
+          },
+          {
+            "term": "far tabula rasa",
+            "meaning": "finire qualcosa o portare via ogni cosa",
+            "english": "finish something or take everything away"
+          },
+          {
+            "term": "militare radere al suolo",
+            "meaning": "militare radere al suolo",
+            "english": "military raze to the ground"
+          },
+          {
+            "term": "misura rasa a raso",
+            "meaning": "misurazione ottenuta livellando all'orlo dello strumento di misura il contenuto",
+            "english": "measurement obtained by leveling the contents to the edge of the measuring instrument"
+          },
+          {
+            "term": "modio raso",
+            "meaning": "storia nell'antica Roma: unità di misura romana di capacità per aridi, equivalente a 10,43 litri, usato in Egitto",
+            "english": "history in ancient Rome: Roman unit of measurement of dry capacity, equivalent to 10.43 litres, used in Egypt"
+          }
+        ]
+      },
       "ai_definition": "1. A flat, level surface or ground, often referring to the road surface or the ground level of a parking area.\n2. A place where the ground is even and without significant elevation changes.\n3. A state of being shaved or cut very short, such as hair.\n4. A condition of being smooth or polished, like a mirror."
     },
     "ravvicinare": {
@@ -51310,7 +51986,15 @@
         "reagiscono"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "reagire",
+        "lemma": "reagìre",
+        "meanings": [
+          "act in opposition to or under the stimulus of another action",
+          "chemistry undergo transformations in contact with other substances"
+        ],
+        "related": []
+      },
       "ai_definition": "1. To react to a hazard or change in traffic conditions.\n2. To respond to a stimulus or situation.\n3. To undergo a chemical reaction."
     },
     "reale": {
@@ -52779,7 +53463,38 @@
         "richiamare"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "richiamare",
+        "lemma": "richiamàre",
+        "meanings": [
+          "call again",
+          "call back; bring back also in a figurative sense",
+          "to rush; also attract in a figurative sense",
+          "scold"
+        ],
+        "related": [
+          {
+            "term": "richiamare alla memoria far tornare alla mente",
+            "meaning": "ricordare o far ricordare",
+            "english": "remember or cause to be remembered"
+          },
+          {
+            "term": "richiamare rievocare alla mente",
+            "meaning": "ricordare o far ricordare",
+            "english": "remember or cause to be remembered"
+          },
+          {
+            "term": "richiamare all'ordine",
+            "meaning": "richiamare al dovere",
+            "english": "call to duty"
+          },
+          {
+            "term": "in un'assemblea: richiamare un membro dell'assemblea al rispetto delle regole",
+            "meaning": "in un'assemblea: richiamare un membro dell'assemblea al rispetto delle regole",
+            "english": "in a meeting: remind a member of the meeting to respect the rules"
+          }
+        ]
+      },
       "ai_definition": "1. To recall a vehicle due to a safety defect or non-compliance with regulations.\n2. To call someone back on the phone.\n3. To summon or request the presence of a person.\n4. To evoke a memory or bring something to mind."
     },
     "richiedente": {
@@ -56544,7 +57259,12 @@
         "scalzamenti"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "scalzamenti",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. The removal of snow or ice from the road surface to ensure safe driving conditions.\n2. The act of clearing a path or area of obstacles.\n3. The removal of shoes or footwear.\n4. The uprooting of plants or trees."
     },
     "scalzare": {
@@ -58652,7 +59372,12 @@
         "semibarriere"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "semibarriere",
+        "lemma": null,
+        "meanings": [],
+        "related": []
+      },
       "ai_definition": "1. Half-barriers: Automatic road barriers that lower only partially to stop vehicles while allowing pedestrians or cyclists to pass.\n2. Partial barriers: Safety gates at level crossings that do not fully block the road width."
     },
     "semicarreggiata": {
@@ -63293,7 +64018,43 @@
         "stiano"
       ],
       "source_count": 4,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "stare",
+        "lemma": "stàre",
+        "meanings": [
+          "of person or thing: to remain, to remain physically in a place without moving or leaving",
+          "to be, to remain in a certain condition or situation, to have a certain attitude or behavior, to maintain a certain position []",
+          "have a stable romantic relationship with someone",
+          "live, inhabit, dwell in a certain place; have headquarters"
+        ],
+        "related": [
+          {
+            "term": "stare tenersi tra le due acque",
+            "meaning": "non compromettersi troppo",
+            "english": "don't compromise yourself too much"
+          },
+          {
+            "term": "stare alto",
+            "meaning": "raro stare contegnoso, tenere il broncio",
+            "english": "It's rare to be prim and sulky"
+          },
+          {
+            "term": "va' là che vai bene!; va' là che stai fresco!",
+            "meaning": "ironico continua pure così e vedrai che cosa ti succede",
+            "english": "ironic, continue like this and you'll see what happens to you"
+          },
+          {
+            "term": "andare stare a capo chino",
+            "meaning": "stare con la testa inclinata in avanti, specialmente in segno di umiltà, rassegnazione, colpa",
+            "english": "stand with the head tilted forward, especially as a sign of humility, resignation, guilt"
+          },
+          {
+            "term": "stare di buon animo",
+            "meaning": "essere tranquillo, sereno, di buon umore, non preoccupato",
+            "english": "be calm, serene, in a good mood, not worried"
+          }
+        ]
+      },
       "ai_definition": "1. To remain stationary or keep a specific position on the road.\n2. To stay or continue in a particular state or condition.\n3. To be located or situated in a specific place.\n4. To last or endure for a certain period of time."
     },
     "statico": {
@@ -63622,7 +64383,40 @@
         "stivali"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "stivale",
+        "lemma": "stivàle",
+        "meanings": [
+          "leather or rubber shoe that reaches up to the knee or thigh"
+        ],
+        "related": [
+          {
+            "term": "untare gli stivali a qualcuno",
+            "meaning": "figurato adulare qualcuno",
+            "english": "figuratively flattering someone"
+          },
+          {
+            "term": "stivali alla vaquero",
+            "meaning": "abbigliamento stivali tipici di certa moda western, con margine smerlato e impunture ornamentali",
+            "english": "clothing boots typical of certain western fashion, with scalloped edges and ornamental stitching"
+          },
+          {
+            "term": "stivali a trombino",
+            "meaning": "abbigliamento stivali con gambale a mezza gamba o fino al ginocchio",
+            "english": "clothing boots with half-leg or knee-high upper"
+          },
+          {
+            "term": "scarpe ferrate, stivali ferrati, scarponi ferrati",
+            "meaning": "scarpe, stivali, scarponi con suole chiodate, usati per montagna",
+            "english": "shoes, boots, boots with studded soles, used for the mountains"
+          },
+          {
+            "term": "avere gli stivali delle sette leghe",
+            "meaning": "figurato essere incredibilmente veloci",
+            "english": "let alone be incredibly fast"
+          }
+        ]
+      },
       "ai_definition": "1. A type of high boot worn by drivers or passengers, often required for safety in certain vehicles.\n2. A geographical nickname for the Italian peninsula, which is the location of the driving exam.\n3. A container or storage compartment in a vehicle, such as a trunk or glove box.\n4. A tool used for cleaning or maintaining vehicle interiors."
     },
     "stop": {
@@ -63662,7 +64456,42 @@
         "storico"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "storico",
+        "lemma": "stòrico",
+        "meanings": [
+          "of history",
+          "set in a real context of the past. • historical novel",
+          "which has fundamental importance and affects subsequent future events"
+        ],
+        "related": [
+          {
+            "term": "capo storico",
+            "meaning": "politica persona di grande carisma che è stato ispiratore o fondatore di un partito o movimento politico",
+            "english": "politician person of great charisma who was the inspiration or founder of a political party or movement"
+          },
+          {
+            "term": "carta storica",
+            "meaning": "cartografia carta geografica che raffigura le condizioni geografiche antiche di determinati paesi, con gli insediamenti umani e le divisioni politiche",
+            "english": "cartography geographical map depicting the ancient geographical conditions of certain countries, with human settlements and political divisions"
+          },
+          {
+            "term": "centro storico",
+            "meaning": "il nucleo urbano più antico originario di una città, che in genere è la sua parte di maggior interesse storico-artistico e dove spesso si raggruppano gli edifici pubblici",
+            "english": "the oldest original urban nucleus of a city, which is generally its part of greatest historical-artistic interest and where public buildings are often grouped"
+          },
+          {
+            "term": "memoria storica collettiva",
+            "meaning": "l'insieme dei valori derivanti dalla conoscenza della propria storia e tradizione, che costituiscono il patrimonio spirituale di un popolo e gli conferiscono un'identità propria",
+            "english": "the set of values ​​deriving from knowledge of one's history and tradition, which constitute the spiritual heritage of a people and give it its own identity"
+          },
+          {
+            "term": "regata storica",
+            "meaning": "marineria regata che rievoca un avvenimento storico, disputata con imbarcazioni d'epoca e marinai in costume",
+            "english": "marine regatta which commemorates a historical event, contested with vintage boats and sailors in costume"
+          }
+        ]
+      },
       "ai_definition": "1. A vehicle classified as a historic or vintage car, often exempt from certain traffic restrictions.\n2. Relating to the history or past events of a specific subject.\n3. Pertaining to the study of history as an academic discipline.\n4. Describing something that has significant historical importance or value."
     },
     "strada": {
@@ -64426,7 +65255,35 @@
         "sugli"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "sul",
+        "lemma": "sul",
+        "meanings": [
+          "articulated masculine singular preposition composed of su + il; it is used before singular masculine words beginning with a consonant, which is not impure s, gn, ps, x, z"
+        ],
+        "related": [
+          {
+            "term": "avere qualcuno sullo stomaco sulle corna",
+            "meaning": "non sopportarlo, non poterlo soffrire",
+            "english": "can't stand it, can't suffer it"
+          },
+          {
+            "term": "avere qualcosa sullo stomaco",
+            "meaning": "non averla ancora digerita",
+            "english": "haven't digested it yet"
+          },
+          {
+            "term": "†in sul dì",
+            "meaning": "arcaico sul far del giorno",
+            "english": "archaic at daybreak"
+          },
+          {
+            "term": "sul fare di ...",
+            "meaning": "a somiglianza, ad imitazione di...",
+            "english": "in likeness, in imitation of..."
+          }
+        ]
+      },
       "ai_definition": "1. On (referring to a vehicle being positioned on a road, lane, or surface).\n2. Upon (used in legal contexts to indicate an action taken after a specific event).\n3. About (referring to a topic or subject matter).\n4. Over (indicating a position above something)."
     },
     "sull": {
@@ -67222,7 +68079,30 @@
         "tracciata"
       ],
       "source_count": 1,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "tracciato",
+        "lemma": "tracciàto",
+        "meanings": [
+          "construction the set of signs or pickets that delimit a part of land on which a road, a building, an excavation and the like will be built"
+        ],
+        "related": [
+          {
+            "term": "tracciato miografico",
+            "meaning": "medicina lo stesso che miogramma",
+            "english": "medicine the same as myogram"
+          },
+          {
+            "term": "tracciato rinomanometrico",
+            "meaning": "medicina registrazione dei valori di flusso e pressione nelle cavità nasali ottenuta con l'esame rinomanometrico",
+            "english": "medicine recording of flow and pressure values ​​in the nasal cavities obtained with rhinomanometric examination"
+          },
+          {
+            "term": "tracciato a regresso",
+            "meaning": "ferrovie nelle vecchie ferrovie di montagna, tracciato corrispondente al tornante stradale, formato da più livellette a forte pendenza collegate agli estremi con binario di disimpegno quasi orizzontale",
+            "english": "railways in the old mountain railways, route corresponding to the road bend, made up of several steeply sloping grades connected at the ends with an almost horizontal disengagement track"
+          }
+        ]
+      },
       "ai_definition": "1. The specific route or path of a road, track, or circuit.\n2. The drawn line or outline of a map or plan.\n3. The recorded path of a moving object, such as a vehicle's trajectory.\n4. The layout or design of a railway line or race track."
     },
     "traffico": {
@@ -68907,7 +69787,16 @@
         "ulteriori"
       ],
       "source_count": 2,
-      "dictionary_cache": null,
+      "dictionary_cache": {
+        "lookup_word": "ulteriore",
+        "lemma": "ulterióre",
+        "meanings": [
+          "which follows another",
+          "new",
+          "which is beyond, beyond"
+        ],
+        "related": []
+      },
       "ai_definition": "1. Additional or further, often used to describe extra requirements, documents, or steps needed for a driving license or traffic procedure.\n2. Next or subsequent, referring to the following item in a sequence of events or instructions.\n3. More, indicating an increased quantity or degree of something.\n4. Later, denoting a point in time that comes after the current moment."
     },
     "ultima": {
