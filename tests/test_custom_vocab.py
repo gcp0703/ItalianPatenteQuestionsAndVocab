@@ -85,3 +85,124 @@ def test_normalize_custom_vocab_input_nfc_normalizes():
     word, reason = _normalize_custom_vocab_input(decomposed)
     assert reason is None
     assert word == precomposed
+
+
+def test_add_custom_vocab_requires_auth(client):
+    r = client.post("/api/vocab/custom", json={"input": "ciao"})
+    assert r.status_code == 401
+
+
+def test_add_custom_vocab_single_word(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    r = client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "ciao"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["added"] == ["ciao"]
+    assert body["skipped"] == []
+
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    assert "ciao" in data["custom_vocab"]
+    entry = data["custom_vocab"]["ciao"]
+    assert entry["english"] == ""
+    assert entry["ai_definition"] is None
+    assert entry["dictionary_cache"] is None
+    assert entry["ai_definition_failed"] is False
+    assert "added_at" in entry  # ISO timestamp string
+
+
+def test_add_custom_vocab_multiple_comma_separated(client):
+    token = _register(client, "alice@example.com")
+    r = client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "ciao, diritto di precedenza, semaforo"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    # `semaforo` is in the curated bank, so it should be skipped.
+    assert sorted(body["added"]) == ["ciao", "diritto di precedenza"]
+    skipped_inputs = {s["input"]: s["reason"] for s in body["skipped"]}
+    assert skipped_inputs == {"semaforo": "already_in_bank"}
+
+
+def test_add_custom_vocab_normalizes_input(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    r = client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "  CIAO  "},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["added"] == ["ciao"]
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    assert "ciao" in data["custom_vocab"]
+
+
+def test_add_custom_vocab_collapses_whitespace(client, isolated_env):
+    token = _register(client, "alice@example.com")
+    r = client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "diritto   di  precedenza"},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["added"] == ["diritto di precedenza"]
+    data = json.loads(_user_file(isolated_env, "alice@example.com").read_text())
+    assert "diritto di precedenza" in data["custom_vocab"]
+
+
+def test_add_custom_vocab_skips_duplicate_custom(client):
+    token = _register(client, "alice@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+    r = client.post("/api/vocab/custom", headers=_auth(token), json={"input": "ciao"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["added"] == []
+    assert body["skipped"] == [{"input": "ciao", "reason": "already_custom"}]
+
+
+def test_add_custom_vocab_invalid_entries(client):
+    token = _register(client, "alice@example.com")
+    r = client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "hello!, , " + "x" * 70 + ", ok"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["added"] == ["ok"]
+    skipped = {s["input"]: s["reason"] for s in body["skipped"]}
+    assert skipped["hello!"] == "invalid_chars"
+    # Empty-after-trim entries are silently dropped (not in skipped).
+    assert "" not in skipped
+    long_input = "x" * 70
+    assert skipped[long_input] == "too_long"
+
+
+def test_add_custom_vocab_dedupes_within_same_request(client):
+    token = _register(client, "alice@example.com")
+    r = client.post(
+        "/api/vocab/custom",
+        headers=_auth(token),
+        json={"input": "ciao, CIAO, ciao"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["added"] == ["ciao"]
+    # The 2nd and 3rd `ciao` are duplicates within the same request,
+    # not duplicates of stored data — they're surfaced as already_custom
+    # because the first was inserted before they were checked.
+    assert all(s["reason"] == "already_custom" for s in body["skipped"])
+    assert len(body["skipped"]) == 2
+
+
+def test_add_custom_vocab_per_user_isolation(client, isolated_env):
+    token_a = _register(client, "alice@example.com")
+    token_b = _register(client, "bob@example.com")
+    client.post("/api/vocab/custom", headers=_auth(token_a), json={"input": "ciao"})
+    data_b = json.loads(_user_file(isolated_env, "bob@example.com").read_text())
+    assert data_b["custom_vocab"] == {}

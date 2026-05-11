@@ -1341,6 +1341,57 @@ def persist_vocab_tracking_for_user(email: str, update: VocabTrackingSyncIn) -> 
     return len(feedback_counts)
 
 
+def _now_iso_utc() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def add_custom_vocab_words(email: str, raw_input: str) -> dict[str, Any]:
+    """Add zero or more comma-separated entries to the user's custom_vocab.
+
+    Returns {"added": [str, ...], "skipped": [{"input": str, "reason": str}, ...]}.
+    Performs a single locked read-modify-write.
+    """
+    parts = [p for p in raw_input.split(",")]
+    added: list[str] = []
+    skipped: list[dict[str, str]] = []
+
+    with USER_DATA_LOCK:
+        data = _read_user_data_unlocked(email)
+        if "custom_vocab" not in data or not isinstance(data["custom_vocab"], dict):
+            data["custom_vocab"] = {}
+        custom = data["custom_vocab"]
+        now = _now_iso_utc()
+
+        for raw in parts:
+            normalized, reason = _normalize_custom_vocab_input(raw)
+            if reason == "empty":
+                # Silently drop empty fragments from comma splits.
+                continue
+            if reason is not None:
+                skipped.append({"input": raw.strip(), "reason": reason})
+                continue
+            assert normalized is not None
+            if normalized in VOCAB_BY_WORD:
+                skipped.append({"input": raw.strip(), "reason": "already_in_bank"})
+                continue
+            if normalized in custom:
+                skipped.append({"input": raw.strip(), "reason": "already_custom"})
+                continue
+            custom[normalized] = {
+                "added_at": now,
+                "english": "",
+                "ai_definition": None,
+                "ai_definition_failed": False,
+                "dictionary_cache": None,
+            }
+            added.append(normalized)
+
+        if added:
+            _write_user_data_unlocked(email, data)
+
+    return {"added": added, "skipped": skipped}
+
+
 def unique_preserve_order(items: list[str]) -> list[str]:
     seen: set[str] = set()
     unique_items: list[str] = []
@@ -2194,6 +2245,18 @@ async def prefetch_vocab_batch(
         background_tasks.add_task(prefetch_vocab_meanings, words)
 
     return VocabPrefetchResponse(queued_words=len(words))
+
+
+@app.post("/api/vocab/custom", response_model=CustomVocabAddResponse)
+async def add_custom_vocab(
+    body: CustomVocabAddIn,
+    email: str = Depends(get_current_user_email),
+) -> CustomVocabAddResponse:
+    result = await asyncio.to_thread(add_custom_vocab_words, email, body.input)
+    return CustomVocabAddResponse(
+        added=result["added"],
+        skipped=[CustomVocabSkipped(**s) for s in result["skipped"]],
+    )
 
 
 @app.post("/api/score", response_model=ScoreResponse)
